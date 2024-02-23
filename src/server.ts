@@ -1,20 +1,19 @@
+import morgan from "morgan";
 import express, { Application } from "express";
 import bodyParser from "body-parser";
-import morgan from "morgan";
-// import swaggerUi from "swagger-ui-express";
-import { serve, setup } from "swagger-ui-express";
-import { bootstrapAdmin } from "./utils/bootstrap.util";
-import Routes from "./routes";
+import path from 'path'
 import cors from "cors";
-import dotenv from "dotenv";
-dotenv.config();
-// connect to mongodb
-require("./configs/mongoose.config");
-
-const PORT = process.env.PORT || 8000;
-
+import helmet from "helmet";
+import { serve, setup } from "swagger-ui-express";
+import { APP } from './constants/index'
+import Routes from "./routes";
+import { bootstrapAdmin } from "./utils/bootstrap.util";
+require("./configs/mongoose.config");// connect to mongodb
 const app: Application = express();
-app.use(function(req, res, next) {
+
+app.use(helmet())
+
+app.use(function (req, res, next) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Credentials", 1);
   res.setHeader(
@@ -29,13 +28,16 @@ app.use(function(req, res, next) {
 });
 
 app.use(cors());
-app.use(express.json());
+app.use(bodyParser.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ extended: true, }));
 app.use(morgan("tiny"));
-app.use(express.static("public"));
 
-app.use(
-  "/swagger",
-  serve,
+app.use(express.static("public"));
+app.use(express.static(path.join(__dirname, "/public")));
+app.use("/files", express.static(__dirname + "/public/uploads"));
+
+app.use("/swagger", serve,
   setup(undefined, {
     swaggerOptions: {
       url: "/swagger/swagger.json",
@@ -43,20 +45,12 @@ app.use(
   })
 );
 
-// Use body parser to read sent json payloads
-app.use(
-  bodyParser.urlencoded({
-    extended: true,
-  })
-);
-app.use(bodyParser.json());
-
 app.use("/api", Routes);
 bootstrapAdmin(() => {
   console.log("Bootstraping finished!");
 });
 
-app.listen(PORT, () => {
-  console.log("Server is running on port", PORT);
-  console.log("swagger link ", `localhost:${PORT}/swagger`);
+app.listen(APP.PORT, () => {
+  console.log("Server is running on port", APP.PORT);
+  console.log("swagger link ", `localhost:${APP.PORT}/swagger`);
 });

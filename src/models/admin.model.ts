@@ -1,15 +1,20 @@
 import { Schema, model } from 'mongoose';
-import { ROLE } from '../constants/index';
+import { ROLE, USER_STATUS } from '../constants/index';
 
 const AdminSchema = new Schema(
     {
-        email: { type: String, required: true, minLength: 4, maxLength: 35, trim: true, unique: true },
-        role: { type: Number, enum: [ROLE.ADMIN_ROLE, ROLE.USER_ROLE], default: ROLE.ADMIN_ROLE },
-        firstName: { type: String, required: false, minLength: 4, maxLength: 20},
-        lastName: { type: String, required: false, minLength: 4, maxLength: 20},
-        password: { type: String, required: true, minLength: 4, maxLength: 80, trim: true },
-        isBlocked: { type: Boolean, default: false },
-        isDeleted: { type: Boolean, default: false },
-    }, { timestamps: true, versionKey: false }
+        first_name: { type: String, default: "" },
+        last_name: { type: String, default: "" },
+        email: { type: String },
+        password: { type: String },
+        profile_pic: { type: String, default: "" },
+        user_type: { type: Number, default: ROLE.ADMIN },
+        is_verified: { type: Boolean, default: false },
+        status: { type: Number, default: USER_STATUS.ACTIVE },
+        created_on: { type: Number, default: 0 },
+        updated_on: { type: Number, default: 0 }
+
+    },
+    { timestamps: true, versionKey: false }
 )
 export default model('admin', AdminSchema)

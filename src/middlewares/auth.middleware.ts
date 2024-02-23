@@ -1,81 +1,59 @@
 import { Request, Response, NextFunction } from 'express';
 import { verifyToken } from '../utils/common.util'
-import { responseWithStatus } from '../utils/response.util';
+import { showOutput } from '../utils/response.util';
+import { ApiResponse } from '../utils/Interfaces/showResponse';
 
-export const authenticate = (req: Request, res: Response, next: NextFunction) => {
-    const authHeader = req.headers.authorization;
+export const verifyTokenUser = async (req: Request, res: Response, next: NextFunction) => {
+    const authHeader = req.headers;
+
     if (authHeader) {
-        const decoded = verifyToken(authHeader);
+        const decoded = verifyToken(req, res);
         if (decoded) {
             req.body.user = decoded;
             next();
         } else {
-            return responseWithStatus(res, 400, {
-                data: null,
-                error: 'Unauthorized',
-                message: '',
-                status: 401
-            })
+            return showOutput(res, { status: false, message: 'Unauthorized', data: null, other: null, code: 400 }, 400)
         }
     } else {
-        return responseWithStatus(res, 400, {
-            data: null,
-            error: 'Unauthorized',
-            message: '',
-            status: 401
-        })
-    }
-}
+        return showOutput(res, { status: false, message: 'Unauthorized', data: null, other: null, code: 400 }, 400)
 
-export const authenticateAdmin = async(req: Request, res: Response, next: NextFunction) => {
+    }
+}//ends
+
+
+export const verifyTokenAdmin = async (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
     if (authHeader) {
-        const decoded = verifyToken(authHeader);
+        const decoded = verifyToken(req, res);
         // @ts-ignore
-        if (decoded && decoded?.access=='admin') {
+        if (decoded && decoded?.access == 'admin') {
             req.body.user = decoded;
             next();
         } else {
-            return responseWithStatus(res, 400, {
-                data: null,
-                error: 'Unauthorized',
-                message: '',
-                status: 401
-            })
+            return showOutput(res, { status: false, message: 'Unauthorized', data: null, other: null, code: 400 }, 400)
+
         }
     } else {
-        return responseWithStatus(res, 400, {
-            data: null,
-            error: 'Unauthorized',
-            message: '',
-            status: 401
-        })
+        return showOutput(res, { status: false, message: 'Unauthorized', data: null, other: null, code: 400 }, 400)
+
     }
 }
 
-export const authenticateBoth = async(req: Request, res: Response, next: NextFunction) => {
+export const verifyTokenBoth = async (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
     if (authHeader) {
-        const decoded = verifyToken(authHeader);
+        const decoded = verifyToken(req, res);
         // @ts-ignore
-        if (decoded && decoded?.access=='subAdmin' || decoded?.access=='admin' ) {
+        if (decoded && decoded?.access == 'user' || decoded?.access == 'admin') {
             req.body.user = decoded;
             next();
         } else {
-            return responseWithStatus(res, 400, {
-                data: null,
-                error: 'Unauthorized',
-                message: '',
-                status: 401
-            })
+            return showOutput(res, { status: false, message: 'Unauthorized', data: null, other: null, code: 400 }, 400)
+
         }
     } else {
-        return responseWithStatus(res, 400, {
-            data: null,
-            error: 'Unauthorized',
-            message: '',
-            status: 401
-        })
+        return showOutput(res, { status: false, message: 'Unauthorized', data: null, other: null, code: 400 }, 400)
+
     }
 }
 

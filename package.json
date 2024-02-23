@@ -2,9 +2,9 @@
   "name": "boilerplate_apis",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "start": "npm run build && pm2 start build/index.js --name 'passivo_apis' -prod",
+    "start": "npm run build && pm2 start build/server.js --name 'boilerplate_apis' -dev",
     "restart": "npm run build && pm2 restart passivo_apis",
     "predev": "npm run swagger",
     "prebuild": "npm run swagger",
@@ -18,18 +18,20 @@
       "src"
     ],
     "ext": "ts",
-    "exec": "ts-node src/index.ts"
+    "exec": "ts-node src/server.ts"
   },
   "dependencies": {
     "@hapi/joi": "^17.1.1",
     "axios": "^0.27.2",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.1",
+    "busboy": "^1.6.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
     "eslint": "^8.6.0",
     "express": "^4.17.2",
     "handlebars": "^4.7.7",
+    "helmet": "^7.1.0",
     "joi-objectid": "^4.0.2",
     "json2csv": "^5.0.7",
     "jsonwebtoken": "^8.5.1",
@@ -42,14 +44,15 @@
     "nodemailer": "^6.7.5",
     "stripe": "^9.8.0",
     "swagger-ui-express": "^4.3.0",
-    "tsoa": "^3.14.1",
+    "tsoa": "^6.0.1",
     "winston": "^3.4.0"
   },
-  "author": "BTB",
+  "author": "STS",
   "license": "ISC",
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
     "@types/body-parser": "^1.19.2",
+    "@types/busboy": "^1.5.3",
     "@types/cors": "^2.8.12",
     "@types/hapi__joi": "^17.1.8",
     "@types/json2csv": "^5.0.3",

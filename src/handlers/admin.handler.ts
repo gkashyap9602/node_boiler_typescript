@@ -1,10 +1,11 @@
-
-import { IResponse } from "../utils/interfaces.util";
+import { ApiResponse } from "../utils/Interfaces/showResponse";
+import { showResponse } from "../utils/response.util";
 
 const AdminHandler = {
 
-    async login(data: any, file: any): Promise<IResponse> {
+    async login(data: any, file: any): Promise<ApiResponse> {
         try {
+
             const { email, password } = data;
 
             // const exists = await findOne(adminModel, { email });
@@ -22,20 +23,13 @@ const AdminHandler = {
             // }
             // const token = await signToken(exists._id)
             // delete exists.password
-            return {
-                data: {},
-                error: "",
-                message: "Login Success",
-                status: 200,
-            };
+
+            return showResponse(false, 'ResponseMessages?.middleware?.token_expired', null, null, 401)
+
+
         } catch (err: any) {
             // logger.error(`${this.req.ip} ${err.message}`);
-            return {
-                data: null,
-                error: err.message ? err.message : err,
-                message: "",
-                status: 400,
-            };
+            return showResponse(false, 'ResponseMessages?.middleware?.token_expired', null, null, 401)
         }
     }
 

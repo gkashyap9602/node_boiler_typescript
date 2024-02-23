@@ -4,7 +4,7 @@ import {  ROLE } from '../constants/index';
 
 const ClientSchema = new Schema(
     {
-        role: { type: Number, enum: [ROLE.ADMIN_ROLE, ROLE.USER_ROLE], default: ROLE.USER_ROLE },
+        role: { type: Number, enum: [ROLE.ADMIN, ROLE.USER], default: ROLE.USER },
         email: { type: String, required: false, default: null },
         firstName: { type: String, required: false, minLength: 2, default: null },
         lastName: { type: String, required: false },

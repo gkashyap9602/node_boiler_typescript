@@ -1,89 +1,263 @@
 import { Model } from 'mongoose'
-import fs from 'fs'
-import path from 'path'
-import moment from 'moment'
-import { Parser } from 'json2csv'
+const helpers = require('../services/helper');
 
-export const getById = async (model: Model<any>, id: string, project: any = null) => {
-    const data = await model.findById(id, project, {lean: { virtuals: true }});
-    return data;
-}
 
-export const findOne = async (model: Model<any>, query: object, project: any = null) => {
-    const data = await model.findOne(query, project, {lean: { virtuals: true }});
-    return data;
-}
+export const findOne = (Model: Model<any>, query: object, fields: object, populate: string | null = null) => {
+    return new Promise((resolve, reject) => {
+        let queryBuilder = Model.findOne(query, fields);
 
-export const findAll = async (model: Model<any>, query: object, project: any = null) => {
-    const data = await model.find(query, project, {lean: { virtuals: true }});
-    return data;
-}
-
-export const getAllBySort = async (model: Model<any>, query: any, pageNumber: number = 1, pageSize: number = 20, project: any = null, includeSkip: boolean = true,sort:any) => {
-    const items = await model.find(query, project, {lean: { virtuals: true }}).skip(includeSkip ? ((pageNumber - 1) * pageSize) : 0).limit(includeSkip ? pageSize : 0).sort(sort)
-    const totalItems = await model.find(query).count();
-    return {items, pageNumber, pageSize, totalItems};
-}
-
-export const getAll = async (model: Model<any>, query: any, pageNumber: number = 1, pageSize: number = 20, project: any = null, includeSkip: boolean = true) => {
-    const items = await model.find(query, project, {lean: { virtuals: true }}).skip(includeSkip ? ((pageNumber - 1) * pageSize) : 0).limit(includeSkip ? pageSize : 0).sort({createdAt: -1})
-    const totalItems = await model.find(query).count();
-    return {items, pageNumber, pageSize, totalItems};
-}
-
-export const getAllWithoutPaging = async (model: Model<any>, query: any, project: any = null) => {
-    const items = await model.find(query, project, {lean: { virtuals: true }})
-    const totalItems = await model.find(query).count();
-    return {items, totalItems};
-}
-
-// insert or update
-export const upsert = async(model: Model<any>, data: any, id?: string) => {
-    let dataRes = null;
-    if(id) {
-        // update
-        delete data.id;
-        dataRes = await model.findByIdAndUpdate(id, {...data}, {new: true})
-    } else {
-        dataRes = await model.create(data);
-    }
-    return dataRes;
-}
-
-// update
-export const update = async(model: Model<any>, data: any, matchData: any) => {
-    let dataRes = await model.updateMany({...matchData}, {...data});
-    return dataRes;
-}
-
-export const deleteById = async(model: Model<any>, id: string) => {
-    const deleteResp = await model.deleteOne({_id: id})
-    // @ts-ignore
-    return deleteResp.deletedCount > 0
-}
-export const deleteMany = async (model: Model<any>, query: object) =>{
-    const res = await model.deleteMany(query);
-    return res.deletedCount;
-}  
-
-export const createFolder = async (folderName: string) => {
-    return await fs.mkdir(path.join(__dirname, '../', '../', 'public', `uploads/${folderName}`),{ recursive: true }, function(err) {
-        if (err) {
-          console.log(err)
-        } else {
-          console.log("New directory successfully created.")
+        if (populate) {
+            queryBuilder = queryBuilder.populate(populate);
         }
-      })
-}
+
+        // Enable lean and virtuals
+        queryBuilder = queryBuilder.lean({ virtuals: true });
+
+        queryBuilder.exec((err, data) => {
+            if (err || !data) {
+                let response = helpers.showResponse(false, 'Data Retrieval Failed', err);
+                return resolve(response);
+            }
+            let response = helpers.showResponse(true, 'Data Found', data);
+            return resolve(response);
+        });
+    });
+};
+
+
+export const createOne = (modalReference: any) => {
+    return new Promise((resolve, reject) => {
+        modalReference.save((err: any, savedData: any) => {
+            if (err) {
+                let response = helpers.showResponse(false, 'Data Save Failed', err);
+                return resolve(response);
+            }
+            let response = helpers.showResponse(true, 'Data Saved Successfully', savedData);
+            return resolve(response);
+        });
+    });
+};
+
+
+export const insertMany = (Model: any, dataArray: any[]) => {
+    return new Promise((resolve, reject) => {
+        try {
+            Model.insertMany(dataArray, (err: any, data: any) => {
+                if (err) {
+                    let response = helpers.showResponse(false, 'Data Save Failed', err);
+                    return resolve(response);
+                }
+                let response = helpers.showResponse(true, 'Success', data);
+                return resolve(response);
+            });
+        } catch (err) {
+            let response = helpers.showResponse(false, 'Data Save Failed', err);
+            return resolve(response);
+        }
+    });
+};
+
+
+export const findOneAndUpdate = (Model: any, updateObject: any, matchObj: any) => {
+    return new Promise((resolve, reject) => {
+        Model.findOneAndUpdate(matchObj, { $set: updateObject }, { new: true }, (err: any, updatedData: any) => {
+            if (err) {
+                let response = helpers.showResponse(false, 'Failed error', err);
+                return resolve(response);
+            }
+            if (updatedData) {
+                let response = helpers.showResponse(true, 'Success', updatedData);
+                return resolve(response);
+            }
+            let response = helpers.showResponse(false, 'Failed', null);
+            return resolve(response);
+        });
+    });
+};
 
 
 
 
-export const getFilterMonthDateYear = (date: string) => {
-    return moment(date).add(1, 'day').format('YYYY-MM-DD')
-}
+export const findByIdAndUpdate = (Model: any, DataObject: any, _id: string) => {
+    return new Promise((resolve, reject) => {
+        Model.findByIdAndUpdate(_id, { $set: DataObject }, { new: true }, (err: any, updatedData: any) => {
+            if (err) {
+                let response = helpers.showResponse(false, "Failed", err);
+                return resolve(response);
+            }
 
-export const getCSVFromJSON = (fields: any, json: any) => {
-    const parser = new Parser({ fields });
-    return parser.parse(json);
-}
+            let response = helpers.showResponse(true, 'Success', updatedData);
+            return resolve(response);
+        });
+    });
+};
+
+
+export const updateMany = (Model: any, DataObject: any, filter: any) => {
+    return new Promise((resolve, reject) => {
+        Model.updateMany(filter, { $set: DataObject }, { multi: true, new: true })
+            .exec()
+            .then((updatedData: any) => {
+                let response = helpers.showResponse(true, 'Success', updatedData);
+                return resolve(response);
+            })
+            .catch((err: any) => {
+                let response = helpers.showResponse(false, err);
+                return resolve(response);
+            });
+    });
+};
+
+
+export const deleteMany = (Model: any, query: any) => {
+    return new Promise((resolve, reject) => {
+        Model.deleteMany(query, (err: any) => {
+            if (err) {
+                let response = helpers.showResponse(false, 'Failed', err);
+                return resolve(response);
+            }
+            let response = helpers.showResponse(true, 'Success');
+            return resolve(response);
+        });
+    });
+};
+
+
+export const findByIdAndRemove = (Model: any, id: string) => {
+    return new Promise((resolve, reject) => {
+        Model.findByIdAndRemove(id, (err: any, result: any) => {
+            if (err || !result) {
+                let response = helpers.showResponse(false, 'Failed', err);
+                return resolve(response);
+            }
+            let response = helpers.showResponse(true, 'Success', result);
+            return resolve(response);
+        });
+    });
+};
+
+export const removeItemFromArray = (Model: any, mainIdObj: any, arrayKey: string, itemId: string) => {
+    return new Promise((resolve, reject) => {
+        Model.updateOne(mainIdObj, { $pull: { [arrayKey]: { _id: itemId } } }, (err: any, updatedData: any) => {
+            if (err) {
+                let response = helpers.showResponse(false, err, {});
+                return resolve(response);
+            }
+            if (updatedData?.modifiedCount && updatedData.modifiedCount > 0) {
+                let response = helpers.showResponse(true, 'Success', updatedData);
+                return resolve(response);
+            }
+            let response = helpers.showResponse(false, 'Update failed', {});
+            return resolve(response);
+        });
+    });
+};
+
+
+
+
+
+
+export const bulkOperationQuery = async (Model: any, bulkOperations: any[]) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            // Execute bulk operation 
+            const result = await Model.bulkWrite(bulkOperations);
+            if (result?.ok == 1) {
+                let response = helpers.showResponse(true, 'Success', result);
+                return resolve(response);
+            }
+
+            let response = helpers.showResponse(false, 'Failed', result);
+            return resolve(response);
+        } catch (err) {
+            let response = helpers.showResponse(false, err);
+            return reject(response);
+        }
+    });
+};
+
+export const getDataArray = (Model: Model<any>, query: object, fields: string, pagination?: number | null, sort?: object | null, populate?: string | null) => {
+    return new Promise((resolve, reject) => {
+        let queryBuilder = Model.find(query, fields);
+
+        if (pagination) {
+            queryBuilder = queryBuilder.limit(pagination);
+        }
+
+        if (populate) {
+            queryBuilder = queryBuilder.populate(populate);
+        }
+
+        if (sort) {
+            queryBuilder = queryBuilder.sort(sort);
+        }
+
+        // Enable lean and virtuals
+        queryBuilder = queryBuilder.lean({ virtuals: true });
+
+        queryBuilder.exec((err, data) => {
+            if (err || !data || data.length === 0) {
+                let response = helpers.showResponse(false, err);
+                return resolve(response);
+            }
+            let response = helpers.showResponse(true, "Data found", data);
+            return resolve(response);
+        });
+    });
+};
+
+
+export const getJoinData = async (
+    Model: Model<any>,
+    query: object,
+    fields: string,
+    lookup?: object | null, pagination?: { skip: number; limit: number } | null, sortObj?: object | null) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let aggregation = Model.aggregate().match(query).project(fields);
+
+            if (lookup) {
+                aggregation = aggregation.lookup(lookup);
+            }
+
+            if (sortObj) {
+                aggregation = aggregation.sort(sortObj);
+            } else {
+                aggregation = aggregation.sort({ _id: 0 });
+            }
+
+            if (pagination) {
+                aggregation = aggregation.skip(pagination.skip).limit(pagination.limit);
+            }
+
+            let data = await aggregation.exec();
+
+            if (data.length > 0) {
+                return resolve(helpers.showResponse(true, "Data found", data));
+            } else {
+                return resolve(helpers.showResponse(false, 'NO_DATA'));
+            }
+        } catch (err: any) {
+            console.log(err);
+            return resolve(helpers.showResponse(false, err.message));
+        }
+    });
+};
+
+
+export const getCount = (Model: any, query: any) => {
+    return new Promise((resolve, reject) => {
+        Model.countDocuments(query, (err: any, result: any) => {
+            if (err) {
+                let response = helpers.showResponse(false, 'Failed', err, null, 404);
+                return resolve(response);
+            }
+            let response = helpers.showResponse(true, 'Success', result, null, 200);
+            return resolve(response);
+        });
+    });
+};
+
+
+
