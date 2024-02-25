@@ -21,8 +21,8 @@ export const bycrptPasswordHash = (stringValue: string): Promise<string> => {
 }
 
 
-export const verifyBycryptHash = (password: string, hash: string) => {
-    return bcrypt.compare(password, hash);
+export const verifyBycryptHash = (password: string, hash_password: string) => {
+    return bcrypt.compare(password, hash_password);
 }
 
 

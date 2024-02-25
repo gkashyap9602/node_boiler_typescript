@@ -7,23 +7,25 @@
 		"requestBodies": {},
 		"responses": {},
 		"schemas": {
-			"IResponse": {
+			"ApiResponse": {
 				"properties": {
+					"status": {
+						"type": "boolean"
+					},
 					"message": {
 						"type": "string"
 					},
-					"error": {},
 					"data": {},
-					"status": {
+					"other": {},
+					"code": {
 						"type": "number",
 						"format": "double"
 					}
 				},
 				"required": [
+					"status",
 					"message",
-					"error",
-					"data",
-					"status"
+					"code"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -59,7 +61,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/IResponse"
+									"$ref": "#/components/schemas/ApiResponse"
 								}
 							}
 						}
@@ -112,338 +114,6 @@
 				}
 			}
 		},
-		"/api/client/generateOtp": {
-			"post": {
-				"operationId": "GenerateOtp",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/IResponse"
-								}
-							}
-						}
-					}
-				},
-				"description": "Generate otp for Users",
-				"tags": [
-					"Client"
-				],
-				"security": [],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"properties": {
-									"email": {
-										"type": "string"
-									}
-								},
-								"required": [
-									"email"
-								],
-								"type": "object"
-							}
-						}
-					}
-				}
-			}
-		},
-		"/api/client/verifyOtp": {
-			"put": {
-				"operationId": "VerifyOtp",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/IResponse"
-								}
-							}
-						}
-					}
-				},
-				"description": "Verify otp for user",
-				"tags": [
-					"Client"
-				],
-				"security": [],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"properties": {
-									"otp": {
-										"type": "number",
-										"format": "double"
-									},
-									"email": {
-										"type": "string"
-									}
-								},
-								"required": [
-									"otp",
-									"email"
-								],
-								"type": "object"
-							}
-						}
-					}
-				}
-			}
-		},
-		"/api/client/login": {
-			"post": {
-				"operationId": "Login",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/IResponse"
-								}
-							}
-						}
-					}
-				},
-				"description": "User login",
-				"tags": [
-					"Client"
-				],
-				"security": [],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"properties": {
-									"password": {
-										"type": "string"
-									},
-									"email": {
-										"type": "string"
-									}
-								},
-								"required": [
-									"password",
-									"email"
-								],
-								"type": "object"
-							}
-						}
-					}
-				}
-			}
-		},
-		"/api/client/forgotPassword": {
-			"post": {
-				"operationId": "ForgotPassword",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/IResponse"
-								}
-							}
-						}
-					}
-				},
-				"description": "Client Forgot Password",
-				"tags": [
-					"Client"
-				],
-				"security": [],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"properties": {
-									"domain": {
-										"type": "string"
-									},
-									"email": {
-										"type": "string"
-									}
-								},
-								"required": [
-									"domain",
-									"email"
-								],
-								"type": "object"
-							}
-						}
-					}
-				}
-			}
-		},
-		"/api/client/verifyForgetLink": {
-			"put": {
-				"operationId": "VerifyForgetLink",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/IResponse"
-								}
-							}
-						}
-					}
-				},
-				"description": "verify Link",
-				"tags": [
-					"Client"
-				],
-				"security": [
-					{
-						"Bearer": []
-					}
-				],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"properties": {
-									"id": {
-										"type": "string"
-									}
-								},
-								"type": "object"
-							}
-						}
-					}
-				}
-			}
-		},
-		"/api/client/resetPassword": {
-			"post": {
-				"operationId": "ResetPassword",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/IResponse"
-								}
-							}
-						}
-					}
-				},
-				"description": "Forgot password api endpoint",
-				"tags": [
-					"Client"
-				],
-				"security": [
-					{
-						"Bearer": []
-					}
-				],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"properties": {
-									"password": {
-										"type": "string"
-									}
-								},
-								"required": [
-									"password"
-								],
-								"type": "object"
-							}
-						}
-					}
-				}
-			}
-		},
-		"/api/client/resendOtp": {
-			"put": {
-				"operationId": "ResendOtp",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/IResponse"
-								}
-							}
-						}
-					}
-				},
-				"description": "Verify otp",
-				"tags": [
-					"Client"
-				],
-				"security": [],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"properties": {
-									"id": {
-										"type": "string"
-									}
-								},
-								"required": [
-									"id"
-								],
-								"type": "object"
-							}
-						}
-					}
-				}
-			}
-		},
-		"/api/client/me": {
-			"get": {
-				"operationId": "Me",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/IResponse"
-								}
-							}
-						}
-					}
-				},
-				"description": "Get user info",
-				"tags": [
-					"Client"
-				],
-				"security": [
-					{
-						"Bearer": []
-					}
-				],
-				"parameters": []
-			}
-		},
 		"/api/admin/login": {
 			"post": {
 				"operationId": "Login",
@@ -453,7 +123,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/IResponse"
+									"$ref": "#/components/schemas/ApiResponse"
 								}
 							}
 						}

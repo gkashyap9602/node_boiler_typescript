@@ -1,10 +1,9 @@
-import { Route, Controller, Tags, Post, Body, Get, Security, Query } from 'tsoa'
-import { ApiResponse } from '../utils/Interfaces/showResponse';
-
 import { Request, Response } from 'express'
+import { Route, Controller, Tags, Post, Body, Get, Security, Query } from 'tsoa'
+import { ApiResponse } from '../utils/interfaces.util';
 // import { findOne, getById, upsert, getAll } from '../helpers/db.helpers';
 // import { verifyHash, signToken, genHash } from '../utils/common.util';
-import { validateChangePassword, validateForgotPassword, validateProfile, validateResetPassword, validateAdmin } from '../validations/admin.validator';
+// import { validateChangePassword, validateForgotPassword, validateProfile, validateResetPassword, validateAdmin } from '../validations/admin.validator';
 import adminModel from '../models/admin.model';
 import logger from '../configs/logger.config';
 // import { sendEmail } from '../configs/nodemailer';

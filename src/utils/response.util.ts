@@ -1,5 +1,5 @@
 import { Response } from 'express'
-import { ApiResponse } from '../utils/Interfaces/showResponse'
+import { ApiResponse } from '../utils/interfaces.util'
 
 
 // export const responseWithStatus = (res: Response, status: number, responseData: any) => {

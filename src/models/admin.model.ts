@@ -9,12 +9,12 @@ const AdminSchema = new Schema(
         password: { type: String },
         profile_pic: { type: String, default: "" },
         user_type: { type: Number, default: ROLE.ADMIN },
-        is_verified: { type: Boolean, default: false },
+        is_verified: { type: Boolean, default: true },
         status: { type: Number, default: USER_STATUS.ACTIVE },
         created_on: { type: Number, default: 0 },
         updated_on: { type: Number, default: 0 }
 
     },
-    { timestamps: true, versionKey: false }
+    // { timestamps: true, versionKey: false }
 )
 export default model('admin', AdminSchema)

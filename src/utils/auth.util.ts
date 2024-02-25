@@ -5,7 +5,7 @@ import Users from '../models/client.model'
 import Admin from '../models/admin.model'
 import { showResponse } from './response.util';
 
-export const signToken = async (id: string, extras = {}, expiresIn = '24h') => {
+export const generateJwtToken = async (id: string, extras = {}, expiresIn = '24h') => {
     return new Promise((res, rej) => {
         jwt.sign({ id, ...extras }, process.env.SECRET as string, {
             expiresIn
@@ -47,7 +47,7 @@ export const verifyToken = (req: Request, res: Response) => {
                 // }
                 if (decoded?.user_type == "user") {
 
-                    let response: any = await findOne(Users, { _id: decoded._id }, { password: 0 });
+                    let response: any = await findOne(Users, { _id: decoded._id });
                     if (!response.status) {
                         return res.status(401).json({ status: false, message: 'ResponseMessages?.users?.invalid_user', StatusCode: 401 });
                     }
@@ -67,7 +67,7 @@ export const verifyToken = (req: Request, res: Response) => {
 
                 } else if (decoded?.user_type == "admin") {
 
-                    let response: any = await findOne(Admin, { _id: decoded._id }, { password: 0 });
+                    let response: any = await findOne(Admin, { _id: decoded._id });
                     if (!response.status) {
                         return res.status(401).json({ status: false, message: 'ResponseMessages?.users?.invalid_user', StatusCode: 401 });
                     }
