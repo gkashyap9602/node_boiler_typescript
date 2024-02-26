@@ -1,14 +1,14 @@
 import { Request, Response } from 'express'
 import { Route, Controller, Tags, Post, Body, Get, Security, Query } from 'tsoa'
 import { ApiResponse } from '../utils/interfaces.util';
-import { validateChangePassword, validateForgotPassword, validateRegister, validateResetPassword, validateAdmin, validateResendOtp, validateVerifyOtp } from '../validations/admin.validator';
-import handlers from '../handlers/admin.handler'
+import { validateChangePassword, validateForgotPassword, validateRegister, validateResetPassword, validateUser, validateResendOtp, validateVerifyOtp } from '../validations/user.validator';
+import handlers from '../handlers/user.handler'
 import { showResponse } from '../utils/response.util';
 
-@Tags('Admin')
-@Route('api/admin')
+@Tags('User')
+@Route('api/user')
 
-export default class AdminController extends Controller {
+export default class UserController extends Controller {
     req: Request;
     res: Response;
     userId: string
@@ -20,16 +20,16 @@ export default class AdminController extends Controller {
     }
 
     /**
-     * Get Admin login
+     * Get User login
      */
     @Post("/login")
     public async login(@Body() request: { email: string, password: string }): Promise<ApiResponse> {
         try {
 
-            const validatedAdmin = validateAdmin(request);
+            const validatedUser = validateUser(request);
 
-            if (validatedAdmin.error) {
-                return showResponse(false, validatedAdmin.error.message, null, null, 400)
+            if (validatedUser.error) {
+                return showResponse(false, validatedUser.error.message, null, null, 400)
             }
 
             return handlers.login(request)
@@ -42,7 +42,7 @@ export default class AdminController extends Controller {
     //ends
 
     /**
-    * Save a Admin
+    * Save a User
     */
     @Post("/register")
     public async register(@Body() request: { email: string, first_name: string, last_name: string, password: string }): Promise<ApiResponse> {
@@ -121,7 +121,6 @@ export default class AdminController extends Controller {
     @Post("/verify_otp")
     public async verifyOtp(@Body() request: { email: string, otp: number }): Promise<ApiResponse> {
         try {
-
             const validatedVerifyOtp = validateVerifyOtp(request);
 
             if (validatedVerifyOtp.error) {
@@ -152,6 +151,7 @@ export default class AdminController extends Controller {
             if (validatedResendOtp.error) {
                 return showResponse(false, validatedResendOtp.error.message, null, null, 400)
             }
+
             return handlers.resendOtp(request)
 
         }

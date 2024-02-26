@@ -1,10 +1,10 @@
 import express from 'express';
 const Route = express.Router();
 const admin = require('./admin');
-const client = require('./client');
+const user = require('./user');
 
 Route.use('/admin', admin);
-Route.use('/client', client);
+Route.use('/user', user);
 
 
 export default Route;

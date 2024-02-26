@@ -26,7 +26,6 @@ const verifyBycryptHash = (password: string, hash_password: string) => {
 }
 
 
-
 const convertIdToObjectId = (id: string) => {
     return Types.ObjectId(id);
 }
@@ -42,15 +41,6 @@ const generateRandomOtp = (len: number) => {
     }
     return (OTP);
 }
-
-// export const generateRandomOtp = () => {
-//     const digits = '0123456789';
-//     let OTP = '';
-//     for (let i = 0; i < 6; i++) {
-//         OTP += digits[Math.floor(Math.random() * 10)];
-//     }
-//     return OTP;
-// }
 
 const camelize = (str: string) => {
     try {
@@ -71,6 +61,7 @@ const getCSVFromJSON = (fields: any, json: any) => {
     const parser = new Parser({ fields });
     return parser.parse(json);
 }
+
 
 
 export default {

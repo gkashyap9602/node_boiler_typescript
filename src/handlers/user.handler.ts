@@ -6,7 +6,7 @@ import { showResponse } from "../utils/response.util";
 import { findOne, createOne, findByIdAndUpdate, findOneAndUpdate } from "../helpers/db.helpers";
 import { generateJwtToken } from "../utils/auth.util";
 import commonHelper from "../helpers/common.helper";
-import adminModel from "../models/admin.model";
+import userModel from "../models/user.model";
 import services from '../services';
 import responseMessage from "../constants/responseMessage.constant";
 import { APP } from '../constants/app.constant';
@@ -17,7 +17,7 @@ const AdminHandler = {
         try {
             const { email, password } = data;
 
-            const exists = await findOne(adminModel, { email });
+            const exists = await findOne(userModel, { email });
             if (!exists.status) {
                 return showResponse(false, responseMessage.admin.does_not_exist, null, null, 400)
             }
@@ -44,7 +44,7 @@ const AdminHandler = {
             let { first_name, last_name, email, password } = data;
 
             // check if user exists
-            const exists = await findOne(adminModel, { email });
+            const exists = await findOne(userModel, { email });
 
             if (exists.status) {
                 return showResponse(false, responseMessage.common.email_already, null, null, 400)
@@ -52,7 +52,7 @@ const AdminHandler = {
 
             password = await commonHelper.bycrptPasswordHash(password);
 
-            let adminRef = new adminModel(data)
+            let adminRef = new userModel(data)
 
             let save = await createOne(adminRef)
 
@@ -73,7 +73,7 @@ const AdminHandler = {
         try {
             const { email } = data;
             // check if admin exists
-            const exists = await findOne(adminModel, { email });
+            const exists = await findOne(userModel, { email });
 
             if (!exists.status) {
                 return showResponse(false, responseMessage.admin.invalid_admin, null, null, 400)
@@ -103,7 +103,7 @@ const AdminHandler = {
                     updated_on: moment().unix()
                 }
 
-                await findByIdAndUpdate(adminModel, userObj, (exists?.data?._id));
+                await findByIdAndUpdate(userModel, userObj, (exists?.data?._id));
 
                 return showResponse(true, responseMessage.users.otp_send, null, null, 200);
             }
@@ -123,7 +123,7 @@ const AdminHandler = {
 
             let queryObject = { email, status: { $ne: 2 } }
 
-            let result = await findOne(adminModel, queryObject);
+            let result = await findOne(userModel, queryObject);
             if (!result.status) {
                 return showResponse(false, `${responseMessage.users.invalid_user} or email`, null, null, 400);
             }
@@ -136,7 +136,7 @@ const AdminHandler = {
                 updated_on: moment().unix()
             }
 
-            const updated = await findByIdAndUpdate(adminModel, updateObj, userId)
+            const updated = await findByIdAndUpdate(userModel, updateObj, userId)
 
             if (!updated.status) {
                 return showResponse(false, responseMessage.users.password_reset_error, null, null, 400)
@@ -160,10 +160,10 @@ const AdminHandler = {
 
             let queryObject = { email, otp, status: { $ne: 2 } }
 
-            let findUser = await findOne(adminModel, queryObject)
+            let findUser = await findOne(userModel, queryObject)
 
             if (findUser.status) {
-                await findOneAndUpdate(adminModel, queryObject, { is_verified: true })
+                await findOneAndUpdate(userModel, queryObject, { is_verified: true })
 
                 return showResponse(true, responseMessage.users.otp_verify_success, null, null, 200);
 
@@ -185,7 +185,7 @@ const AdminHandler = {
             const { email } = data;
             let queryObject = { email, status: { $ne: 2 } }
 
-            let result = await findOne(adminModel, queryObject);
+            let result = await findOne(userModel, queryObject);
 
             if (result.status) {
 
@@ -208,7 +208,7 @@ const AdminHandler = {
                 let resendOtp = await services.emailService.nodemailer(to, subject, template, attachments)
 
                 if (resendOtp.status) {
-                    await findOneAndUpdate(adminModel, queryObject, { otp })
+                    await findOneAndUpdate(userModel, queryObject, { otp })
 
                     return showResponse(true, responseMessage.users.otp_resend, null, null, 200);
                 }
@@ -228,7 +228,7 @@ const AdminHandler = {
         try {
             const { old_password, new_password } = data;
 
-            const exists = await findOne(adminModel, { _id: userId })
+            const exists = await findOne(userModel, { _id: userId })
 
             if (!exists.status) {
                 return showResponse(false, responseMessage.admin.invalid_admin, null, null, 400)
@@ -243,7 +243,7 @@ const AdminHandler = {
             const hashed = await commonHelper.bycrptPasswordHash(new_password)
 
 
-            const updated = await findByIdAndUpdate(adminModel, { password: hashed }, userId)
+            const updated = await findByIdAndUpdate(userModel, { password: hashed }, userId)
 
             if (!updated.status) {
                 return showResponse(false, responseMessage.users.password_change_failed, null, null, 400)
@@ -260,7 +260,7 @@ const AdminHandler = {
     async getUserDetails(userId: string): Promise<ApiResponse> {
         try {
 
-            let getResponse = await findOne(adminModel, { _id: userId }, { password: 0 });
+            let getResponse = await findOne(userModel, { _id: userId }, { password: 0 });
 
             if (!getResponse.status) {
                 return showResponse(false, responseMessage.admin.invalid_admin, null, null, 400)

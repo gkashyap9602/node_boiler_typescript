@@ -2,7 +2,7 @@ import { Model } from 'mongoose'
 import { showResponse } from '../utils/response.util';
 import { ApiResponse } from '../utils/interfaces.util';
 
-export const findOne = (Model: Model<any>, query: object, fields: string = '', populate?: string | null): Promise<ApiResponse> => {
+export const findOne = (Model: Model<any>, query: object, fields: object = {}, populate?: string | null): Promise<ApiResponse> => {
     return new Promise((resolve, reject) => {
         let queryBuilder = Model.findOne(query, fields);
 

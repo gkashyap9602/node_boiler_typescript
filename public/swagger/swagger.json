@@ -52,9 +52,9 @@
 		}
 	},
 	"paths": {
-		"/api/client/save": {
+		"/api/user/login": {
 			"post": {
-				"operationId": "Save",
+				"operationId": "Login",
 				"responses": {
 					"200": {
 						"description": "Ok",
@@ -67,9 +67,9 @@
 						}
 					}
 				},
-				"description": "Save a client",
+				"description": "Get User login",
 				"tags": [
-					"Client"
+					"User"
 				],
 				"security": [],
 				"parameters": [],
@@ -79,20 +79,7 @@
 						"application/json": {
 							"schema": {
 								"properties": {
-									"language": {
-										"type": "string"
-									},
-									"phoneNumber": {
-										"type": "number",
-										"format": "double"
-									},
 									"password": {
-										"type": "string"
-									},
-									"lastName": {
-										"type": "string"
-									},
-									"firstName": {
 										"type": "string"
 									},
 									"email": {
@@ -100,11 +87,7 @@
 									}
 								},
 								"required": [
-									"language",
-									"phoneNumber",
 									"password",
-									"lastName",
-									"firstName",
 									"email"
 								],
 								"type": "object"
@@ -112,6 +95,320 @@
 						}
 					}
 				}
+			}
+		},
+		"/api/user/register": {
+			"post": {
+				"operationId": "Register",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Save a User",
+				"tags": [
+					"User"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"password": {
+										"type": "string"
+									},
+									"last_name": {
+										"type": "string"
+									},
+									"first_name": {
+										"type": "string"
+									},
+									"email": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"password",
+									"last_name",
+									"first_name",
+									"email"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/user/forgot_password": {
+			"post": {
+				"operationId": "ForgotPassword",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Forgot password api endpoint",
+				"tags": [
+					"User"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"email": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"email"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/user/reset_password": {
+			"post": {
+				"operationId": "ResetPassword",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Reset password api endpoint",
+				"tags": [
+					"User"
+				],
+				"security": [
+					{
+						"Bearer": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"new_password": {
+										"type": "string"
+									},
+									"email": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"new_password",
+									"email"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/user/verify_otp": {
+			"post": {
+				"operationId": "VerifyOtp",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Verify Otp Route  api endpoint",
+				"tags": [
+					"User"
+				],
+				"security": [
+					{
+						"Bearer": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"otp": {
+										"type": "number",
+										"format": "double"
+									},
+									"email": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"otp",
+									"email"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/user/resend_otp": {
+			"post": {
+				"operationId": "ResendOtp",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Resend Otp Route  api endpoint",
+				"tags": [
+					"User"
+				],
+				"security": [
+					{
+						"Bearer": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"email": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"email"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/user/changePassword": {
+			"post": {
+				"operationId": "ChangePassword",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Change Password endpoint",
+				"tags": [
+					"User"
+				],
+				"security": [
+					{
+						"Bearer": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"new_password": {
+										"type": "string"
+									},
+									"old_password": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"new_password",
+									"old_password"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/user/get_details": {
+			"get": {
+				"operationId": "GetUserDetails",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get Admin info",
+				"tags": [
+					"User"
+				],
+				"security": [
+					{
+						"Bearer": []
+					}
+				],
+				"parameters": []
 			}
 		},
 		"/api/admin/login": {
@@ -284,12 +581,16 @@
 						"application/json": {
 							"schema": {
 								"properties": {
-									"password": {
+									"new_password": {
+										"type": "string"
+									},
+									"email": {
 										"type": "string"
 									}
 								},
 								"required": [
-									"password"
+									"new_password",
+									"email"
 								],
 								"type": "object"
 							}
@@ -442,7 +743,7 @@
 				}
 			}
 		},
-		"/api/admin/getUserDetails": {
+		"/api/admin/get_details": {
 			"get": {
 				"operationId": "GetUserDetails",
 				"responses": {

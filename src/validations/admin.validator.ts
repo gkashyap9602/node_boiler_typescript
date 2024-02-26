@@ -13,19 +13,37 @@ const registerSchema = joi.object({
 })
 
 
-
 const forgotPasswordSchema = joi.object({
     email: joi.string().trim().email().min(4).max(35).required()
 })
 
 const validateResetPasswordSchema = joi.object({
-    password: joi.string().min(4).max(20).required(),
+    email: joi.string().trim().email().min(4).max(35).required(),
+    new_password: joi.string().min(4).max(20).required(),
 })
 const validateChangePasswordSchema = joi.object({
     oldPassword: joi.string().min(4).max(20).required(),
     newPassword: joi.string().min(4).max(20).required(),
 })
 
+const verifyOtpSchema = joi.object({
+    email: joi.string().trim().email().min(4).max(35).required(),
+    otp: joi.string().min(4).max(20).required(),
+})
+
+
+const resendOtpSchema = joi.object({
+    email: joi.string().trim().email().min(4).max(35).required(),
+})
+
+
+
+export const validateVerifyOtp = (user: any) => {
+    return verifyOtpSchema.validate(user)
+}
+export const validateResendOtp = (user: any) => {
+    return resendOtpSchema.validate(user)
+}
 
 
 export const validateAdmin = (admin: any) => {

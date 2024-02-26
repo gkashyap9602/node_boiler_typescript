@@ -7,34 +7,37 @@ export const verifyTokenUser = async (req: Request, res: Response, next: NextFun
     const authHeader = req.headers;
 
     if (authHeader) {
-        const decoded = verifyToken(req, res);
-        if (decoded) {
-            req.body.user = decoded;
+        const decoded: ApiResponse = await verifyToken(req, res).data;
+        if (decoded.status && decoded?.data?.user_type == 'user') {
+            req.body.user = decoded?.data;
             next();
         } else {
-            return showOutput(res, { status: false, message: 'Unauthorized', data: null, other: null, code: 400 }, 400)
+            return showOutput(res, decoded, decoded?.code)
+            // return showOutput(res, { status: false, message: decoded?.message, data: null, other: null, code: decoded?.code }, decoded?.code)
         }
     } else {
-        return showOutput(res, { status: false, message: 'Unauthorized', data: null, other: null, code: 400 }, 400)
+        return showOutput(res, { status: false, message: 'Unauthorized', data: null, other: null, code: 401 }, 401)
 
     }
 }//ends
 
 
 export const verifyTokenAdmin = async (req: Request, res: Response, next: NextFunction) => {
-    const authHeader = req.headers.authorization;
+    const authHeader = req.headers;
+
     if (authHeader) {
-        const decoded = verifyToken(req, res);
+        const decoded: ApiResponse = await verifyToken(req, res).data;
         // @ts-ignore
-        if (decoded && decoded?.access == 'admin') {
-            req.body.user = decoded;
+        if (decoded.status && decoded?.data?.user_type == 'admin') {
+            req.body.user = decoded.data;
             next();
         } else {
-            return showOutput(res, { status: false, message: 'Unauthorized', data: null, other: null, code: 400 }, 400)
+            return showOutput(res, decoded, decoded?.code)
+            // return showOutput(res, { status: false, message: decoded.message, data: null, other: null, code: decoded?.code }, decoded?.code)
 
         }
     } else {
-        return showOutput(res, { status: false, message: 'Unauthorized', data: null, other: null, code: 400 }, 400)
+        return showOutput(res, { status: false, message: 'Unauthorized', data: null, other: null, code: 401 }, 401)
 
     }
 }
@@ -42,17 +45,18 @@ export const verifyTokenAdmin = async (req: Request, res: Response, next: NextFu
 export const verifyTokenBoth = async (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
     if (authHeader) {
-        const decoded = verifyToken(req, res);
+        const decoded: ApiResponse = verifyToken(req, res).data;
         // @ts-ignore
-        if (decoded && decoded?.access == 'user' || decoded?.access == 'admin') {
-            req.body.user = decoded;
+        if (decoded.status && decoded?.data?.user_type == 'user' || decoded?.data?.user_type == 'admin') {
+            req.body.user = decoded.data;
             next();
         } else {
-            return showOutput(res, { status: false, message: 'Unauthorized', data: null, other: null, code: 400 }, 400)
+            return showOutput(res, decoded, decoded?.code)
+            // return showOutput(res, { status: false, message: 'Unauthorized', data: null, other: null, code: 400 }, 400)
 
         }
     } else {
-        return showOutput(res, { status: false, message: 'Unauthorized', data: null, other: null, code: 400 }, 400)
+        return showOutput(res, { status: false, message: 'Unauthorized', data: null, other: null, code: 401 }, 401)
 
     }
 }
