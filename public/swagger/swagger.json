@@ -335,7 +335,7 @@
 				}
 			}
 		},
-		"/api/user/changePassword": {
+		"/api/user/change_password": {
 			"post": {
 				"operationId": "ChangePassword",
 				"responses": {
@@ -456,59 +456,6 @@
 				}
 			}
 		},
-		"/api/admin/register": {
-			"post": {
-				"operationId": "Register",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiResponse"
-								}
-							}
-						}
-					}
-				},
-				"description": "Save a Admin",
-				"tags": [
-					"Admin"
-				],
-				"security": [],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"properties": {
-									"password": {
-										"type": "string"
-									},
-									"last_name": {
-										"type": "string"
-									},
-									"first_name": {
-										"type": "string"
-									},
-									"email": {
-										"type": "string"
-									}
-								},
-								"required": [
-									"password",
-									"last_name",
-									"first_name",
-									"email"
-								],
-								"type": "object"
-							}
-						}
-					}
-				}
-			}
-		},
 		"/api/admin/forgot_password": {
 			"post": {
 				"operationId": "ForgotPassword",
@@ -524,7 +471,7 @@
 						}
 					}
 				},
-				"description": "Forgot password api endpoint",
+				"description": "Save a Admin",
 				"tags": [
 					"Admin"
 				],
@@ -694,7 +641,7 @@
 				}
 			}
 		},
-		"/api/admin/changePassword": {
+		"/api/admin/change_password": {
 			"post": {
 				"operationId": "ChangePassword",
 				"responses": {

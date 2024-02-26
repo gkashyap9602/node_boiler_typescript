@@ -44,24 +44,24 @@ export default class AdminController extends Controller {
     /**
     * Save a Admin
     */
-    @Post("/register")
-    public async register(@Body() request: { email: string, first_name: string, last_name: string, password: string }): Promise<ApiResponse> {
-        try {
-            const validatedSignup = validateRegister(request);
+    // @Post("/register")
+    // public async register(@Body() request: { email: string, first_name: string, last_name: string, password: string }): Promise<ApiResponse> {
+    //     try {
+    //         const validatedSignup = validateRegister(request);
 
-            if (validatedSignup.error) {
-                return showResponse(false, validatedSignup.error.message, null, null, 400)
-            }
+    //         if (validatedSignup.error) {
+    //             return showResponse(false, validatedSignup.error.message, null, null, 400)
+    //         }
 
-            return handlers.register(request)
+    //         return handlers.register(request)
 
-        }
-        catch (err: any) {
-            // logger.error(`${this.req.ip} ${err.message}`)
-            return err
+    //     }
+    //     catch (err: any) {
+    //         // logger.error(`${this.req.ip} ${err.message}`)
+    //         return err
 
-        }
-    }
+    //     }
+    // }
     //ends
 
 
@@ -103,7 +103,7 @@ export default class AdminController extends Controller {
                 return showResponse(false, validatedResetPassword.error.message, null, null, 400)
             }
 
-            return handlers.resetPassword(request, this.userId)
+            return handlers.resetPassword(request)
 
         }
         catch (err: any) {
@@ -167,7 +167,7 @@ export default class AdminController extends Controller {
     * Change Password endpoint
     */
     @Security('Bearer')
-    @Post("/changePassword")
+    @Post("/change_password")
     public async changePassword(@Body() request: { old_password: string, new_password: string }): Promise<ApiResponse> {
         try {
             const { old_password, new_password } = request;

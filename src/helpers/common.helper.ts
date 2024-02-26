@@ -5,16 +5,17 @@ import bcrypt from 'bcryptjs';
 
 
 const bycrptPasswordHash = (stringValue: string): Promise<string> => {
-    return new Promise((res, rej) => {
+    console.log(stringValue, "stringValue")
+    return new Promise((resolve, reject) => {
         bcrypt.genSalt(10, function (err: any, salt: string) {
             if (err) {
-                rej(err.message)
+                reject(err.message)
             }
             bcrypt.hash(stringValue, salt, async (err: any, hash: string) => {
                 if (err) {
-                    rej(err.message)
+                    reject(err.message)
                 }
-                res(hash);
+                resolve(hash);
             });
         });
     })

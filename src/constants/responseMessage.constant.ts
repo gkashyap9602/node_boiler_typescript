@@ -124,7 +124,7 @@ export default {
         email_already: "Email address is already occupied",
         subAdmin_added: "SubAdmin Added Successfully",
         subAdmin_save_fail: "Error while Creating SubAdmin",
-        admin_created: "Admin Created Successfullt",
+        admin_created: "Admin Created Successfully",
 
 
     },

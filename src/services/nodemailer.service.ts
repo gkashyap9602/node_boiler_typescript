@@ -29,7 +29,7 @@ const sendEmailService = async (to: string, subject: string, body: any, attachme
                     return resolve(showResponse(false, 'Email Sent Error', error, null, 200));
                 }
 
-                console.log(data, "datatatatataemail")
+                // console.log(data, "datatatatataemail")
                 return resolve(showResponse(true, 'Email Sent Successfully', null, null, 200));
             })
         } catch (err) {

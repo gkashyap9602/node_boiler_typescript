@@ -6,8 +6,8 @@ const loginSchema = joi.object({
 })
 
 const registerSchema = joi.object({
-    firstName: joi.string().trim().min(4).max(20).required(),
-    lastName: joi.string().min(4).max(20).required(),
+    first_name: joi.string().trim().min(4).max(20).required(),
+    last_name: joi.string().min(4).max(20).required(),
     email: joi.string().trim().email().min(4).max(35).required(),
     password: joi.string().min(4).max(20).required(),
 })
@@ -22,8 +22,8 @@ const validateResetPasswordSchema = joi.object({
     new_password: joi.string().min(4).max(20).required(),
 })
 const validateChangePasswordSchema = joi.object({
-    oldPassword: joi.string().min(4).max(20).required(),
-    newPassword: joi.string().min(4).max(20).required(),
+    old_password: joi.string().min(4).max(20).required(),
+    new_password: joi.string().min(4).max(20).required(),
 })
 
 const verifyOtpSchema = joi.object({

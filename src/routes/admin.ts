@@ -16,12 +16,12 @@ router.post('/login', async (req: Request | any, res: Response) => {
     return showOutput(res, result, result.code)
 })
 
-router.post('/register', async (req: Request | any, res: Response) => {
-    const { first_name, last_name, email, password } = req.body;
-    const adminController = new AdminController(req, res)
-    const result: ApiResponse = await adminController.register({ first_name, last_name, email, password });
-    return showOutput(res, result, result.code)
-})
+// router.post('/register', async (req: Request | any, res: Response) => {
+//     const { first_name, last_name, email, password } = req.body;
+//     const adminController = new AdminController(req, res)
+//     const result: ApiResponse = await adminController.register({ first_name, last_name, email, password });
+//     return showOutput(res, result, result.code)
+// })
 
 router.post('/forgot_password', async (req: Request | any, res: Response) => {
     const { email, mode } = req.body;

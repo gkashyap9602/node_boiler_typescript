@@ -11,7 +11,7 @@ import services from '../services';
 import responseMessage from "../constants/responseMessage.constant";
 import { APP } from '../constants/app.constant';
 
-const AdminHandler = {
+const UserHandler = {
 
     async login(data: any): Promise<ApiResponse> {
         try {
@@ -19,7 +19,7 @@ const AdminHandler = {
 
             const exists = await findOne(userModel, { email });
             if (!exists.status) {
-                return showResponse(false, responseMessage.admin.does_not_exist, null, null, 400)
+                return showResponse(false, responseMessage.users.invalid_email, null, null, 400)
             }
 
             const isValid = await commonHelper.verifyBycryptHash(password, exists.data.password);
@@ -27,10 +27,10 @@ const AdminHandler = {
                 return showResponse(false, responseMessage.common.password_incorrect, null, null, 400)
             }
 
-            const token = await generateJwtToken(exists.data._id, { user_type: 'admin', type: "access" }, APP.ACCESS_EXPIRY)
+            const token = await generateJwtToken(exists.data._id, { user_type: 'user', type: "access" }, APP.ACCESS_EXPIRY)
             delete exists.data.password
 
-            return showResponse(true, responseMessage.admin.login_success, { ...exists.data, token }, null, 200)
+            return showResponse(true, responseMessage.users.login_success, { ...exists.data, token }, null, 200)
 
 
         } catch (err: any) {
@@ -50,18 +50,42 @@ const AdminHandler = {
                 return showResponse(false, responseMessage.common.email_already, null, null, 400)
             }
 
-            password = await commonHelper.bycrptPasswordHash(password);
+            let hashed = await commonHelper.bycrptPasswordHash(password);
 
-            let adminRef = new userModel(data)
+            let userObj = {
+                first_name,
+                last_name,
+                email,
+                password: hashed
+            }
 
-            let save = await createOne(adminRef)
+            let userRef = new userModel(userObj)
+            let result = await createOne(userRef)
 
-            if (!save.status) {
+            if (!result.status) {
                 return showResponse(false, responseMessage.common.error_while_create_acc, null, null, 400)
 
             }
 
-            return showResponse(true, responseMessage.admin.admin_created, null, null, 200)
+            let otp = commonHelper.generateRandomOtp(4)
+
+            const template = await ejs.renderFile(path.join(__dirname, '../templates', 'registration.ejs'), { user_name: result?.data?.first_name, cidLogo: 'unique@Logo', otp });
+            const logoPath = path.join(process.cwd(), './public', 'logo.png');
+            //send email of attachment to admin
+            let to = `${result?.data?.email}`
+            let subject = `New user registered`
+
+            let attachments = [
+                {
+                    filename: 'logo.png',
+                    path: logoPath,
+                    cid: 'unique@Logo',
+                }
+            ]
+
+            await services.emailService.nodemailer(to, subject, template, attachments)
+
+            return showResponse(true, responseMessage.users.register_success, {}, null, 200)
 
         } catch (err: any) {
             // logger.error(`${this.req.ip} ${err.message}`);
@@ -90,7 +114,7 @@ const AdminHandler = {
                 {
                     filename: 'logo.png',
                     path: logoPath,
-                    cid: 'unique@DigismartLogo',
+                    cid: 'unique@Logo',
                 }
             ]
 
@@ -117,11 +141,12 @@ const AdminHandler = {
         }
     },
 
-    async resetPassword(data: any, userId: string): Promise<ApiResponse> {
+    async resetPassword(data: any): Promise<ApiResponse> {
         try {
             const { email, new_password } = data;
 
             let queryObject = { email, status: { $ne: 2 } }
+            // is_verified: true
 
             let result = await findOne(userModel, queryObject);
             if (!result.status) {
@@ -136,7 +161,7 @@ const AdminHandler = {
                 updated_on: moment().unix()
             }
 
-            const updated = await findByIdAndUpdate(userModel, updateObj, userId)
+            const updated = await findByIdAndUpdate(userModel, updateObj, result?.data?._id)
 
             if (!updated.status) {
                 return showResponse(false, responseMessage.users.password_reset_error, null, null, 400)
@@ -169,7 +194,7 @@ const AdminHandler = {
 
             }
 
-            return showResponse(false, responseMessage.users.invalid_otp, null, null, 400);
+            return showResponse(false, `${responseMessage.users.invalid_otp} or email`, null, null, 400);
 
         }
         catch (err: any) {
@@ -278,4 +303,4 @@ const AdminHandler = {
 
 }
 
-export default AdminHandler 
+export default UserHandler 

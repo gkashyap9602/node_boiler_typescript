@@ -103,7 +103,7 @@ export default class UserController extends Controller {
                 return showResponse(false, validatedResetPassword.error.message, null, null, 400)
             }
 
-            return handlers.resetPassword(request, this.userId)
+            return handlers.resetPassword(request)
 
         }
         catch (err: any) {
@@ -167,7 +167,7 @@ export default class UserController extends Controller {
     * Change Password endpoint
     */
     @Security('Bearer')
-    @Post("/changePassword")
+    @Post("/change_password")
     public async changePassword(@Body() request: { old_password: string, new_password: string }): Promise<ApiResponse> {
         try {
             const { old_password, new_password } = request;

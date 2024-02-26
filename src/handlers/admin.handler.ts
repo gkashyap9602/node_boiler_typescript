@@ -90,7 +90,7 @@ const AdminHandler = {
                 {
                     filename: 'logo.png',
                     path: logoPath,
-                    cid: 'unique@DigismartLogo',
+                    cid: 'unique@Logo',
                 }
             ]
 
@@ -117,7 +117,7 @@ const AdminHandler = {
         }
     },
 
-    async resetPassword(data: any, userId: string): Promise<ApiResponse> {
+    async resetPassword(data: any): Promise<ApiResponse> {
         try {
             const { email, new_password } = data;
 
@@ -136,7 +136,7 @@ const AdminHandler = {
                 updated_on: moment().unix()
             }
 
-            const updated = await findByIdAndUpdate(adminModel, updateObj, userId)
+            const updated = await findByIdAndUpdate(adminModel, updateObj, result?.data?._id)
 
             if (!updated.status) {
                 return showResponse(false, responseMessage.users.password_reset_error, null, null, 400)
@@ -169,7 +169,7 @@ const AdminHandler = {
 
             }
 
-            return showResponse(false, responseMessage.users.invalid_otp, null, null, 400);
+            return showResponse(false, `${responseMessage.users.invalid_otp} or email`, null, null, 400);
 
         }
         catch (err: any) {
