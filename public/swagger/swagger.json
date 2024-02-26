@@ -27,6 +27,29 @@
 				],
 				"type": "object",
 				"additionalProperties": false
+			},
+			"ApiResponse": {
+				"properties": {
+					"status": {
+						"type": "boolean"
+					},
+					"message": {
+						"type": "string"
+					},
+					"data": {},
+					"other": {},
+					"code": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"status",
+					"message",
+					"code"
+				],
+				"type": "object",
+				"additionalProperties": false
 			}
 		},
 		"securitySchemes": {
@@ -453,7 +476,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/IResponse"
+									"$ref": "#/components/schemas/ApiResponse"
 								}
 							}
 						}
