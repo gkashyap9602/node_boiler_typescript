@@ -1,19 +1,21 @@
-import { findOne, upsert } from '../helpers/db.helpers';
+import { findOne, createOne } from '../helpers/db.helpers';
 import AdminModel from '../models/admin.model';
-import clientModel from '../models/client.model';
-import { genHash } from './common.util';
+// import clientModel from '../models/client.model';
+import commonHelper from '../helpers/common.helper';
 
 export const bootstrapAdmin = async function (cb: Function) {
-  const userPassword = await genHash("123456");
+  const userPassword = await commonHelper.bycrptPasswordHash("123456");
   const adminData = {
     password: userPassword,
     email: 'boilerplate@yopmail.com',
-    firstName: 'Admin',
-    lastName: 'Account',
+    first_name: 'Admin',
+    last_name: 'Account',
   };
   const adminDoc = await findOne(AdminModel, { email: adminData.email });
-  if (!adminDoc) {
-    await upsert(AdminModel, adminData)
+  // console.log(adminDoc,"adminDocc")
+  if (!adminDoc.status) {
+    let adminRef = new AdminModel(adminData)
+    await createOne(adminRef)
   }
 
   // const client = await findOne(clientModel, {})

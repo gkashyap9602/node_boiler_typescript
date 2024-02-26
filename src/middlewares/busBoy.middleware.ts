@@ -18,7 +18,7 @@ interface BusboyErrorEvent {
     error: Error;
 }
 
-export const busboyMultipart = (request: Request): Promise<{ status: boolean; message: string; data?: FileObject[] }> => {
+const busboyMultipart = (request: Request): Promise<{ status: boolean; message: string; data?: FileObject[] }> => {
     return new Promise((resolve, reject) => {
         try {
             let busboy = Busboy({ headers: request.headers });
@@ -53,3 +53,5 @@ export const busboyMultipart = (request: Request): Promise<{ status: boolean; me
         }
     });
 };
+
+export default { busboyMultipart }

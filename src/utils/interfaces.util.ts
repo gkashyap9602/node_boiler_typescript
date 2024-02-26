@@ -1,6 +1,8 @@
-export interface IResponse {
-    message: string
-    error: any
-    data: any
-    status: number
+
+export interface ApiResponse {
+    status: boolean;
+    message: string;
+    data?: any;
+    other?: any;
+    code: number;
 }

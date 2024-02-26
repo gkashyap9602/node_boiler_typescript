@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { verifyToken } from '../utils/common.util'
+import { verifyToken } from '../utils/auth.util'
 import { showOutput } from '../utils/response.util';
-import { ApiResponse } from '../utils/Interfaces/showResponse';
+import { ApiResponse } from '../utils/interfaces.util';
 
 export const verifyTokenUser = async (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers;
@@ -55,5 +55,11 @@ export const verifyTokenBoth = async (req: Request, res: Response, next: NextFun
         return showOutput(res, { status: false, message: 'Unauthorized', data: null, other: null, code: 400 }, 400)
 
     }
+}
+
+export default {
+    verifyTokenAdmin,
+    verifyTokenBoth,
+    verifyTokenUser
 }
 

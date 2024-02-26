@@ -5,7 +5,7 @@ import path from 'path'
 import cors from "cors";
 import helmet from "helmet";
 import { serve, setup } from "swagger-ui-express";
-import { APP } from './constants/index'
+import { APP } from './constants/app.constant'
 import Routes from "./routes";
 import { bootstrapAdmin } from "./utils/bootstrap.util";
 require("./configs/mongoose.config");// connect to mongodb

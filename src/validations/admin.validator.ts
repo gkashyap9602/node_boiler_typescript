@@ -1,16 +1,18 @@
 import joi from '@hapi/joi';
 
-const schema = joi.object({
+const loginSchema = joi.object({
     email: joi.string().trim().email().min(4).max(35).required(),
     password: joi.string().min(4).max(20).required(),
 })
 
-const adminProfileSchema = joi.object({
+const registerSchema = joi.object({
     firstName: joi.string().trim().min(4).max(20).required(),
     lastName: joi.string().min(4).max(20).required(),
     email: joi.string().trim().email().min(4).max(35).required(),
     password: joi.string().min(4).max(20).required(),
 })
+
+
 
 const forgotPasswordSchema = joi.object({
     email: joi.string().trim().email().min(4).max(35).required()
@@ -24,12 +26,14 @@ const validateChangePasswordSchema = joi.object({
     newPassword: joi.string().min(4).max(20).required(),
 })
 
+
+
 export const validateAdmin = (admin: any) => {
-    return schema.validate(admin)
+    return loginSchema.validate(admin)
 }
 
-export const validateProfile = (admin: any) => {
-    return adminProfileSchema.validate(admin)
+export const validateRegister = (admin: any) => {
+    return registerSchema.validate(admin)
 }
 
 export const validateForgotPassword = (admin: any) => {

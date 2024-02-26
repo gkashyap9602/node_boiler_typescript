@@ -1,11 +1,5 @@
 import { Response } from 'express'
-import { ApiResponse } from '../utils/Interfaces/showResponse'
-
-
-// export const responseWithStatus = (res: Response, status: number, responseData: any) => {
-//     return res.status(status).send(responseData);
-// }
-
+import { ApiResponse } from '../utils/interfaces.util'
 
 export const showResponse = (status: boolean, message: string, data: any = null, other: any = null, code: number | null = null) => {
 

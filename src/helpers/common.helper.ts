@@ -4,7 +4,7 @@ import { Types } from 'mongoose';
 import bcrypt from 'bcryptjs';
 
 
-export const bycrptPasswordHash = (stringValue: string): Promise<string> => {
+const bycrptPasswordHash = (stringValue: string): Promise<string> => {
     return new Promise((res, rej) => {
         bcrypt.genSalt(10, function (err: any, salt: string) {
             if (err) {
@@ -21,27 +21,38 @@ export const bycrptPasswordHash = (stringValue: string): Promise<string> => {
 }
 
 
-export const verifyBycryptHash = (password: string, hash: string) => {
-    return bcrypt.compare(password, hash);
+const verifyBycryptHash = (password: string, hash_password: string) => {
+    return bcrypt.compare(password, hash_password);
 }
 
 
 
-export const convertIdToObjectId = (id: string) => {
+const convertIdToObjectId = (id: string) => {
     return Types.ObjectId(id);
 }
 
-
-export const generateRandomOtp = () => {
+const generateRandomOtp = (len: number) => {
     const digits = '0123456789';
     let OTP = '';
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < len; i++) {
         OTP += digits[Math.floor(Math.random() * 10)];
     }
-    return OTP;
+    if (OTP.length < len || OTP.length > len) {
+        generateRandomOtp(len);
+    }
+    return (OTP);
 }
 
-export const camelize = (str: string) => {
+// export const generateRandomOtp = () => {
+//     const digits = '0123456789';
+//     let OTP = '';
+//     for (let i = 0; i < 6; i++) {
+//         OTP += digits[Math.floor(Math.random() * 10)];
+//     }
+//     return OTP;
+// }
+
+const camelize = (str: string) => {
     try {
         str = str.trim().split(' ').join('_')
         return str
@@ -52,13 +63,24 @@ export const camelize = (str: string) => {
 }
 
 
-export const getFilterMonthDateYear = (date: string) => {
+const getFilterMonthDateYear = (date: string) => {
     return moment(date).add(1, 'day').format('YYYY-MM-DD')
 }
 
-export const getCSVFromJSON = (fields: any, json: any) => {
+const getCSVFromJSON = (fields: any, json: any) => {
     const parser = new Parser({ fields });
     return parser.parse(json);
 }
 
 
+export default {
+    bycrptPasswordHash,
+    verifyBycryptHash,
+    convertIdToObjectId,
+    generateRandomOtp,
+    camelize,
+    getFilterMonthDateYear,
+    getCSVFromJSON
+
+
+}

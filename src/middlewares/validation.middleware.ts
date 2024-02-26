@@ -42,3 +42,4 @@ export const validator = (schema: any) => {
     }
 }
 
+export default { validator }

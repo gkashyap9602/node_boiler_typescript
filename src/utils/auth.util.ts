@@ -4,8 +4,9 @@ import { findOne } from "../helpers/db.helpers"
 import Users from '../models/client.model'
 import Admin from '../models/admin.model'
 import { showResponse } from './response.util';
+import responseMessage from '../constants/responseMessage.constant';
 
-export const signToken = async (id: string, extras = {}, expiresIn = '24h') => {
+export const generateJwtToken = async (id: string, extras = {}, expiresIn = '24h') => {
     return new Promise((res, rej) => {
         jwt.sign({ id, ...extras }, process.env.SECRET as string, {
             expiresIn
@@ -40,26 +41,26 @@ export const verifyToken = (req: Request, res: Response) => {
             let decoded = jwt.verify(token, API_SECRET as string, async (err: any, decoded: any) => {
 
                 if (err) {
-                    return res.status(401).json({ status: false, message: 'ResponseMessages?.middleware?.token_expired', StatusCode: 401 });
+                    return res.status(401).json({ status: false, message: responseMessage?.middleware?.token_expired, StatusCode: 401 });
                 }
                 // if (decoded?.type == "refresh") {
                 //     return res.status(403).json({ status: false, message: 'ResponseMessages?.middleware?.use_access_token', StatusCode: 401 });
                 // }
                 if (decoded?.user_type == "user") {
 
-                    let response: any = await findOne(Users, { _id: decoded._id }, { password: 0 });
+                    let response: any = await findOne(Users, { _id: decoded._id });
                     if (!response.status) {
-                        return res.status(401).json({ status: false, message: 'ResponseMessages?.users?.invalid_user', StatusCode: 401 });
+                        return res.status(401).json({ status: false, message: responseMessage?.users?.invalid_user, StatusCode: 401 });
                     }
                     let userData = response?.data
                     console.log(userData.status, "status jwt side");
 
                     if (userData.status == 2) {
-                        return res.status(451).json({ status: false, message: 'ResponseMessages?.middleware?.deleted_account', StatusCode: 451 });
+                        return res.status(451).json({ status: false, message: responseMessage?.middleware?.deleted_account, StatusCode: 451 });
                     }
 
                     if (userData.status == 4) {
-                        return res.status(451).json({ status: false, message: 'ResponseMessages?.middleware?.deactivated_account', StatusCode: 451 });
+                        return res.status(451).json({ status: false, message: responseMessage?.middleware?.deactivated_account, StatusCode: 451 });
                     }
 
                     decoded = { ...decoded, user_id: userData._id }
@@ -67,20 +68,20 @@ export const verifyToken = (req: Request, res: Response) => {
 
                 } else if (decoded?.user_type == "admin") {
 
-                    let response: any = await findOne(Admin, { _id: decoded._id }, { password: 0 });
+                    let response: any = await findOne(Admin, { _id: decoded._id });
                     if (!response.status) {
-                        return res.status(401).json({ status: false, message: 'ResponseMessages?.users?.invalid_user', StatusCode: 401 });
+                        return res.status(401).json({ status: false, message: responseMessage?.users?.invalid_user, StatusCode: 401 });
                     }
 
                     let userData = response?.data
                     console.log(userData.status, "status jwt side");
 
                     if (userData.status == 2) {
-                        return res.status(451).json({ status: false, message: 'ResponseMessages?.middleware?.deleted_account', StatusCode: 451 });
+                        return res.status(451).json({ status: false, message: responseMessage?.middleware?.deleted_account, StatusCode: 451 });
                     }
 
                     if (userData.status == 4) {
-                        return res.status(451).json({ status: false, message: 'ResponseMessages?.middleware?.deactivated_account', StatusCode: 451 });
+                        return res.status(451).json({ status: false, message: responseMessage?.middleware?.deactivated_account, StatusCode: 451 });
                     }
                     decoded = { ...decoded, user_id: userData._id }
 
@@ -88,13 +89,13 @@ export const verifyToken = (req: Request, res: Response) => {
 
                 } else {
 
-                    return res.status(401).json({ status: false, message: 'ResponseMessages?.middleware?.invalid_user', StatusCode: 401 });
+                    return res.status(401).json({ status: false, message: responseMessage?.middleware?.invalid_user, StatusCode: 401 });
                 }
             })
 
             return decoded
         } else {
-            return res.status(401).json({ status: false, message: 'ResponseMessages?.middleware?.token_expired', StatusCode: 401 });
+            return res.status(401).json({ status: false, message: responseMessage?.middleware?.token_expired, StatusCode: 401 });
             return showResponse(false, 'ResponseMessages?.middleware?.token_expired', null, null, 401)
         }
 

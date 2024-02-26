@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { DB } from "../constants/index";
+import { DB } from "../constants/app.constant";
 
 mongoose
   .connect(DB.MONGODB_URI as string, {

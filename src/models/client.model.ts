@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose';
 
-import {  ROLE } from '../constants/index';
+import {  ROLE } from '../constants/app.constant';
 
 const ClientSchema = new Schema(
     {

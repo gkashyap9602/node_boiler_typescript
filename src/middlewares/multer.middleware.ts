@@ -4,7 +4,7 @@ const multer = require("multer");
 const path = require('path')
 
 
-export const addToMulter = multer({
+const addToMulter = multer({
     storage: multer.memoryStorage(),
     fileFilter: (req: any, file: any, callback: any) => {
         callback(null, true); // Accept the file
@@ -18,9 +18,9 @@ const storage = multer.diskStorage({
     destination: function (req: any, file: any, cb: any) {
 
         if (file.fieldname === 'documents') {
-            cb(null, `${__dirname}../../uploads/documents`);
+            cb(null, `${process.cwd()}/public/uploads/documents`);
         } else {
-            cb(null, `${__dirname}../../uploads/`);
+            cb(null, `${__dirname}/public/uploads`);
         }
 
     },
@@ -35,14 +35,20 @@ const storage = multer.diskStorage({
 const fileFilter = function (req: any, file: Express.Multer.File, callback: any) {
     const mime = file.mimetype;
 
-    if (!mime.includes('image') && !mime.includes('pdf')) {
-        return callback(new Error("Only image or pdf files are allowed"));
-    }
+    // if (!mime.includes('image') && !mime.includes('pdf')) {
+    //     return callback(new Error("Only image or pdf files are allowed"));
+    // }
+
     callback(null, true);
 }
 
-export const multerUpload = multer({
+const multerUpload = multer({
     storage: storage,
     limits: { fileSize: 15 * 1048576 }, // 5 mb
     fileFilter
 });
+
+export default {
+    addToMulter,
+    multerUpload
+}
