@@ -1,24 +1,24 @@
 const nodemailer = require('nodemailer');
 import { showResponse } from "../utils/response.util";
 import { ApiResponse } from "../utils/interfaces.util";
+import { EMAIL_CREDENTIAL } from "../constants/app.constant";
 
 const sendEmailService = async (to: string, subject: string, body: any, attachments: any = []): Promise<ApiResponse> => {
     return new Promise(async (resolve, reject) => {
-        // let SMTP_MAIL = await getParameterFromAWS({ name: 'STMP_EMAIL' });
-        // let SMTP_APP_PASSWORD = await getParameterFromAWS({ name: 'SMTP_APP_PASSWORD' });
 
         try {
             const transporter = nodemailer.createTransport({
-                host: "smtp.gmail.com",
+                host: EMAIL_CREDENTIAL.EMAIL_HOST,
                 port: 465,
                 secure: true,
                 auth: {
-                    user: 'digismartdisc@gmail.com',
-                    pass: 'xmcscwkzvrlorqtc'
+                    user: EMAIL_CREDENTIAL.SENDGRID_API,
+                    pass: EMAIL_CREDENTIAL.SENDGRID_API_KEY
                 }
             });
+
             let mailOptions = {
-                from: 'digismartdisc@gmail.com',
+                from: EMAIL_CREDENTIAL.EMAIL_HOST,
                 to,
                 subject,
                 html: body,

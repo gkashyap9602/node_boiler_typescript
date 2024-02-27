@@ -141,6 +141,24 @@ const UserHandler = {
         }
     },
 
+    async uploadFile(data: any): Promise<ApiResponse> {
+        try {
+            const { file } = data;
+
+            const s3Upload = await services.awsService.uploadFileToS3([file])
+            if (!s3Upload.status) {
+                return showResponse(false, responseMessage?.common.file_upload_error, {}, null, 203);
+            }
+
+            return showResponse(true, responseMessage.common.file_upload_success, s3Upload?.data, null, 200)
+        }
+        catch (err: any) {
+            // logger.error(`${this.req.ip} ${err.message}`)
+            return showResponse(false, err?.message ?? err, null, null, 400)
+
+        }
+    },
+
     async resetPassword(data: any): Promise<ApiResponse> {
         try {
             const { email, new_password } = data;

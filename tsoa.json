@@ -8,17 +8,6 @@
     "version": "1.0.0",
     "license": "license",
     "specMerging": "recursive",
-    "servers": [
-      {
-        "url": "http://localhost:3000",
-        "description": "Local environment"
-      },
-      {
-        "url": "https://liveUrl.com",
-        "description": "Live environment"
-      }
-    ],
-
     "securityDefinitions": {
       "Bearer": {
         "type": "apiKey",

@@ -4,6 +4,7 @@ import { showOutput } from '../utils/response.util'
 import { ApiResponse } from '../utils/interfaces.util'
 import middlewares from '../middlewares'
 let { verifyTokenUser } = middlewares.auth
+let { addToMulter } = middlewares.fileUpload.multer
 
 const router = express.Router()
 
@@ -19,6 +20,13 @@ router.post('/register', async (req: Request | any, res: Response) => {
     const userController = new UserController(req, res)
     const result: ApiResponse = await userController.register({ first_name, last_name, email, password });
     return showOutput(res, result, result.code)
+})
+
+router.post('/upload_file', addToMulter.single('file'), async (req: Request | any, res: Response) => {
+    const userController = new UserController(req, res)
+    const result: ApiResponse = await userController.uploadFile(req.file as Express.Multer.File);
+    return showOutput(res, result, result.code)
+
 })
 
 router.post('/forgot_password', async (req: Request | any, res: Response) => {

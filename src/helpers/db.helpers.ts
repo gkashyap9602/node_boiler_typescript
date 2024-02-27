@@ -177,7 +177,7 @@ export const bulkOperationQuery = async (Model: any, bulkOperations: any[]): Pro
     });
 };
 
-export const getDataArray = (Model: Model<any>, query: object, fields: string, pagination?: number | null, sort?: object | null, populate?: string | null): Promise<ApiResponse> => {
+export const getDataArray = (Model: Model<any>, query: object, fields: string, pagination?: number | null, sort?: any | null, populate?: string | null): Promise<ApiResponse> => {
     return new Promise((resolve, reject) => {
         let queryBuilder = Model.find(query, fields);
 
@@ -211,8 +211,8 @@ export const getDataArray = (Model: Model<any>, query: object, fields: string, p
 export const getJoinData = async (
     Model: Model<any>,
     query: object,
-    fields: string,
-    lookup?: object | null, pagination?: { skip: number; limit: number } | null, sortObj?: object | null): Promise<ApiResponse> => {
+    fields: string | any,
+    lookup?: any | null, pagination?: { skip: number; limit: number } | null, sortObj?: any | null): Promise<ApiResponse> => {
     return new Promise(async (resolve, reject) => {
         try {
             let aggregation = Model.aggregate().match(query).project(fields);
@@ -224,7 +224,7 @@ export const getJoinData = async (
             if (sortObj) {
                 aggregation = aggregation.sort(sortObj);
             } else {
-                aggregation = aggregation.sort({ _id: 0 });
+                aggregation = aggregation.sort({ _id: -1 });
             }
 
             if (pagination) {

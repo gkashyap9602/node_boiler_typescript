@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { Route, Controller, Tags, Post, Body, Get, Security, Query } from 'tsoa'
+import { Route, Controller, Tags, Post, Body, Get, Security, Query, UploadedFile } from 'tsoa'
 import { ApiResponse } from '../utils/interfaces.util';
 import { validateChangePassword, validateForgotPassword, validateRegister, validateResetPassword, validateUser, validateResendOtp, validateVerifyOtp } from '../validations/user.validator';
 import handlers from '../handlers/user.handler'
@@ -44,9 +44,11 @@ export default class UserController extends Controller {
     /**
     * Save a User
     */
+
     @Post("/register")
     public async register(@Body() request: { email: string, first_name: string, last_name: string, password: string }): Promise<ApiResponse> {
         try {
+
             const validatedSignup = validateRegister(request);
 
             if (validatedSignup.error) {
@@ -63,6 +65,25 @@ export default class UserController extends Controller {
         }
     }
     //ends
+
+    /**
+    * Upload a file
+    */
+    @Security('Bearer')
+    @Post("/upload_file")
+    public async uploadFile(@UploadedFile() file: Express.Multer.File): Promise<ApiResponse> {
+        try {
+
+            return handlers.uploadFile({ file })
+
+        }
+
+        catch (err: any) {
+            // logger.error(`${this.req.ip} ${err.message}`)
+            return err
+
+        }
+    }
 
 
     /**
