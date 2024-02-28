@@ -5,10 +5,13 @@ import { ApiResponse } from '../utils/interfaces.util';
 
 export const verifyTokenUser = async (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers;
-
     if (authHeader) {
-        const decoded: ApiResponse = await verifyToken(req, res).data;
+        const decoded: ApiResponse = await (await verifyToken(req, res))
+        // .data;
+        console.log(decoded, "decodeddddddddUser")
+
         if (decoded.status && decoded?.data?.user_type == 'user') {
+            console.log("underrrrDeco")
             req.body.user = decoded?.data;
             next();
         } else {
@@ -26,7 +29,7 @@ export const verifyTokenAdmin = async (req: Request, res: Response, next: NextFu
     const authHeader = req.headers;
 
     if (authHeader) {
-        const decoded: ApiResponse = await verifyToken(req, res).data;
+        const decoded: ApiResponse = await verifyToken(req, res);
         // @ts-ignore
         if (decoded.status && decoded?.data?.user_type == 'admin') {
             req.body.user = decoded.data;
@@ -45,9 +48,10 @@ export const verifyTokenAdmin = async (req: Request, res: Response, next: NextFu
 export const verifyTokenBoth = async (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
     if (authHeader) {
-        const decoded: ApiResponse = verifyToken(req, res).data;
+        const decoded: ApiResponse = await verifyToken(req, res);
+        console.log(decoded, "decodeddddddd")
         // @ts-ignore
-        if (decoded.status && decoded?.data?.user_type == 'user' || decoded?.data?.user_type == 'admin') {
+        if (decoded.status && decoded?.data?.data?.user_type == 'user' || decoded?.data?.data?.user_type == 'admin') {
             req.body.user = decoded.data;
             next();
         } else {
