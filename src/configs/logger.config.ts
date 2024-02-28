@@ -15,6 +15,7 @@ const logger = winston.createLogger({
         winston.format.splat(),
         winston.format.printf(({ level, message }) => `${new Date().toISOString()} ${level}: ${message}`)
     ),
+    //
     transports: [
         new winston.transports.Console({
             stderrLevels: ["error"],
