@@ -3,7 +3,7 @@ import { showResponse } from "../utils/response.util";
 import { ApiResponse } from "../utils/interfaces.util";
 import { EMAIL_CREDENTIAL } from "../constants/app.constant";
 
-const sendEmailService = async (to: string, subject: string, body: any, attachments: any = []): Promise<ApiResponse> => {
+const nodemail = async (to: string, subject: string, body: any, attachments: any = []): Promise<ApiResponse> => {
     return new Promise(async (resolve, reject) => {
 
         try {
@@ -39,4 +39,4 @@ const sendEmailService = async (to: string, subject: string, body: any, attachme
     });
 }
 
-export default sendEmailService
+export default { nodemail } 

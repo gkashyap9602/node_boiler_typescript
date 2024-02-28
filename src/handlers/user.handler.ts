@@ -7,9 +7,9 @@ import { findOne, createOne, findByIdAndUpdate, findOneAndUpdate } from "../help
 import { generateJwtToken } from "../utils/auth.util";
 import commonHelper from "../helpers/common.helper";
 import userModel from "../models/user.model";
-import services from '../services';
 import responseMessage from "../constants/responseMessage.constant";
 import { APP } from '../constants/app.constant';
+import services from '../services';
 
 const UserHandler = {
 
@@ -83,7 +83,7 @@ const UserHandler = {
                 }
             ]
 
-            await services.emailService.nodemailer(to, subject, template, attachments)
+            await services.emailService.nodemail(to, subject, template, attachments)
 
             return showResponse(true, responseMessage.users.register_success, {}, null, 200)
 
@@ -118,7 +118,7 @@ const UserHandler = {
                 }
             ]
 
-            let forgotPassMail = await services.emailService.nodemailer(to, subject, template, attachments)
+            let forgotPassMail = await services.emailService.nodemail(to, subject, template, attachments)
 
             if (forgotPassMail.status) {
 
@@ -248,7 +248,7 @@ const UserHandler = {
                     }
                 ]
 
-                let resendOtp = await services.emailService.nodemailer(to, subject, template, attachments)
+                let resendOtp = await services.emailService.nodemail(to, subject, template, attachments)
 
                 if (resendOtp.status) {
                     await findOneAndUpdate(userModel, queryObject, { otp })

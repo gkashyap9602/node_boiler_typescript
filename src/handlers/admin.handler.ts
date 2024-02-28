@@ -94,7 +94,7 @@ const AdminHandler = {
                 }
             ]
 
-            let forgotPassMail = await services.emailService.nodemailer(to, subject, template, attachments)
+            let forgotPassMail = await services.emailService.nodemail(to, subject, template, attachments)
 
             if (forgotPassMail.status) {
 
@@ -205,7 +205,7 @@ const AdminHandler = {
                     }
                 ]
 
-                let resendOtp = await services.emailService.nodemailer(to, subject, template, attachments)
+                let resendOtp = await services.emailService.nodemail(to, subject, template, attachments)
 
                 if (resendOtp.status) {
                     await findOneAndUpdate(adminModel, queryObject, { otp })

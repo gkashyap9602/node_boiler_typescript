@@ -852,6 +852,4 @@ export default {
     uploadZipImagesToS3,
     uploadToS3
 
-
-
 }

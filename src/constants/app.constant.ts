@@ -5,7 +5,6 @@ const envConfig = dotenv.config({ path: path.resolve(__dirname, "../../.env") })
 if (envConfig.error) {
   throw new Error("No .Env File Found");
 }
-
 import services from "../services";
 import { AwsCredential, RoleType } from "../utils/interfaces.util";
 
@@ -31,18 +30,14 @@ async function initializeAWSCredentials() {
       return { status: true, message: "Aws credential Fetched Successfully" }
 
     } else {
+
       return { status: false, message: "Error initializing AWS credentials" }
-      // console.error('Error initializing AWS credentials:', AWS_CREDENTIAL);
     }
 
   } catch (error) {
     return { status: false, message: "Error initializing AWS credentials" }
-    // console.error('Error initializing AWS credentials:', error);
   }
 }
-
-// Initialize AWS credentials
-// initializeAWSCredentials()
 
 
 const APP = {
