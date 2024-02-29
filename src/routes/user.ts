@@ -73,6 +73,8 @@ router.post('/change_password', verifyTokenUser, async (req: Request | any, res:
 
 router.get('/get_details', verifyTokenUser, async (req: Request | any, res: Response) => {
     const userController = new UserController(req, res)
+    console.log(req.body.user, "roueeeeee")
+
     const result: ApiResponse = await userController.getUserDetails();
     return showOutput(res, result, result.code)
 

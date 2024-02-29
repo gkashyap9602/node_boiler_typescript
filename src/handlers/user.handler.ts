@@ -305,8 +305,9 @@ const UserHandler = {
 
             let getResponse = await findOne(userModel, { _id: userId }, { password: 0 });
 
+            console.log("handlerrrrrr", userId)
             if (!getResponse.status) {
-                return showResponse(false, responseMessage.admin.invalid_admin, null, null, 400)
+                return showResponse(false, responseMessage.users.invalid_user, null, null, 400)
             }
 
             return showResponse(true, responseMessage.users.user_detail, getResponse.data, null, 200)

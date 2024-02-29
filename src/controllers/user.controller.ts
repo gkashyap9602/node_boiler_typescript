@@ -217,6 +217,7 @@ export default class UserController extends Controller {
     @Get("/get_details")
     public async getUserDetails(): Promise<ApiResponse> {
         try {
+            // console.log(req.body.user, "")
 
             return handlers.getUserDetails(this.userId)
 
