@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { verifyToken } from '../utils/auth.util'
 import { showOutput } from '../utils/response.util';
 import { ApiResponse } from '../utils/interfaces.util';
-
+///
 export const verifyTokenUser = async (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers;
     if (authHeader) {
