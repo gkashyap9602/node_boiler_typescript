@@ -1,14 +1,14 @@
 import { Request, Response } from 'express'
-import { Route, Controller, Tags, Post, Body, Get, Security, Query, UploadedFile } from 'tsoa'
-import { ApiResponse } from '../utils/interfaces.util';
-import { validateChangePassword, validateForgotPassword, validateRegister, validateResetPassword, validateUser, validateResendOtp, validateVerifyOtp } from '../validations/user.validator';
-import handlers from '../handlers/user.handler'
-import { showResponse } from '../utils/response.util';
+import { Route, Controller, Tags, Post, Body, Get, Security, Query, Put } from 'tsoa'
+import { ApiResponse } from '../../utils/interfaces.util';
+import { validateChangePassword, validateForgotPassword, validateRegister, validateUpdateQuestion, validateAddQuestion, validateCommonContent, validateResetPassword, validateAdmin, validateResendOtp, validateVerifyOtp } from '../../validations/admin.validator';
+import handlers from '../../handlers/Admin/admin.handler'
+import { showResponse } from '../../utils/response.util';
 
-@Tags('User')
-@Route('api/user')
+@Tags('Admin')
+@Route('api/admin')
 
-export default class UserController extends Controller {
+export default class AdminController extends Controller {
     req: Request;
     res: Response;
     userId: string
@@ -20,16 +20,16 @@ export default class UserController extends Controller {
     }
 
     /**
-     * Get User login
+     * Get Admin login
      */
     @Post("/login")
     public async login(@Body() request: { email: string, password: string }): Promise<ApiResponse> {
         try {
 
-            const validatedUser = validateUser(request);
+            const validatedAdmin = validateAdmin(request);
 
-            if (validatedUser.error) {
-                return showResponse(false, validatedUser.error.message, null, null, 400)
+            if (validatedAdmin.error) {
+                return showResponse(false, validatedAdmin.error.message, null, null, 400)
             }
 
             return handlers.login(request)
@@ -42,48 +42,27 @@ export default class UserController extends Controller {
     //ends
 
     /**
-    * Save a User
+    * Save a Admin
     */
+    // @Post("/register")
+    // public async register(@Body() request: { email: string, first_name: string, last_name: string, password: string }): Promise<ApiResponse> {
+    //     try {
+    //         const validatedSignup = validateRegister(request);
 
-    @Post("/register")
-    public async register(@Body() request: { email: string, first_name: string, last_name: string, password: string }): Promise<ApiResponse> {
-        try {
+    //         if (validatedSignup.error) {
+    //             return showResponse(false, validatedSignup.error.message, null, null, 400)
+    //         }
 
-            const validatedSignup = validateRegister(request);
+    //         return handlers.register(request)
 
-            if (validatedSignup.error) {
-                return showResponse(false, validatedSignup.error.message, null, null, 400)
-            }
+    //     }
+    //     catch (err: any) {
+    //         // logger.error(`${this.req.ip} ${err.message}`)
+    //         return err
 
-            return handlers.register(request)
-
-        }
-        catch (err: any) {
-            // logger.error(`${this.req.ip} ${err.message}`)
-            return err
-
-        }
-    }
+    //     }
+    // }
     //ends
-
-    /**
-    * Upload a file
-    */
-    @Security('Bearer')
-    @Post("/upload_file")
-    public async uploadFile(@UploadedFile() file: Express.Multer.File): Promise<ApiResponse> {
-        try {
-
-            return handlers.uploadFile({ file })
-
-        }
-
-        catch (err: any) {
-            // logger.error(`${this.req.ip} ${err.message}`)
-            return err
-
-        }
-    }
 
 
     /**
@@ -142,6 +121,7 @@ export default class UserController extends Controller {
     @Post("/verify_otp")
     public async verifyOtp(@Body() request: { email: string, otp: number }): Promise<ApiResponse> {
         try {
+
             const validatedVerifyOtp = validateVerifyOtp(request);
 
             if (validatedVerifyOtp.error) {
@@ -172,7 +152,6 @@ export default class UserController extends Controller {
             if (validatedResendOtp.error) {
                 return showResponse(false, validatedResendOtp.error.message, null, null, 400)
             }
-
             return handlers.resendOtp(request)
 
         }
@@ -217,7 +196,6 @@ export default class UserController extends Controller {
     @Get("/get_details")
     public async getUserDetails(): Promise<ApiResponse> {
         try {
-            // console.log(req.body.user, "")
 
             return handlers.getUserDetails(this.userId)
 
@@ -229,6 +207,86 @@ export default class UserController extends Controller {
         }
     }
     //ends
+
+    /**
+* Add Question  endpoint
+*/
+    @Security('Bearer')
+    @Post("/add_question")
+    public async addQuestion(@Body() request: { question: string, answer: string }): Promise<ApiResponse> {
+        try {
+            // const { old_password, new_password } = request;
+
+            console.log(request,"requesttttt")
+
+            const validatedAddQuestion = validateAddQuestion(request);
+
+            if (validatedAddQuestion.error) {
+                return showResponse(false, validatedAddQuestion.error.message, null, null, 400)
+            }
+
+            return handlers.addQuestion(request)
+
+        }
+        catch (err: any) {
+            // logger.error(`${this.req.ip} ${err.message}`)
+            return err
+
+        }
+    }
+    //ends
+
+    /**
+* Update Question endpoint
+*/
+    @Security('Bearer')
+    @Put("/update_question")
+    public async updateQuestion(@Body() request: { question_id: string, question: string, answer: string }): Promise<ApiResponse> {
+        try {
+
+            const validatedUpdateQuestion = validateUpdateQuestion(request);
+
+            if (validatedUpdateQuestion.error) {
+                return showResponse(false, validatedUpdateQuestion.error.message, null, null, 400)
+            }
+
+            return handlers.updateQuestion(request)
+
+        }
+        catch (err: any) {
+            // logger.error(`${this.req.ip} ${err.message}`)
+            return err
+
+        }
+    }
+    //ends
+
+    /**
+ * Update Common Content endpoint
+ */
+    @Security('Bearer')
+    @Put("/update_common_content")
+    public async updateCommonContent(@Body() request: { about: string, privacy_policy: string, terms_conditions: string }): Promise<ApiResponse> {
+        try {
+
+            const validatedCommonContent = validateCommonContent(request);
+
+            if (validatedCommonContent.error) {
+                return showResponse(false, validatedCommonContent.error.message, null, null, 400)
+            }
+
+            return handlers.updateCommonContent(request)
+
+        }
+        catch (err: any) {
+            // logger.error(`${this.req.ip} ${err.message}`)
+            return err
+
+        }
+    }
+    //ends
+
+
 
 
 

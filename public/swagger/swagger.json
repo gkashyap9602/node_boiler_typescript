@@ -457,6 +457,60 @@
 				"parameters": []
 			}
 		},
+		"/api/common/get_common_content": {
+			"get": {
+				"operationId": "GetCommonContent",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get Common Content info",
+				"tags": [
+					"Common"
+				],
+				"security": [
+					{
+						"Bearer": []
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/api/common/get_questions": {
+			"get": {
+				"operationId": "GetQuestions",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get Faq Questions",
+				"tags": [
+					"Common"
+				],
+				"security": [
+					{
+						"Bearer": []
+					}
+				],
+				"parameters": []
+			}
+		},
 		"/api/admin/login": {
 			"post": {
 				"operationId": "Login",
@@ -761,6 +815,161 @@
 					}
 				],
 				"parameters": []
+			}
+		},
+		"/api/admin/add_question": {
+			"post": {
+				"operationId": "AddQuestion",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Add Question  endpoint",
+				"tags": [
+					"Admin"
+				],
+				"security": [
+					{
+						"Bearer": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"answer": {
+										"type": "string"
+									},
+									"question": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"answer",
+									"question"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/admin/update_question": {
+			"put": {
+				"operationId": "UpdateQuestion",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Update Question endpoint",
+				"tags": [
+					"Admin"
+				],
+				"security": [
+					{
+						"Bearer": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"answer": {
+										"type": "string"
+									},
+									"question": {
+										"type": "string"
+									},
+									"question_id": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"answer",
+									"question",
+									"question_id"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/admin/update_common_content": {
+			"put": {
+				"operationId": "UpdateCommonContent",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Update Common Content endpoint",
+				"tags": [
+					"Admin"
+				],
+				"security": [
+					{
+						"Bearer": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"terms_conditions": {
+										"type": "string"
+									},
+									"privacy_policy": {
+										"type": "string"
+									},
+									"about": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"terms_conditions",
+									"privacy_policy",
+									"about"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
 			}
 		}
 	},

@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
 import { findOne } from "../helpers/db.helpers"
-import Users from '../models/user.model'
-import adminModel from '../models/admin.model'
+import Users from '../models/User/user.model'
+import adminModel from '../models/Admin/admin.model'
 import { showResponse } from './response.util';
 import responseMessage from '../constants/responseMessage.constant';
 import { APP } from '../constants/app.constant';

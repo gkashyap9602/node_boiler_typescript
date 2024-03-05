@@ -39,4 +39,4 @@ const nodemail = async (to: string, subject: string, body: any, attachments: any
     });
 }
 
-export default { nodemail } 
+export {nodemail} 

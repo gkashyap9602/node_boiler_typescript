@@ -177,9 +177,9 @@ export const bulkOperationQuery = async (Model: any, bulkOperations: any[]): Pro
     });
 };
 
-export const getDataArray = (Model: Model<any>, query: object, fields: string, pagination?: number | null, sort?: any | null, populate?: string | null): Promise<ApiResponse> => {
+export const findAll = (Model: Model<any>, query: object, project_field?: string, pagination?: number | null, sort?: any | null, populate?: string | null): Promise<ApiResponse> => {
     return new Promise((resolve, reject) => {
-        let queryBuilder = Model.find(query, fields);
+        let queryBuilder = Model.find(query, project_field);
 
         if (pagination) {
             queryBuilder = queryBuilder.limit(pagination);

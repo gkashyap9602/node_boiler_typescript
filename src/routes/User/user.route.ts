@@ -1,8 +1,8 @@
 import express, { Request, Response } from 'express'
-import UserController from '../controllers/user.controller'
-import { showOutput } from '../utils/response.util'
-import { ApiResponse } from '../utils/interfaces.util'
-import middlewares from '../middlewares'
+import UserController from '../../controllers/User/user.controller'
+import { showOutput } from '../../utils/response.util'
+import { ApiResponse } from '../../utils/interfaces.util'
+import middlewares from '../../middlewares'
 let { verifyTokenUser } = middlewares.auth
 let { addToMulter } = middlewares.fileUpload.multer
 

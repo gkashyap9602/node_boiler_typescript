@@ -1,14 +1,15 @@
 import { Request, Response } from 'express'
-import { Route, Controller, Tags, Post, Body, Get, Security, Query } from 'tsoa'
-import { ApiResponse } from '../utils/interfaces.util';
-import { validateChangePassword, validateForgotPassword, validateRegister, validateResetPassword, validateAdmin, validateResendOtp, validateVerifyOtp } from '../validations/admin.validator';
-import handlers from '../handlers/admin.handler'
-import { showResponse } from '../utils/response.util';
+import { Route, Controller, Tags, Post, Body, Get, Security, Query, UploadedFile } from 'tsoa'
+import { ApiResponse } from '../../utils/interfaces.util';
+import { validateChangePassword, validateForgotPassword, validateRegister, validateResetPassword, validateUser, validateResendOtp, validateVerifyOtp } from '../../validations/user.validator';
+import handlers from '../../handlers/User/user.handler'
+import { showResponse } from '../../utils/response.util';
 
-@Tags('Admin')
-@Route('api/admin')
 
-export default class AdminController extends Controller {
+@Tags('User')
+@Route('api/user')
+
+export default class UserController extends Controller {
     req: Request;
     res: Response;
     userId: string
@@ -20,16 +21,16 @@ export default class AdminController extends Controller {
     }
 
     /**
-     * Get Admin login
+     * Get User login
      */
     @Post("/login")
     public async login(@Body() request: { email: string, password: string }): Promise<ApiResponse> {
         try {
 
-            const validatedAdmin = validateAdmin(request);
+            const validatedUser = validateUser(request);
 
-            if (validatedAdmin.error) {
-                return showResponse(false, validatedAdmin.error.message, null, null, 400)
+            if (validatedUser.error) {
+                return showResponse(false, validatedUser.error.message, null, null, 400)
             }
 
             return handlers.login(request)
@@ -42,27 +43,49 @@ export default class AdminController extends Controller {
     //ends
 
     /**
-    * Save a Admin
+    * Save a User
     */
-    // @Post("/register")
-    // public async register(@Body() request: { email: string, first_name: string, last_name: string, password: string }): Promise<ApiResponse> {
-    //     try {
-    //         const validatedSignup = validateRegister(request);
+   
 
-    //         if (validatedSignup.error) {
-    //             return showResponse(false, validatedSignup.error.message, null, null, 400)
-    //         }
+    @Post("/register")
+    public async register(@Body() request: { email: string, first_name: string, last_name: string, password: string }): Promise<ApiResponse> {
+        try {
 
-    //         return handlers.register(request)
+            const validatedSignup = validateRegister(request);
 
-    //     }
-    //     catch (err: any) {
-    //         // logger.error(`${this.req.ip} ${err.message}`)
-    //         return err
+            if (validatedSignup.error) {
+                return showResponse(false, validatedSignup.error.message, null, null, 400)
+            }
 
-    //     }
-    // }
+            return handlers.register(request)
+
+        }
+        catch (err: any) {
+            // logger.error(`${this.req.ip} ${err.message}`)
+            return err
+
+        }
+    }
     //ends
+
+    /**
+    * Upload a file
+    */
+    @Security('Bearer')
+    @Post("/upload_file")
+    public async uploadFile(@UploadedFile() file: Express.Multer.File): Promise<ApiResponse> {
+        try {
+
+            return handlers.uploadFile({ file })
+
+        }
+
+        catch (err: any) {
+            // logger.error(`${this.req.ip} ${err.message}`)
+            return err
+
+        }
+    }
 
 
     /**
@@ -121,7 +144,6 @@ export default class AdminController extends Controller {
     @Post("/verify_otp")
     public async verifyOtp(@Body() request: { email: string, otp: number }): Promise<ApiResponse> {
         try {
-
             const validatedVerifyOtp = validateVerifyOtp(request);
 
             if (validatedVerifyOtp.error) {
@@ -152,6 +174,7 @@ export default class AdminController extends Controller {
             if (validatedResendOtp.error) {
                 return showResponse(false, validatedResendOtp.error.message, null, null, 400)
             }
+
             return handlers.resendOtp(request)
 
         }
@@ -196,6 +219,7 @@ export default class AdminController extends Controller {
     @Get("/get_details")
     public async getUserDetails(): Promise<ApiResponse> {
         try {
+            // console.log(req.body.user, "")
 
             return handlers.getUserDetails(this.userId)
 

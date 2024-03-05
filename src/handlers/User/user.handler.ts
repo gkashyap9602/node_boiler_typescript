@@ -1,15 +1,15 @@
 import ejs from 'ejs'
 import path from 'path'
 import moment from "moment";
-import { ApiResponse } from "../utils/interfaces.util";
-import { showResponse } from "../utils/response.util";
-import { findOne, createOne, findByIdAndUpdate, findOneAndUpdate } from "../helpers/db.helpers";
-import { generateJwtToken } from "../utils/auth.util";
-import commonHelper from "../helpers/common.helper";
-import userModel from "../models/user.model";
-import responseMessage from "../constants/responseMessage.constant";
-import { APP } from '../constants/app.constant';
-import services from '../services';
+import { ApiResponse } from "../../utils/interfaces.util";
+import { showResponse } from "../../utils/response.util";
+import { findOne, createOne, findByIdAndUpdate, findOneAndUpdate } from "../../helpers/db.helpers";
+import { generateJwtToken } from "../../utils/auth.util";
+import commonHelper from "../../helpers/common.helper";
+import userModel from "../../models/User/user.model";
+import responseMessage from "../../constants/responseMessage.constant";
+import { APP } from '../../constants/app.constant';
+import services from '../../services';
 
 const UserHandler = {
 
@@ -104,7 +104,7 @@ const UserHandler = {
             }
 
             let otp = commonHelper.generateRandomOtp(4);
-            const template = await ejs.renderFile(path.join(__dirname, '../templates', 'forgotPassword.ejs'), { user_name: exists?.data?.first_name, cidLogo: 'unique@Logo', otp });
+            const template = await ejs.renderFile(path.join(process.cwd(), './src/templates', 'forgotPassword.ejs'), { user_name: exists?.data?.first_name, cidLogo: 'unique@Logo', otp });
             const logoPath = path.join(process.cwd(), './public', 'logo.png');
 
             let to = `${exists?.data?.email}`
@@ -234,7 +234,7 @@ const UserHandler = {
 
                 let otp = commonHelper.generateRandomOtp(4);
 
-                const template = await ejs.renderFile(path.join(__dirname, '../templates', 'registration.ejs'), { user_name: result?.data?.first_name, cidLogo: 'unique@Logo', otp });
+                const template = await ejs.renderFile(path.join(process.cwd(), './src/templates', 'registration.ejs'), { user_name: result?.data?.first_name, cidLogo: 'unique@Logo', otp });
                 const logoPath = path.join(process.cwd(), './public', 'logo.png');
 
                 let to = `${result?.data?.email}`

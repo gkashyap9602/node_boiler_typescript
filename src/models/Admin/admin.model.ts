@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { ROLE, USER_STATUS } from '../constants/app.constant';
+import { ROLE, USER_STATUS } from '../../constants/app.constant';
 
 const AdminSchema = new Schema(
     {

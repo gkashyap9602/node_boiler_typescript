@@ -837,7 +837,7 @@ const unlinkFromS3Bucket = async (fileUrls: any) => { //fileUrls should be array
     }
 };
 
-export default {
+export  {
     getParameterFromAWS,
     postParameterToAWS,
     getSecretFromAWS,

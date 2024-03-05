@@ -125,6 +125,10 @@ export default {
         subAdmin_added: "SubAdmin Added Successfully",
         subAdmin_save_fail: "Error while Creating SubAdmin",
         admin_created: "Admin Created Successfully",
+        common_content_updated: "Common Content has been updated",
+        question_added: "New Question Added Successfully",
+        failed_question_add: "Unable to add new question at the moment",
+        here_is_question: "Here is a list of questions",
 
 
     },
