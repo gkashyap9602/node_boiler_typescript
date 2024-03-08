@@ -1,12 +1,15 @@
 import mongoose from "mongoose";
 import { DB } from "../constants/app.constant";
+import { AWS_CREDENTIAL } from "../constants/app.constant";
 
-
-const connection = () => {
-  mongoose.connect(DB.MONGODB_URI as string, {
+const connection = async () => {
+  // console.log(AWS_CREDENTIAL.ACCESSID, "AWS_MONGO_URI")
+  let MONGO_URI = await AWS_CREDENTIAL.MONGO_URI
+  console.log(MONGO_URI,"MONGO_URI")
+  mongoose.connect(MONGO_URI as string, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    dbName: DB.DBNAME,
+    dbName: await AWS_CREDENTIAL.DB_NAME,
   } as mongoose.ConnectOptions)
     .then(() => {
       console.log("Mongodb connected to " + DB.MONGODB_URI);
@@ -16,26 +19,5 @@ const connection = () => {
     });
 }
 
-const db = mongoose.connection;
+connection()
 
-
-// mongoose.connection.on("connected", function () {
-//   console.info("connected to " + DB.DBNAME);
-// });
-
-// // If the connection throws an error
-// mongoose.connection.on("error", function (err: any) {
-//   console.info("DB connection error: " + err);
-// });
-
-// // When the connection is disconnected
-// mongoose.connection.on("disconnected", function () {
-//   console.info("DB connection disconnected");
-// });
-
-//This line sets up an event listener for the SIGINT signal emitted by the process when Ctrl + C is pressed.
-// process.on("SIGINT", async () => {
-//   await mongoose.connection.close();
-//   process.exit(0);
-// });
-export default { connection, db }

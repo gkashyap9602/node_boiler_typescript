@@ -151,6 +151,8 @@ const UserHandler = {
         try {
             const { file } = data;
 
+            console.log(file,"fileeeAw")
+
             const s3Upload = await services.awsService.uploadFileToS3([file])
             if (!s3Upload.status) {
                 return showResponse(false, responseMessage?.common.file_upload_error, {}, null, 203);

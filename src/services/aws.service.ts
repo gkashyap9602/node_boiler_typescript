@@ -73,7 +73,8 @@ const getSecretFromAWS = (secret_key_param: string) => {
                 }
                 // console.log(data,"datadatadataAWSSECRET")
                 let secretKey = JSON.parse(data.SecretString);
-                let response = { SecretString: secretKey?.digismart_secret }
+                // let response = { SecretString: secretKey?.digismart_secret }
+                let response = secretKey?.digismart_secret
                 return resolve(response);
             });
         } catch (e) {
@@ -137,9 +138,9 @@ const uploadVideoToS3 = async (files: []) => {
     try {
 
         const s3 = new AWS.S3({
-            accessKeyId: AWS_CREDENTIAL.ACCESSID,
-            secretAccessKey: AWS_CREDENTIAL.AWS_SECRET,
-            region: AWS_CREDENTIAL.REGION,
+            accessKeyId: await AWS_CREDENTIAL.ACCESSID,
+            secretAccessKey: await AWS_CREDENTIAL.AWS_SECRET,
+            region: await AWS_CREDENTIAL.REGION,
         });
 
 
@@ -170,7 +171,7 @@ const uploadVideoToS3 = async (files: []) => {
                 } else if (file?.mimetype.indexOf("video") >= 0) {
                     let fileExt = path.extname(file?.originalname);
                     const ElasticTranscoder = new AWS.ElasticTranscoder({
-                        region: AWS_CREDENTIAL.REGION,
+                        region: await AWS_CREDENTIAL.REGION,
                         apiVersion: "2012-09-25",
                     });
                     let VideoInputBucket = await getParameterFromAWS({
@@ -297,12 +298,12 @@ const createVideoThumbnail = async (videoFileName: any, fileExt: any) => {
         try {
 
             const s3 = new AWS.S3({
-                accessKeyId: AWS_CREDENTIAL.ACCESSID,
-                secretAccessKey: AWS_CREDENTIAL.AWS_SECRET,
-                region: AWS_CREDENTIAL.REGION
+                accessKeyId: await AWS_CREDENTIAL.ACCESSID,
+                secretAccessKey: await AWS_CREDENTIAL.AWS_SECRET,
+                region: await AWS_CREDENTIAL.REGION
             });
 
-            let VideoInputBucket = AWS_CREDENTIAL.BUCKET_NAME
+            let VideoInputBucket = await AWS_CREDENTIAL.BUCKET_NAME
 
             const inputFileName = `${videoFileName}${fileExt}`;
             const outputFileName = `${videoFileName}-thumbnail.jpg`;
@@ -460,12 +461,12 @@ const uploadFileToS3 = async (files: [any]): Promise<ApiResponse> => {
 
 const uploadMultipleFilesToS3 = async (files: any) => {
     const s3 = new AWS.S3({
-        accessKeyId: AWS_CREDENTIAL.ACCESSID,
-        secretAccessKey: AWS_CREDENTIAL.AWS_SECRET,
-        region: AWS_CREDENTIAL.REGION
+        accessKeyId: await AWS_CREDENTIAL.ACCESSID,
+        secretAccessKey: await AWS_CREDENTIAL.AWS_SECRET,
+        region: await AWS_CREDENTIAL.REGION
     });
 
-    let bucketName = AWS_CREDENTIAL.BUCKET_NAME
+    let bucketName = await AWS_CREDENTIAL.BUCKET_NAME
 
     return new Promise(async (resolve, reject) => {
         try {
@@ -502,97 +503,18 @@ const uploadMultipleFilesToS3 = async (files: any) => {
     });
 }
 
-const uploadZipFileToS3 = async (files: any) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            let webpFilesArray = await Promise.all(files?.map(async (file: any) => {
-                let mime_type = file?.mimetype.split("/")[0];
-
-                if (mime_type == "image" && !file.originalname.endsWith(".psd")) {
-                    let imageNewBuffer = await commonHelper.convertImageToWebp(file?.buffer);
-
-                    if (imageNewBuffer) {
-                        return {
-                            fieldname: file.fieldname,
-                            originalname: `${file.originalname}.webp`,
-                            encoding: file.encoding,
-                            mimetype: file.mimetype,
-                            buffer: imageNewBuffer,
-                            size: file.size,
-                        };
-                    }
-                }
-                return file;
-            }));
-
-            if (webpFilesArray?.length > 0) {
-                console.log(webpFilesArray, "webpFilesArray");
-                let filesResponse: any = await uploadZipImagesToS3(webpFilesArray);
-
-                console.log(filesResponse, "filesResponse");
-                console.log(filesResponse.every((data: any) => data.status == false), "fgggilesResponse");
-
-
-
-                if (filesResponse.every((data: any) => data.status == true)) {
-                    return resolve(
-                        showResponse(
-                            true,
-                            responseMessage?.common?.file_upload_success,
-                            filesResponse,
-                            null,
-                            200
-                        )
-                    );
-                } else {
-                    console.log("elseee")
-                    return resolve(
-                        showResponse(
-                            false,
-                            responseMessage?.common?.file_upload_error,
-                            null,
-                            null,
-                            400
-                        )
-                    );
-                }
-            }
-            return resolve(
-                showResponse(
-                    false,
-                    responseMessage?.common?.file_upload_error,
-                    null,
-                    null,
-                    200
-                )
-            );
-        } catch (err) {
-            console.log(`in catch error 472`, err);
-            return resolve(
-                showResponse(
-                    false,
-                    responseMessage?.common?.file_upload_error,
-                    err,
-                    null,
-                    200
-                )
-            );
-        }
-    });
-};
-
 const uploadToS3ExcelSheet = async (excelBuffer: any, fileName: any) => {
     return new Promise(async (resolve, reject) => {
         try {
 
 
             const s3 = new AWS.S3({
-                accessKeyId: AWS_CREDENTIAL.ACCESSID,
-                secretAccessKey: AWS_CREDENTIAL.AWS_SECRET,
-                region: AWS_CREDENTIAL.REGION
+                accessKeyId: await AWS_CREDENTIAL.ACCESSID,
+                secretAccessKey: await AWS_CREDENTIAL.AWS_SECRET,
+                region: await AWS_CREDENTIAL.REGION
             });
 
-            let bucketName = AWS_CREDENTIAL.BUCKET_NAME;
+            let bucketName = await AWS_CREDENTIAL.BUCKET_NAME;
 
             const params: any = {
                 Bucket: bucketName,
@@ -616,16 +538,15 @@ const uploadToS3ExcelSheet = async (excelBuffer: any, fileName: any) => {
 
 const uploadToS3 = async (files: any[], key?: string) => {
     try {
-
-        console.log(AWS_CREDENTIAL.AWS_SECRET, "AWS_CREDENTIALAWS_SECRET")
+        // console.log(AWS_CREDENTIAL, "AWS_CREDENTIALAWS_SECRET")
         const s3 = new AWS.S3({
-            accessKeyId: AWS_CREDENTIAL.ACCESSID,
-            secretAccessKey: AWS_CREDENTIAL.AWS_SECRET,
-            region: AWS_CREDENTIAL.REGION,
+            accessKeyId: await AWS_CREDENTIAL.ACCESSID,
+            secretAccessKey: await AWS_CREDENTIAL.AWS_SECRET,
+            region: await AWS_CREDENTIAL.REGION,
         });
 
 
-        let bucketName = AWS_CREDENTIAL.BUCKET_NAME;
+        let bucketName = await AWS_CREDENTIAL.BUCKET_NAME;
 
         interface filee {
             fieldname: string,
@@ -684,96 +605,17 @@ const uploadToS3 = async (files: any[], key?: string) => {
     }
 };
 
-const uploadZipImagesToS3 = async (files: any, key?: any) => {
-    try {
-
-        const s3 = new AWS.S3({
-            accessKeyId: AWS_CREDENTIAL.ACCESSID,
-            secretAccessKey: AWS_CREDENTIAL.AWS_SECRET,
-            region: AWS_CREDENTIAL.REGION,
-        });
-
-        let bucketName = AWS_CREDENTIAL.BUCKET_NAME;
-
-        const s3UploadPromises = await files.map(async (file: any) => {
-            return new Promise((resolve, reject) => {
-                const bufferImage = key ? file : file.buffer;
-
-                const ext = path.extname(file?.originalname ?? file?.fieldname ?? file?.mimetype,);
-                let fileName = "";
-
-                if (file?.mimetype?.indexOf("image" && !file.originalname.endsWith(".psd")) >= 0) {
-                    // image file
-                    let fileOrgName = file?.originalname.split(".")[0];
-                    fileName = `${file.fieldname}-${fileOrgName}.webp`;
-                } else {
-                    let fileOrgName = file?.originalname.split(".")[0];
-                    fileName = `${file.fieldname}-${fileOrgName}${ext}`;
-                }
-                // let fileName = `${file.fieldname}-${file?.originalname}`;
-
-                const params = {
-                    Bucket: bucketName,
-                    ContentType: file?.mimetype?.indexOf("image" && !file.originalname.endsWith(".psd")) >= 0 ? "image/webp" : file?.mimetype,
-                    Key: `${file.fieldname}/${fileName}`,
-                    Body: bufferImage,
-                };
-
-                console.log(bufferImage, "imagebuffer")
-                s3.upload(params, (error: any, data: any) => {
-                    console.log(data, "bucketdata");
-                    if (error) {
-                        console.log("bucketerror", error);
-                        resolve(
-                            showResponse(
-                                false,
-                                'Error uploading object on s3 bucket',
-                                null,
-                                error,
-                                400
-                            ));
-                    } else {
-                        resolve(
-                            showResponse(
-                                true,
-                                'Success Upload',
-                                null,
-                                (data.Key || data.key),
-                                200
-                            ));
-                        // resolve(data.Key || data.key);
-                    }
-                });
-            });
-        });
-
-        const s3UploadResults = await Promise.all(s3UploadPromises);
-
-        // Check if all uploads were successful
-        if (s3UploadResults.every(result => result !== null)) {
-            // console.log(s3UploadResults, "s3UploadResults");
-            return s3UploadResults;
-        } else {
-            console.log("Some file uploads failed.");
-            return null; // or handle the error as needed
-        }
-
-    } catch (error) {
-        console.log(error, "errorrr s3upload")
-        return null; // or handle the error as needed
-    }
-};
 
 const unlinkFromS3Bucket = async (fileUrls: any) => { //fileUrls should be array of urls and mandatory 
     try {
         // console.log(files, "filessss uploadToS3 side");
         const s3 = new AWS.S3({
-            accessKeyId: AWS_CREDENTIAL.ACCESSID,
-            secretAccessKey: AWS_CREDENTIAL.AWS_SECRET,
-            region: AWS_CREDENTIAL.REGION,
+            accessKeyId: await AWS_CREDENTIAL.ACCESSID,
+            secretAccessKey: await AWS_CREDENTIAL.AWS_SECRET,
+            region: await AWS_CREDENTIAL.REGION,
         });
 
-        let bucketName = AWS_CREDENTIAL.BUCKET_NAME
+        let bucketName = await AWS_CREDENTIAL.BUCKET_NAME
 
         const unlinkFromS3Promises = fileUrls.map(async (url: any) => {
 
@@ -838,7 +680,7 @@ const unlinkFromS3Bucket = async (fileUrls: any) => { //fileUrls should be array
     }
 };
 
-export  {
+export {
     getParameterFromAWS,
     postParameterToAWS,
     getSecretFromAWS,
@@ -848,9 +690,7 @@ export  {
     createVideoThumbnail,
     uploadFileToS3,
     uploadMultipleFilesToS3,
-    uploadZipFileToS3,
     uploadToS3ExcelSheet,
-    uploadZipImagesToS3,
     uploadToS3
 
 }

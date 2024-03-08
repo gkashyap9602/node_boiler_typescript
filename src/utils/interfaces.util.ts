@@ -8,9 +8,11 @@ export interface ApiResponse {
 }
 
 export interface AwsCredential {
-    ACCESSID: string;
-    REGION: string;
-    BUCKET_NAME: string;
+    MONGO_URI: any
+    DB_NAME: any
+    ACCESSID: any;
+    REGION: any;
+    BUCKET_NAME: any;
     AWS_SECRET: any;
 }
 
@@ -28,6 +30,5 @@ export interface RoleType {
     ADMIN: number;
     SUB_ADMIN: number;
     USER: number;
-  }
-  
-  
+}
+

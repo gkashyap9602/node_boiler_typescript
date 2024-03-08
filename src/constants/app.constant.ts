@@ -10,39 +10,18 @@ import services from "../services";
 import { AwsCredential, RoleType } from "../utils/interfaces.util";
 import { getEnvironmentParams } from "../utils/common.util";
 
-let AWS_CREDENTIAL: AwsCredential
 let parmsFetchFromAws = getEnvironmentParams(process.env.ENV_MODE, 'BOILERPLATE') //2nd parm is project name 
 // console.log(parmsFetchFromAws, "parmsFetchFromAws")
 
 
-async function initializeAWSCredentials() {
-  try {
-
-    let ACCESSID = await services.awsService.getParameterFromAWS({ name: "ACCESSID" })
-    let REGION = await services.awsService.getParameterFromAWS({ name: "REGION" })
-    let BUCKET_NAME = await services.awsService.getParameterFromAWS({ name: "DIGISMART-BUCKET" })
-    let AWS_SECRET: any = await services.awsService.getSecretFromAWS("digismart_secret")
-
-    if (typeof ACCESSID == 'string' && typeof REGION == 'string' && typeof BUCKET_NAME == 'string' && AWS_SECRET) {
-
-      AWS_CREDENTIAL = {
-        ACCESSID,
-        REGION,
-        BUCKET_NAME,
-        AWS_SECRET: AWS_SECRET.SecretString,
-      };
-
-      return { status: true, message: "Aws credential Fetched Successfully" }
-
-    } else {
-
-      return { status: false, message: "Error initializing AWS credentials" }
-    }
-
-  } catch (error) {
-    return { status: false, message: "Error initializing AWS credentials" }
-  }
-}
+let AWS_CREDENTIAL: AwsCredential = {
+  MONGO_URI: process.env.MONGODB_URI,
+  DB_NAME: process.env.DBNAME,
+  ACCESSID: services.awsService.getParameterFromAWS({ name: "ACCESSID" }),
+  REGION: services.awsService.getParameterFromAWS({ name: "REGION" }),
+  BUCKET_NAME: services.awsService.getParameterFromAWS({ name: "DIGISMART-BUCKET" }),
+  AWS_SECRET: services.awsService.getSecretFromAWS("digismart_secret"),
+};
 
 
 const APP = {
@@ -94,4 +73,4 @@ const REDIS_CREDENTIAL = {
 };
 
 
-export { DB, APP, ROLE, REDIS_CREDENTIAL, LOGS, USER_STATUS, AWS_CREDENTIAL, EMAIL_CREDENTIAL, initializeAWSCredentials };
+export { DB, APP, ROLE, REDIS_CREDENTIAL, LOGS, USER_STATUS, AWS_CREDENTIAL, EMAIL_CREDENTIAL };
