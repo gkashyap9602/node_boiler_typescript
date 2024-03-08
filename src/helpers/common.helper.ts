@@ -1,9 +1,7 @@
 import moment from 'moment'
 import { Parser } from 'json2csv'
-import mongoose from 'mongoose';
+import { Model } from 'mongoose'
 import bcrypt from 'bcryptjs';
-import Queue from 'bull'
-import { REDIS_CREDENTIAL } from '../constants/app.constant'
 import XLSX from 'xlsx'
 import sharp from 'sharp';
 import fs from 'fs'
@@ -131,7 +129,7 @@ const Comma_seprator = (x: any) => {
 
 
 //add this function where we cannot add query to get count of document example searchKey and add pagination at the end of query
-const getCountAndPagination = async (model: any, aggregate: any, pageIndex: number, pageSize: number) => {
+const getCountAndPagination = async (model: Model<any>, aggregate: any, page: number, limit: number) => {
 
     //this aggregation is for aggregate Model and add pagination at the end of the query aggregation
     let aggregation = [...aggregate]
@@ -147,10 +145,10 @@ const getCountAndPagination = async (model: any, aggregate: any, pageIndex: numb
     aggregation?.push(
 
         {
-            $skip: (pageIndex - 1) * pageSize
+            $skip: (page - 1) * limit
         },
         {
-            $limit: pageSize
+            $limit: limit
         }
     );
     //ends 
@@ -159,17 +157,7 @@ const getCountAndPagination = async (model: any, aggregate: any, pageIndex: numb
     return { totalCount, aggregation }
 }
 
-const generateQueue = (queueName: string) => {
-    const queue = new Queue(queueName, {
-        redis: {
-            port: REDIS_CREDENTIAL.PORT,
-            host: REDIS_CREDENTIAL.URI,
-            // db:
-        }
-    })
 
-    return queue
-}
 
 
 function generateRandomAlphanumeric(length: number) {
@@ -360,7 +348,31 @@ const generateUsernames = (name: string, count: number, all_usernames: any = nul
     return usernames;
 };
 
-export default {
+
+type MyObject = { [key: string]: number };
+const findClosestKey = async (targetValue: number, obj: MyObject) => {  //object in which all values are present targetValue is values to find in that object nearby
+    // Initialize variables to store the closest key and the minimum difference
+    let closestKey = null;
+    let minDifference = Infinity;
+
+    // Iterate over each key-value pair in the object
+    for (const [key, value] of Object.entries(obj)) {
+        // Calculate the difference between the target value and the current value
+        const difference: number = Math.abs(targetValue - value);
+
+        // If the current difference is smaller than the minimum difference, update the closest key and minimum difference
+        if (difference < minDifference) {
+            closestKey = key;
+            minDifference = difference;
+        }
+    }
+
+    // Return the closest key
+    return closestKey;
+
+}
+
+export {
     bycrptPasswordHash,
     verifyBycryptHash,
     // convertIdToObjectId,
@@ -374,7 +386,6 @@ export default {
     getDistanceFromLatLonInKm,
     Comma_seprator,
     getCountAndPagination,
-    generateQueue,
     generateUniqueCustomerId,
     getCurrentDate,
     generateCsrfToken,
@@ -382,6 +393,7 @@ export default {
     convertImageToWebp,
     exportJsonToExcel,
     readFileAsyncChunks,
+    findClosestKey
 
 
 }

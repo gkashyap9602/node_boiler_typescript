@@ -2,7 +2,7 @@ import { findOne, createOne } from '../helpers/db.helpers';
 import adminModel from '../models/Admin/admin.model';
 import userModel from '../models/User/user.model';
 import commonContentModel from '../models/Admin/commonContent.model';
-import commonHelper from '../helpers/common.helper';
+import * as commonHelper from '../helpers/common.helper';
 import moment from 'moment';
 
 

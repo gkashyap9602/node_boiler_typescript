@@ -15,10 +15,10 @@ router.post('/login', async (req: Request | any, res: Response) => {
     return showOutput(res, result, result.code)
 })
 
-router.post('/register', async (req: Request | any, res: Response) => {
-    const { first_name, last_name, email, password } = req.body;
+router.post('/register', addToMulter.single('profile_pic'), async (req: Request | any, res: Response) => {
+    const { first_name, last_name, email, password, phone_number, country_code } = req.body;
     const userController = new UserController(req, res)
-    const result: ApiResponse = await userController.register({ first_name, last_name, email, password });
+    const result: ApiResponse = await userController.register(first_name, last_name, email, password, phone_number, country_code, req.file);
     return showOutput(res, result, result.code)
 })
 
@@ -73,12 +73,19 @@ router.post('/change_password', verifyTokenUser, async (req: Request | any, res:
 
 router.get('/get_details', verifyTokenUser, async (req: Request | any, res: Response) => {
     const userController = new UserController(req, res)
-    console.log(req.body.user, "roueeeeee")
-
     const result: ApiResponse = await userController.getUserDetails();
     return showOutput(res, result, result.code)
 
 })
+
+router.put('/update_profile', addToMulter.single('profile_pic'), verifyTokenUser, async (req: Request | any, res: Response) => {
+    const { first_name, last_name, phone_number, country_code } = req.body
+    const userController = new UserController(req, res)
+    const result: ApiResponse = await userController.updateUserProfile(first_name, last_name, phone_number, country_code, req.file);
+    return showOutput(res, result, result.code)
+
+})
+
 
 
 module.exports = router

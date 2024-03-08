@@ -1,7 +1,8 @@
 import { Request, Response } from 'express'
-import { Route, Controller, Tags, Post, Body, Get, Security, Query, UploadedFile } from 'tsoa'
+import { Route, Controller, Tags, Post, Body, Get, Security, Query, UploadedFile, FormField, Put } from 'tsoa'
+
 import { ApiResponse } from '../../utils/interfaces.util';
-import { validateChangePassword, validateForgotPassword, validateRegister, validateResetPassword, validateUser, validateResendOtp, validateVerifyOtp } from '../../validations/user.validator';
+import { validateChangePassword, validateForgotPassword, validateUpdateProfile, validateRegister, validateResetPassword, validateUser, validateResendOtp, validateVerifyOtp } from '../../validations/user.validator';
 import handlers from '../../handlers/User/user.handler'
 import { showResponse } from '../../utils/response.util';
 
@@ -45,19 +46,19 @@ export default class UserController extends Controller {
     /**
     * Save a User
     */
-   
 
     @Post("/register")
-    public async register(@Body() request: { email: string, first_name: string, last_name: string, password: string }): Promise<ApiResponse> {
+    public async register(@FormField() first_name: string, @FormField() last_name: string, @FormField() email: string, @FormField() password: string, @FormField() phone_number?: string, @FormField() country_code?: string, @UploadedFile() profile_pic?: Express.Multer.File): Promise<ApiResponse> {
         try {
+            let body = { first_name, last_name, email, password, phone_number, country_code }
 
-            const validatedSignup = validateRegister(request);
+            const validatedSignup = validateRegister(body);
 
             if (validatedSignup.error) {
                 return showResponse(false, validatedSignup.error.message, null, null, 400)
             }
 
-            return handlers.register(request)
+            return handlers.register(body, profile_pic)
 
         }
         catch (err: any) {
@@ -232,7 +233,32 @@ export default class UserController extends Controller {
     }
     //ends
 
+    /**
+* Update User Profile
+*/
+    @Security('Bearer')
+    @Put("/update_profile")
+    public async updateUserProfile(@FormField() first_name?: string, @FormField() last_name?: string, @FormField() phone_number?: string, @FormField() country_code?: string, @UploadedFile() profile_pic?: Express.Multer.File): Promise<ApiResponse> {
+        try {
 
+            let body = { first_name, last_name, phone_number, country_code }
+
+            const validatedUpdateProfile = validateUpdateProfile(body);
+
+            if (validatedUpdateProfile.error) {
+                return showResponse(false, validatedUpdateProfile.error.message, null, null, 400)
+            }
+
+            return handlers.updateUserProfile(body, this.userId, profile_pic)
+
+        }
+        catch (err: any) {
+            // logger.error(`${this.req.ip} ${err.message}`)
+            return err
+
+        }
+    }
+    //ends
 
 
 }

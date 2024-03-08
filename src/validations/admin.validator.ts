@@ -52,8 +52,22 @@ const updateQuestionSchema = joi.object({
     answer: joi.string().optional(),
 })
 
+const getCustomerDetails = joi.object({
+    user_id: joi.string().required(),
+})
 
+const updateUserStatus = joi.object({
+    user_id: joi.string().required(),
+    status: joi.number().valid(1, 2, 3).required(),
 
+})
+
+const updateProfileSchema = joi.object({
+    first_name: joi.string().optional().allow(''),
+    last_name: joi.string().optional().allow(''),
+    phone_number: joi.string().optional().allow(''),
+    country_code: joi.string().optional().allow(''),
+})
 
 export const validateVerifyOtp = (user: any) => {
     return verifyOtpSchema.validate(user)
@@ -93,4 +107,14 @@ export const validateAddQuestion = (admin: any) => {
 
 export const validateUpdateQuestion = (admin: any) => {
     return updateQuestionSchema.validate(admin)
+}
+
+export const validateGetCustomerDetails = (admin: any) => {
+    return getCustomerDetails.validate(admin)
+}
+export const validateUpdateUserStatus = (admin: any) => {
+    return updateUserStatus.validate(admin)
+}
+export const validateUpdateProfile = (admin: any) => {
+    return updateProfileSchema.validate(admin)
 }

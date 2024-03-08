@@ -10,6 +10,8 @@ const registerSchema = joi.object({
     last_name: joi.string().min(4).max(20).required(),
     email: joi.string().trim().email().min(4).max(35).required(),
     password: joi.string().min(4).max(20).required(),
+    phone_number: joi.string().min(4).max(20).optional().allow(''),
+    country_code: joi.string().min(1).max(4).optional().allow(''),
 })
 
 
@@ -38,7 +40,12 @@ const resendOtpSchema = joi.object({
     email: joi.string().trim().email().min(4).max(35).required(),
 })
 
-
+const updateProfileSchema = joi.object({
+    first_name: joi.string().optional().allow(''),
+    last_name: joi.string().optional().allow(''),
+    phone_number: joi.string().optional().allow(''),
+    country_code: joi.string().optional().allow(''),
+})
 
 export const validateVerifyOtp = (user: any) => {
     return verifyOtpSchema.validate(user)
@@ -65,4 +72,8 @@ export const validateResetPassword = (user: any) => {
 
 export const validateChangePassword = (user: any) => {
     return changePasswordSchema.validate(user)
+}
+
+export const validateUpdateProfile = (admin: any) => {
+    return updateProfileSchema.validate(admin)
 }

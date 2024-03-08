@@ -10,6 +10,8 @@ const AdminSchema = new Schema(
         profile_pic: { type: String, default: "" },
         user_type: { type: Number, default: ROLE.ADMIN },
         otp: { type: Number, default: null },
+        phone_number: { type: String, default: null },
+        country_code: { type: String, default: null },
         is_verified: { type: Boolean, default: true },
         status: { type: Number, default: USER_STATUS.ACTIVE },
         created_on: { type: Number, default: 0 },

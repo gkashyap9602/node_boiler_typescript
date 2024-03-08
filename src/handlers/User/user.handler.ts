@@ -5,10 +5,10 @@ import { ApiResponse } from "../../utils/interfaces.util";
 import { showResponse } from "../../utils/response.util";
 import { findOne, createOne, findByIdAndUpdate, findOneAndUpdate } from "../../helpers/db.helpers";
 import { generateJwtToken } from "../../utils/auth.util";
-import commonHelper from "../../helpers/common.helper";
+import * as commonHelper from "../../helpers/common.helper";
 import userModel from "../../models/User/user.model";
 import responseMessage from "../../constants/responseMessage.constant";
-import { APP } from '../../constants/app.constant';
+import { APP, ROLE, USER_STATUS } from '../../constants/app.constant';
 import services from '../../services';
 
 const UserHandler = {
@@ -39,9 +39,9 @@ const UserHandler = {
         }
     },
 
-    async register(data: any): Promise<ApiResponse> {
+    async register(data: any, profile_pic: any): Promise<ApiResponse> {
         try {
-            let { first_name, last_name, email, password } = data;
+            let { email, password } = data;
 
             // check if user exists
             const exists = await findOne(userModel, { email });
@@ -51,15 +51,21 @@ const UserHandler = {
             }
 
             let hashed = await commonHelper.bycrptPasswordHash(password);
+            data.password = hashed
+            data.created_on = moment().unix()
 
-            let userObj = {
-                first_name,
-                last_name,
-                email,
-                password: hashed
+            if (profile_pic) {
+                //upload image to aws s3 bucket
+                const s3Upload = await services.awsService.uploadFileToS3([profile_pic])
+                if (!s3Upload.status) {
+                    return showResponse(false, responseMessage?.common.file_upload_error, null, null, 203);
+                }
+
+                data.profile_pic = s3Upload?.data[0]
             }
 
-            let userRef = new userModel(userObj)
+
+            let userRef = new userModel(data)
             let result = await createOne(userRef)
 
             if (!result.status) {
@@ -69,7 +75,7 @@ const UserHandler = {
 
             let otp = commonHelper.generateRandomOtp(4)
 
-            const template = await ejs.renderFile(path.join(__dirname, '../templates', 'registration.ejs'), { user_name: result?.data?.first_name, cidLogo: 'unique@Logo', otp });
+            const template = await ejs.renderFile(path.join(process.cwd(), './src/templates', 'registration.ejs'), { user_name: result?.data?.first_name, cidLogo: 'unique@Logo', otp });
             const logoPath = path.join(process.cwd(), './public', 'logo.png');
             //send email of attachment to admin
             let to = `${result?.data?.email}`
@@ -84,8 +90,8 @@ const UserHandler = {
             ]
 
             await services.emailService.nodemail(to, subject, template, attachments)
-
-            return showResponse(true, responseMessage.users.register_success, {}, null, 200)
+            delete result?.data.password
+            return showResponse(true, responseMessage.users.register_success, result?.data, null, 200)
 
         } catch (err: any) {
             // logger.error(`${this.req.ip} ${err.message}`);
@@ -318,7 +324,61 @@ const UserHandler = {
             return err
 
         }
-    }
+    },
+
+    async updateUserProfile(data: any, user_id: string, profile_pic: any): Promise<ApiResponse> {
+        try {
+
+            let { first_name, last_name, phone_number, country_code } = data
+
+            let findAdmin = await findOne(userModel, { user_type: ROLE.USER, _id: user_id, status: { $ne: USER_STATUS.DELETED } })
+
+            if (!findAdmin.status) {
+                return showResponse(false, responseMessage.admin.invalid_admin, null, null, 400);
+            }
+
+            let updateObj: any = {
+                updated_on: moment().unix()
+            }
+            if (first_name) {
+                updateObj.first_name = first_name
+            }
+            if (last_name) {
+                updateObj.last_name = last_name
+            }
+            if (phone_number) {
+                updateObj.phone_number = phone_number
+            }
+            if (country_code) {
+                updateObj.country_code = country_code
+            }
+
+            if (profile_pic) {
+                //upload image to aws s3 bucket
+                const s3Upload = await services.awsService.uploadFileToS3([profile_pic])
+                if (!s3Upload.status) {
+                    return showResponse(false, responseMessage?.common.file_upload_error, null, null, 203);
+                }
+
+                updateObj.profile_pic = s3Upload?.data[0]
+            }
+
+
+            let result = await findByIdAndUpdate(userModel, updateObj, user_id);
+            if (result.status) {
+                delete result.data.password
+                return showResponse(true, responseMessage.users.user_account_updated, result.data, null, 200);
+            }
+            return showResponse(false, responseMessage.users.user_account_update_error, null, null, 400);
+
+        }
+        catch (err: any) {
+            // logger.error(`${this.req.ip} ${err.message}`)
+            return showResponse(false, err?.message ?? err, null, null, 400)
+
+        }
+    },
+
 
 }
 

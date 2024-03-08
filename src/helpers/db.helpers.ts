@@ -4,7 +4,7 @@ import { ApiResponse } from '../utils/interfaces.util';
 
 export const findOne = (Model: Model<any>, query: object, fields: object = {}, populate?: string | null): Promise<ApiResponse> => {
     return new Promise((resolve, reject) => {
-        let queryBuilder = Model.findOne(query, fields);
+        let queryBuilder = Model.findOne(query, fields)
 
         if (populate) {
             queryBuilder = queryBuilder.populate(populate);
@@ -34,12 +34,12 @@ export const createOne = (modalReference: any): Promise<ApiResponse> => {
             }
             let response = showResponse(true, 'Data Saved Successfully', savedData);
             return resolve(response);
-        });
+        })
     });
 };
 
 
-export const insertMany = (Model: any, dataArray: any[]): Promise<ApiResponse> => {
+export const insertMany = (Model: Model<any>, dataArray: any[]): Promise<ApiResponse> => {
     return new Promise((resolve, reject) => {
         try {
             Model.insertMany(dataArray, (err: any, data: any) => {
@@ -49,7 +49,7 @@ export const insertMany = (Model: any, dataArray: any[]): Promise<ApiResponse> =
                 }
                 let response = showResponse(true, 'Success', data);
                 return resolve(response);
-            });
+            })
         } catch (err) {
             let response = showResponse(false, 'Data Save Failed', err);
             return resolve(response);
@@ -58,7 +58,7 @@ export const insertMany = (Model: any, dataArray: any[]): Promise<ApiResponse> =
 };
 
 
-export const findOneAndUpdate = (Model: any, matchObj: any, updateObject: any): Promise<ApiResponse> => {
+export const findOneAndUpdate = (Model: Model<any>, matchObj: any, updateObject: any): Promise<ApiResponse> => {
     return new Promise((resolve, reject) => {
         Model.findOneAndUpdate(matchObj, { $set: updateObject }, { new: true }, (err: any, updatedData: any) => {
             if (err) {
@@ -71,14 +71,14 @@ export const findOneAndUpdate = (Model: any, matchObj: any, updateObject: any): 
             }
             let response = showResponse(false, 'Failed', null);
             return resolve(response);
-        });
+        }).lean() //return plane object
     });
 };
 
 
 
 
-export const findByIdAndUpdate = (Model: any, DataObject: any, _id: string): Promise<ApiResponse> => {
+export const findByIdAndUpdate = (Model: Model<any>, DataObject: any, _id: string): Promise<ApiResponse> => {
     return new Promise((resolve, reject) => {
         Model.findByIdAndUpdate(_id, { $set: DataObject }, { new: true }, (err: any, updatedData: any) => {
             if (err) {
@@ -88,14 +88,14 @@ export const findByIdAndUpdate = (Model: any, DataObject: any, _id: string): Pro
 
             let response = showResponse(true, 'Success', updatedData);
             return resolve(response);
-        });
-    });
+        }).lean()
+    })
 };
 
 
-export const updateMany = (Model: any, DataObject: any, filter: any): Promise<ApiResponse> => {
+export const updateMany = (Model: Model<any>, DataObject: any, filter: any): Promise<ApiResponse> => {
     return new Promise((resolve, reject) => {
-        Model.updateMany(filter, { $set: DataObject }, { multi: true, new: true })
+        Model.updateMany(filter, { $set: DataObject }, { multi: true, new: true }).lean()
             .exec()
             .then((updatedData: any) => {
                 let response = showResponse(true, 'Success', updatedData);
@@ -109,7 +109,7 @@ export const updateMany = (Model: any, DataObject: any, filter: any): Promise<Ap
 };
 
 
-export const deleteMany = (Model: any, query: any): Promise<ApiResponse> => {
+export const deleteMany = (Model: Model<any>, query: any): Promise<ApiResponse> => {
     return new Promise((resolve, reject) => {
         Model.deleteMany(query, (err: any) => {
             if (err) {
@@ -118,12 +118,12 @@ export const deleteMany = (Model: any, query: any): Promise<ApiResponse> => {
             }
             let response = showResponse(true, 'Success');
             return resolve(response);
-        });
+        }).lean()
     });
 };
 
 
-export const findByIdAndRemove = (Model: any, id: string): Promise<ApiResponse> => {
+export const findByIdAndRemove = (Model: Model<any>, id: string): Promise<ApiResponse> => {
     return new Promise((resolve, reject) => {
         Model.findByIdAndRemove(id, (err: any, result: any) => {
             if (err || !result) {
@@ -132,11 +132,11 @@ export const findByIdAndRemove = (Model: any, id: string): Promise<ApiResponse> 
             }
             let response = showResponse(true, 'Success', result);
             return resolve(response);
-        });
+        }).lean()
     });
 };
 
-export const removeItemFromArray = (Model: any, mainIdObj: any, arrayKey: string, itemId: string): Promise<ApiResponse> => {
+export const removeItemFromArray = (Model: Model<any>, mainIdObj: any, arrayKey: string, itemId: string): Promise<ApiResponse> => {
     return new Promise((resolve, reject) => {
         Model.updateOne(mainIdObj, { $pull: { [arrayKey]: { _id: itemId } } }, (err: any, updatedData: any) => {
             if (err) {
@@ -149,7 +149,7 @@ export const removeItemFromArray = (Model: any, mainIdObj: any, arrayKey: string
             }
             let response = showResponse(false, 'Update failed', {});
             return resolve(response);
-        });
+        }).lean()
     });
 };
 
@@ -158,11 +158,11 @@ export const removeItemFromArray = (Model: any, mainIdObj: any, arrayKey: string
 
 
 
-export const bulkOperationQuery = async (Model: any, bulkOperations: any[]): Promise<ApiResponse> => {
+export const bulkOperationQuery = async (Model: Model<any>, bulkOperations: any[]): Promise<ApiResponse> => {
     return new Promise(async (resolve, reject) => {
         try {
             // Execute bulk operation 
-            const result = await Model.bulkWrite(bulkOperations);
+            const result = await Model.bulkWrite(bulkOperations)
             if (result?.ok == 1) {
                 let response = showResponse(true, 'Success', result);
                 return resolve(response);
@@ -179,7 +179,7 @@ export const bulkOperationQuery = async (Model: any, bulkOperations: any[]): Pro
 
 export const findAll = (Model: Model<any>, query: object, project_field?: string, pagination?: number | null, sort?: any | null, populate?: string | null): Promise<ApiResponse> => {
     return new Promise((resolve, reject) => {
-        let queryBuilder = Model.find(query, project_field);
+        let queryBuilder = Model.find(query, project_field)
 
         if (pagination) {
             queryBuilder = queryBuilder.limit(pagination);
@@ -246,7 +246,7 @@ export const getJoinData = async (
 };
 
 
-export const getCount = (Model: any, query: any): Promise<ApiResponse> => {
+export const getCount = (Model: Model<any>, query: any): Promise<ApiResponse> => {
     return new Promise((resolve, reject) => {
         Model.countDocuments(query, (err: any, result: any) => {
             if (err) {

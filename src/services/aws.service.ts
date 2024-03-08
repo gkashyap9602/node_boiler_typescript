@@ -3,7 +3,7 @@ import AWS from 'aws-sdk'
 import mimeTypes from 'mime-types'
 import path from 'path'
 import responseMessage from "../constants/responseMessage.constant";
-import commonHelper from "../helpers/common.helper";
+import * as commonHelper from "../helpers/common.helper";
 import ffmpeg from 'fluent-ffmpeg'
 import fs from 'fs'
 import { showResponse } from "../utils/response.util";
@@ -71,8 +71,9 @@ const getSecretFromAWS = (secret_key_param: string) => {
                     console.error(err);
                     return resolve(false);
                 }
+                // console.log(data,"datadatadataAWSSECRET")
                 let secretKey = JSON.parse(data.SecretString);
-                let response = { SecretString: secretKey?.digismart }
+                let response = { SecretString: secretKey?.digismart_secret }
                 return resolve(response);
             });
         } catch (e) {

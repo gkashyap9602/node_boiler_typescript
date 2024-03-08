@@ -7,9 +7,11 @@ import helmet from "helmet";
 import { serve, setup } from "swagger-ui-express";
 import Routes from "./routes";
 import { bootstrapAdmin } from "./utils/bootstrap.util";
+import { rateLimiter } from "./utils/common.util";
 import { APP, initializeAWSCredentials } from './constants/app.constant'
 import connect from './configs/mongoose.config'
 const app: Application = express();
+
 
 initializeAWSCredentials()
   .then((res) => {
@@ -42,6 +44,8 @@ initializeAWSCredentials()
       app.use(express.static("public"));
       app.use(express.static(path.join(__dirname, "/public")));
       app.use("/files", express.static(__dirname + "/public/uploads"));
+
+      app.use(rateLimiter); //limit the api hit with specific ip
 
       app.use("/swagger", serve,
         setup(undefined, {

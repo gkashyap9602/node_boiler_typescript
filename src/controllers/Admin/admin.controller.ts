@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
-import { Route, Controller, Tags, Post, Body, Get, Security, Query, Put } from 'tsoa'
+import { Route, Controller, Tags, Post, Body, Get, Security, Query, Put, FormField, UploadedFile } from 'tsoa'
 import { ApiResponse } from '../../utils/interfaces.util';
-import { validateChangePassword, validateForgotPassword, validateRegister, validateUpdateQuestion, validateAddQuestion, validateCommonContent, validateResetPassword, validateAdmin, validateResendOtp, validateVerifyOtp } from '../../validations/admin.validator';
+import { validateChangePassword, validateForgotPassword, validateUpdateProfile, validateUpdateUserStatus, validateGetCustomerDetails, validateUpdateQuestion, validateAddQuestion, validateCommonContent, validateResetPassword, validateAdmin, validateResendOtp, validateVerifyOtp } from '../../validations/admin.validator';
 import handlers from '../../handlers/Admin/admin.handler'
 import { showResponse } from '../../utils/response.util';
 
@@ -194,10 +194,10 @@ export default class AdminController extends Controller {
    */
     @Security('Bearer')
     @Get("/get_details")
-    public async getUserDetails(): Promise<ApiResponse> {
+    public async getAdminDetails(): Promise<ApiResponse> {
         try {
 
-            return handlers.getUserDetails(this.userId)
+            return handlers.getAdminDetails(this.userId)
 
         }
         catch (err: any) {
@@ -209,6 +209,106 @@ export default class AdminController extends Controller {
     //ends
 
     /**
+* Update Admin Profile
+*/
+    @Security('Bearer')
+    @Put("/update_profile")
+    public async updateAdminProfile(@FormField() first_name?: string, @FormField() last_name?: string, @FormField() phone_number?: string, @FormField() country_code?: string, @UploadedFile() profile_pic?: Express.Multer.File): Promise<ApiResponse> {
+        try {
+
+            let body = { first_name, last_name, phone_number, country_code }
+
+            const validatedUpdateProfile = validateUpdateProfile(body);
+
+            if (validatedUpdateProfile.error) {
+                return showResponse(false, validatedUpdateProfile.error.message, null, null, 400)
+            }
+
+            return handlers.updateAdminProfile(body, this.userId, profile_pic)
+
+        }
+        catch (err: any) {
+            // logger.error(`${this.req.ip} ${err.message}`)
+            return err
+
+        }
+    }
+    //ends
+
+    /**
+* Get User List
+*/
+    @Security('Bearer')
+    @Get("/get_users_list")
+    public async getUsersList(@Query() sort_column?: string, @Query() sort_direction?: string, @Query() page?: number, @Query() limit?: number, @Query() search_key?: string, @Query() status?: number): Promise<ApiResponse> {
+        try {
+
+            return handlers.getUsersList(sort_column, sort_direction, page, limit, search_key, status)
+
+        }
+        catch (err: any) {
+            //   logger.error(`${this.req.ip} ${err.message}`)
+            return err
+
+        }
+    }
+    //ends
+
+
+
+    /**
+* Get User Details
+*/
+    @Security('Bearer')
+    @Get("/get_user_details")
+    public async getUserDetails(@Query() user_id: string): Promise<ApiResponse> {
+        try {
+            console.log(user_id, "useriddd")
+            const validatedCustomerDetails = validateGetCustomerDetails({ user_id });
+
+            if (validatedCustomerDetails.error) {
+                return showResponse(false, validatedCustomerDetails.error.message, null, null, 400)
+            }
+
+            return handlers.getUserDetails(user_id)
+
+        }
+        catch (err: any) {
+            //   logger.error(`${this.req.ip} ${err.message}`)
+            return err
+
+        }
+    }
+    //ends
+
+
+    /**
+* Update User Status
+*/
+    @Security('Bearer')
+    @Put("/update_user_status")
+    public async updateUserStatus(@Body() request: { user_id: string, status: number }): Promise<ApiResponse> {
+        try {
+
+            const validatedUpdateUserStatus = validateUpdateUserStatus(request);
+
+            if (validatedUpdateUserStatus.error) {
+                return showResponse(false, validatedUpdateUserStatus.error.message, null, null, 400)
+            }
+
+            return handlers.updateUserStatus(request)
+
+        }
+        catch (err: any) {
+            // logger.error(`${this.req.ip} ${err.message}`)
+            return err
+
+        }
+    }
+    //ends
+
+
+    /**
 * Add Question  endpoint
 */
     @Security('Bearer')
@@ -217,7 +317,7 @@ export default class AdminController extends Controller {
         try {
             // const { old_password, new_password } = request;
 
-            console.log(request,"requesttttt")
+            console.log(request, "requesttttt")
 
             const validatedAddQuestion = validateAddQuestion(request);
 

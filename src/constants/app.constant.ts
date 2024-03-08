@@ -5,10 +5,15 @@ const envConfig = dotenv.config({ path: path.resolve(__dirname, "../../.env") })
 if (envConfig.error) {
   throw new Error("No .Env File Found");
 }
+
 import services from "../services";
 import { AwsCredential, RoleType } from "../utils/interfaces.util";
+import { getEnvironmentParams } from "../utils/common.util";
 
 let AWS_CREDENTIAL: AwsCredential
+let parmsFetchFromAws = getEnvironmentParams(process.env.ENV_MODE, 'BOILERPLATE') //2nd parm is project name 
+// console.log(parmsFetchFromAws, "parmsFetchFromAws")
+
 
 async function initializeAWSCredentials() {
   try {
@@ -16,7 +21,7 @@ async function initializeAWSCredentials() {
     let ACCESSID = await services.awsService.getParameterFromAWS({ name: "ACCESSID" })
     let REGION = await services.awsService.getParameterFromAWS({ name: "REGION" })
     let BUCKET_NAME = await services.awsService.getParameterFromAWS({ name: "DIGISMART-BUCKET" })
-    let AWS_SECRET: any = await services.awsService.getSecretFromAWS("digismart")
+    let AWS_SECRET: any = await services.awsService.getSecretFromAWS("digismart_secret")
 
     if (typeof ACCESSID == 'string' && typeof REGION == 'string' && typeof BUCKET_NAME == 'string' && AWS_SECRET) {
 

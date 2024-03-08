@@ -6,6 +6,7 @@ import { ApiResponse } from '../../utils/interfaces.util'
 // import { verifyTokenAdmin } from '../middlewares/auth.middleware'
 import middlewares from '../../middlewares'
 let { verifyTokenAdmin } = middlewares.auth
+let { addToMulter } = middlewares.fileUpload.multer
 
 const router = express.Router()
 
@@ -67,10 +68,43 @@ router.post('/change_password', verifyTokenAdmin, async (req: Request | any, res
 
 router.get('/get_details', verifyTokenAdmin, async (req: Request | any, res: Response) => {
     const adminController = new AdminController(req, res)
-    const result: ApiResponse = await adminController.getUserDetails();
+    const result: ApiResponse = await adminController.getAdminDetails();
     return showOutput(res, result, result.code)
 
 })
+
+router.put('/update_profile', addToMulter.single('profile_pic'), verifyTokenAdmin, async (req: Request | any, res: Response) => {
+    const { first_name, last_name, phone_number, country_code } = req.body
+    const adminController = new AdminController(req, res)
+    const result: ApiResponse = await adminController.updateAdminProfile(first_name, last_name, phone_number, country_code, req.file);
+    return showOutput(res, result, result.code)
+
+})
+
+
+router.get('/get_user_details', verifyTokenAdmin, async (req: Request | any, res: Response) => {
+    const { user_id } = req.query;
+    const adminController = new AdminController(req, res)
+    const result: ApiResponse = await adminController.getUserDetails(user_id);
+    return showOutput(res, result, result.code)
+
+})
+router.get('/get_users_list', verifyTokenAdmin, async (req: Request | any, res: Response) => {
+    const { sort_column, sort_direction, page, limit, search_key, status } = req.query
+    const adminController = new AdminController(req, res)
+    const result: ApiResponse = await adminController.getUsersList(sort_column, sort_direction, page, limit, search_key, status);
+    return showOutput(res, result, result.code)
+
+})
+
+router.put('/update_user_status', verifyTokenAdmin, async (req: Request | any, res: Response) => {
+    const { user_id, status } = req.body
+    const adminController = new AdminController(req, res)
+    const result: ApiResponse = await adminController.updateUserStatus({ user_id, status });
+    return showOutput(res, result, result.code)
+
+})
+
 
 router.post('/add_question', verifyTokenAdmin, async (req: Request | any, res: Response) => {
     const { question, answer } = req.body;
