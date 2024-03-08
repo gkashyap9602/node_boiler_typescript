@@ -4,6 +4,7 @@ import { findOne, findAll } from "../../helpers/db.helpers";
 import responseMessage from "../../constants/responseMessage.constant";
 import commonContentModel from "../../models/Admin/commonContent.model";
 import faqModel from "../../models/Admin/faq.model";
+import services from "../../services";
 
 const CommonHandler = {
 
@@ -43,7 +44,28 @@ const CommonHandler = {
             return err
 
         }
+    },
+    async storeParameterToStore(name: string, value: string): Promise<ApiResponse> {
+        try {
+
+            let response = await services.awsService.postParameterToAWS({
+                name: name,
+                value: value
+            })
+
+            if (response) {
+                return showResponse(true, responseMessage?.common.parameter_store_post_success, null, null, 200);
+            }
+            return showResponse(false, responseMessage?.common.parameter_store_post_error, null, null, 400);
+
+        }
+        catch (err: any) {
+            //   logger.error(`${this.req.ip} ${err.message}`)
+            return err
+
+        }
     }
+
 
 }
 

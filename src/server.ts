@@ -49,6 +49,7 @@ app.use("/swagger", serve,
   })
 );
 
+console.log(APP.API_PREFIX,"API_PREFIX")
 
 app.use("/api", Routes);
 bootstrapAdmin(() => {

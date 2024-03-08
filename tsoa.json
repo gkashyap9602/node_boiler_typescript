@@ -16,6 +16,7 @@
         "description": "JWT Authorization header using the Bearer scheme."
       }
     }
+    
   },
   "routes": {
     "routesDir": "build"
