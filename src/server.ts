@@ -11,6 +11,12 @@ import { rateLimiter } from "./utils/common.util";
 import { APP, AWS_CREDENTIAL } from './constants/app.constant' //priority 1
 require('../src/configs/mongoose.config') //priority 2
 const app: Application = express();
+import AWS from 'aws-sdk'
+
+AWS.config.update({
+  region: "us-east-1",
+  credentials: new AWS.SharedIniFileCredentials({ profile: "digismart" }),
+});
 
 app.use(helmet())
 

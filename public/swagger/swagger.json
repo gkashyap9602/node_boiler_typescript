@@ -576,6 +576,51 @@
 				"parameters": []
 			}
 		},
+		"/api/common/store_paramter_to_store": {
+			"post": {
+				"operationId": "StoreParameterToStore",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Post parameterto store",
+				"tags": [
+					"Common"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"name": {
+										"type": "string"
+									},
+									"value": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"name",
+									"value"
+								]
+							}
+						}
+					}
+				}
+			}
+		},
 		"/api/admin/login": {
 			"post": {
 				"operationId": "Login",

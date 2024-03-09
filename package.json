@@ -9,7 +9,7 @@
     "predev": " npm run swagger",
     "prebuild": "npm run swagger",
     "build": "tsc",
-    "dev": "export AWS_PROFILE=digismart && export AWS_SDK_LOAD_CONFIG=1 && concurrently \"nodemon\" \"nodemon -x tsoa spec\"",
+    "dev": "set AWS_PROFILE=digismart && set AWS_SDK_LOAD_CONFIG=1 && concurrently \"nodemon\" \"nodemon -x tsoa spec\"",
     "swagger": "tsoa spec",
     "prestart": "mkdir -p build/template && cp -a src/template build/"
   },
