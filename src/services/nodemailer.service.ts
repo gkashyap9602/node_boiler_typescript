@@ -8,17 +8,17 @@ const nodemail = async (to: string, subject: string, body: any, attachments: any
 
         try {
             const transporter = nodemailer.createTransport({
-                host: EMAIL_CREDENTIAL.EMAIL_HOST,
+                host: await EMAIL_CREDENTIAL.EMAIL_HOST,
                 port: 465,
                 secure: true,
                 auth: {
-                    user: EMAIL_CREDENTIAL.SENDGRID_API,
-                    pass: EMAIL_CREDENTIAL.SENDGRID_API_KEY
+                    user: await EMAIL_CREDENTIAL.SENDGRID_API,
+                    pass: await EMAIL_CREDENTIAL.SENDGRID_API_KEY
                 }
             });
 
             let mailOptions = {
-                from: EMAIL_CREDENTIAL.EMAIL_HOST,
+                from: await EMAIL_CREDENTIAL.EMAIL_HOST,
                 to,
                 subject,
                 html: body,
