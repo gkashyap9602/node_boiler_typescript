@@ -8,7 +8,7 @@ import { showResponse } from '../../utils/response.util';
 
 
 @Tags('User')
-@Route('api/user')
+@Route('api/v1/user')
 
 export default class UserController extends Controller {
     req: Request;

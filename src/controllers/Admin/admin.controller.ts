@@ -6,7 +6,7 @@ import handlers from '../../handlers/Admin/admin.handler'
 import { showResponse } from '../../utils/response.util';
 
 @Tags('Admin')
-@Route('api/admin')
+@Route('api/v1/admin')
 
 export default class AdminController extends Controller {
     req: Request;

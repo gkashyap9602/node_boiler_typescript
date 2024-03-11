@@ -45,7 +45,7 @@ const CommonHandler = {
 
         }
     },
-    async storeParameterToStore(name: string, value: string): Promise<ApiResponse> {
+    async storeParameterToAws(name: string, value: string): Promise<ApiResponse> {
         try {
 
             let response = await services.awsService.postParameterToAWS({
