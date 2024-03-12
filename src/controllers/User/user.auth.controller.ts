@@ -6,7 +6,7 @@ import handlers from '../../handlers/User/user.auth.handler'
 import { showResponse } from '../../utils/response.util';
 
 
-@Tags('User')
+@Tags('User Auth')
 @Route('api/v1/user')
 
 export default class UserAuthController extends Controller {
