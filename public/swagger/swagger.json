@@ -69,7 +69,7 @@
 				},
 				"description": "Get User login",
 				"tags": [
-					"User"
+					"User Auth"
 				],
 				"security": [],
 				"parameters": [],
@@ -114,7 +114,7 @@
 				},
 				"description": "Save a User",
 				"tags": [
-					"User"
+					"User Auth"
 				],
 				"security": [],
 				"parameters": [],
@@ -177,7 +177,7 @@
 				},
 				"description": "Upload a file",
 				"tags": [
-					"User"
+					"User Auth"
 				],
 				"security": [
 					{
@@ -223,7 +223,7 @@
 				},
 				"description": "Forgot password api endpoint",
 				"tags": [
-					"User"
+					"User Auth"
 				],
 				"security": [],
 				"parameters": [],
@@ -264,7 +264,7 @@
 				},
 				"description": "Reset password api endpoint",
 				"tags": [
-					"User"
+					"User Auth"
 				],
 				"security": [
 					{
@@ -313,7 +313,7 @@
 				},
 				"description": "Verify Otp Route  api endpoint",
 				"tags": [
-					"User"
+					"User Auth"
 				],
 				"security": [
 					{
@@ -363,7 +363,7 @@
 				},
 				"description": "Resend Otp Route  api endpoint",
 				"tags": [
-					"User"
+					"User Auth"
 				],
 				"security": [
 					{
@@ -408,7 +408,7 @@
 				},
 				"description": "Change Password endpoint",
 				"tags": [
-					"User"
+					"User Auth"
 				],
 				"security": [
 					{
@@ -457,7 +457,7 @@
 				},
 				"description": "Get Admin info",
 				"tags": [
-					"User"
+					"User Auth"
 				],
 				"security": [
 					{
@@ -484,7 +484,7 @@
 				},
 				"description": "Update User Profile",
 				"tags": [
-					"User"
+					"User Auth"
 				],
 				"security": [
 					{

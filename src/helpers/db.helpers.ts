@@ -136,6 +136,14 @@ export const findByIdAndRemove = (Model: Model<any>, id: string): Promise<ApiRes
     });
 };
 
+
+
+//example how to use
+//  let result = await removeItemFromArray(ModelName, { _id: sizeCategoryId }, 'parameters', sizeParamId)
+//1st param  =>> model 
+//2nd param =>> main arrayOfObject Id
+//3rd param =>> array feild name 
+//4th param =>> objectId that you want to delete in array of object  
 export const removeItemFromArray = (Model: Model<any>, mainIdObj: any, arrayKey: string, itemId: string): Promise<ApiResponse> => {
     return new Promise((resolve, reject) => {
         Model.updateOne(mainIdObj, { $pull: { [arrayKey]: { _id: itemId } } }, (err: any, updatedData: any) => {
@@ -154,10 +162,6 @@ export const removeItemFromArray = (Model: Model<any>, mainIdObj: any, arrayKey:
 };
 
 
-
-
-
-
 export const bulkOperationQuery = async (Model: Model<any>, bulkOperations: any[]): Promise<ApiResponse> => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -174,6 +178,31 @@ export const bulkOperationQuery = async (Model: Model<any>, bulkOperations: any[
             let response = showResponse(false, err);
             return reject(response);
         }
+    });
+};
+
+
+//example how to use
+// let result = await addItemInArray(ModelName, matchObj, 'parameters', parameters)
+//1st param  =>> model 
+//2nd param =>> main arrayOfObject Id
+//3rd param =>> array feild name 
+//4th param =>> object that you want to add in array of object  
+
+export const addItemInArray = (Model: Model<any>, mainIdObj: any, arrayKey: string, itemToAdd: any): Promise<ApiResponse> => {
+    return new Promise((resolve, reject) => {
+        Model.updateOne(mainIdObj, { $push: { [arrayKey]: itemToAdd } }, (err: any, updatedData: any) => {
+            if (err) {
+                let response = showResponse(false, err, {});
+                return resolve(response);
+            }
+            if (updatedData?.modifiedCount && updatedData.modifiedCount > 0) {
+                let response = showResponse(true, 'Success', updatedData);
+                return resolve(response);
+            }
+            let response = showResponse(false, 'Update failed', {});
+            return resolve(response);
+        });
     });
 };
 
