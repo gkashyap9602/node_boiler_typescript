@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express'
-import UserController from '../../controllers/User/user.controller'
+import UserAuthController from '../../controllers/User/user.auth.controller'
 import { showOutput } from '../../utils/response.util'
 import { ApiResponse } from '../../utils/interfaces.util'
 import middlewares from '../../middlewares'
@@ -10,37 +10,37 @@ const router = express.Router()
 
 router.post('/login', async (req: Request | any, res: Response) => {
     const { email, password } = req.body;
-    const userController = new UserController(req, res)
-    const result: ApiResponse = await userController.login({ email, password });
+    const userAuthController = new UserAuthController(req, res)
+    const result: ApiResponse = await userAuthController.login({ email, password });
     return showOutput(res, result, result.code)
 })
 
 router.post('/register', addToMulter.single('profile_pic'), async (req: Request | any, res: Response) => {
     const { first_name, last_name, email, password, phone_number, country_code } = req.body;
-    const userController = new UserController(req, res)
-    const result: ApiResponse = await userController.register(first_name, last_name, email, password, phone_number, country_code, req.file);
+    const userAuthController = new UserAuthController(req, res)
+    const result: ApiResponse = await userAuthController.register(first_name, last_name, email, password, phone_number, country_code, req.file);
     return showOutput(res, result, result.code)
 })
 
 router.post('/upload_file', addToMulter.single('file'), async (req: Request | any, res: Response) => {
-    const userController = new UserController(req, res)
-    const result: ApiResponse = await userController.uploadFile(req.file as Express.Multer.File);
+    const userAuthController = new UserAuthController(req, res)
+    const result: ApiResponse = await userAuthController.uploadFile(req.file as Express.Multer.File);
     return showOutput(res, result, result.code)
 
 })
 
 router.post('/forgot_password', async (req: Request | any, res: Response) => {
     const { email, mode } = req.body;
-    const userController = new UserController(req, res)
-    const result: ApiResponse = await userController.forgotPassword({ email });
+    const userAuthController = new UserAuthController(req, res)
+    const result: ApiResponse = await userAuthController.forgotPassword({ email });
     return showOutput(res, result, result.code)
 
 })
 
 router.post('/reset_password', async (req: Request | any, res: Response) => {
     const { email, new_password } = req.body;
-    const userController = new UserController(req, res)
-    const result: ApiResponse = await userController.resetPassword({ email, new_password });
+    const userAuthController = new UserAuthController(req, res)
+    const result: ApiResponse = await userAuthController.resetPassword({ email, new_password });
     return showOutput(res, result, result.code)
 })
 
@@ -48,16 +48,16 @@ router.post('/reset_password', async (req: Request | any, res: Response) => {
 
 router.post('/verify_otp', async (req: Request | any, res: Response) => {
     const { email, otp } = req.body;
-    const userController = new UserController(req, res)
-    const result: ApiResponse = await userController.verifyOtp({ email, otp });
+    const userAuthController = new UserAuthController(req, res)
+    const result: ApiResponse = await userAuthController.verifyOtp({ email, otp });
     return showOutput(res, result, result.code)
 
 })
 
 router.post('/resend_otp', async (req: Request | any, res: Response) => {
     const { email } = req.body;
-    const userController = new UserController(req, res)
-    const result: ApiResponse = await userController.resendOtp({ email });
+    const userAuthController = new UserAuthController(req, res)
+    const result: ApiResponse = await userAuthController.resendOtp({ email });
     return showOutput(res, result, result.code)
 
 })
@@ -65,27 +65,27 @@ router.post('/resend_otp', async (req: Request | any, res: Response) => {
 
 router.post('/change_password', verifyTokenUser, async (req: Request | any, res: Response) => {
     const { old_password, new_password } = req.body;
-    const userController = new UserController(req, res)
-    const result: ApiResponse = await userController.changePassword({ old_password, new_password });
+    const userAuthController = new UserAuthController(req, res)
+    const result: ApiResponse = await userAuthController.changePassword({ old_password, new_password });
     return showOutput(res, result, result.code)
 
 })
 
-router.get('/get_details', verifyTokenUser, async (req: Request | any, res: Response) => {
-    const userController = new UserController(req, res)
-    const result: ApiResponse = await userController.getUserDetails();
+router.get('/details', verifyTokenUser, async (req: Request | any, res: Response) => {
+    const userAuthController = new UserAuthController(req, res)
+    const result: ApiResponse = await userAuthController.getUserDetails();
     return showOutput(res, result, result.code)
 
 })
 
-router.put('/update_profile', addToMulter.single('profile_pic'), verifyTokenUser, async (req: Request | any, res: Response) => {
+router.put('/profile', addToMulter.single('profile_pic'), verifyTokenUser, async (req: Request | any, res: Response) => {
     const { first_name, last_name, phone_number, country_code } = req.body
-    const userController = new UserController(req, res)
-    const result: ApiResponse = await userController.updateUserProfile(first_name, last_name, phone_number, country_code, req.file);
+    const userAuthController = new UserAuthController(req, res)
+    const result: ApiResponse = await userAuthController.updateUserProfile(first_name, last_name, phone_number, country_code, req.file);
     return showOutput(res, result, result.code)
 
 })
 
 
 
-module.exports = router
+export default router

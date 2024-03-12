@@ -4,7 +4,7 @@ import { ApiResponse } from '../../utils/interfaces.util';
 // import { validateChangePassword, validateForgotPassword, validateRegister, validateResetPassword, validateAdmin, validateResendOtp, validateVerifyOtp } from '../../validations/admin.validator';
 import handlers from '../../handlers/Common/common.handler'
 import { showResponse } from '../../utils/response.util';
-import { validateStoreParmeterToAws } from '../../validations/common.validator';
+import { validateStoreParmeterToAws } from '../../validations/Common/common.validator';
 
 @Tags('Common')
 @Route('api/v1/common')
@@ -24,7 +24,7 @@ export default class CommonController extends Controller {
    * Get Common Content info
    */
     @Security('Bearer')
-    @Get("/get_common_content")
+    @Get("/common_content")
     public async getCommonContent(): Promise<ApiResponse> {
         try {
 
@@ -43,7 +43,7 @@ export default class CommonController extends Controller {
    * Get Faq Questions
    */
     @Security('Bearer')
-    @Get("/get_questions")
+    @Get("/questions")
     public async getQuestions(): Promise<ApiResponse> {
         try {
 

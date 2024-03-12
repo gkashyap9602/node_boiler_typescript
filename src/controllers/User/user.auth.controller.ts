@@ -1,16 +1,15 @@
 import { Request, Response } from 'express'
 import { Route, Controller, Tags, Post, Body, Get, Security, Query, UploadedFile, FormField, Put } from 'tsoa'
-
 import { ApiResponse } from '../../utils/interfaces.util';
-import { validateChangePassword, validateForgotPassword, validateUpdateProfile, validateRegister, validateResetPassword, validateUser, validateResendOtp, validateVerifyOtp } from '../../validations/user.validator';
-import handlers from '../../handlers/User/user.handler'
+import { validateChangePassword, validateForgotPassword, validateUpdateProfile, validateRegister, validateResetPassword, validateUser, validateResendOtp, validateVerifyOtp } from '../../validations/User/user.auth.validator';
+import handlers from '../../handlers/User/user.auth.handler'
 import { showResponse } from '../../utils/response.util';
 
 
 @Tags('User')
 @Route('api/v1/user')
 
-export default class UserController extends Controller {
+export default class UserAuthController extends Controller {
     req: Request;
     res: Response;
     userId: string
@@ -217,7 +216,7 @@ export default class UserController extends Controller {
    * Get Admin info
    */
     @Security('Bearer')
-    @Get("/get_details")
+    @Get("/details")
     public async getUserDetails(): Promise<ApiResponse> {
         try {
             // console.log(req.body.user, "")
@@ -237,7 +236,7 @@ export default class UserController extends Controller {
 * Update User Profile
 */
     @Security('Bearer')
-    @Put("/update_profile")
+    @Put("/profile")
     public async updateUserProfile(@FormField() first_name?: string, @FormField() last_name?: string, @FormField() phone_number?: string, @FormField() country_code?: string, @UploadedFile() profile_pic?: Express.Multer.File): Promise<ApiResponse> {
         try {
 

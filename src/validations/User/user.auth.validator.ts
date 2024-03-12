@@ -74,6 +74,6 @@ export const validateChangePassword = (user: any) => {
     return changePasswordSchema.validate(user)
 }
 
-export const validateUpdateProfile = (admin: any) => {
-    return updateProfileSchema.validate(admin)
+export const validateUpdateProfile = (user: any) => {
+    return updateProfileSchema.validate(user)
 }
