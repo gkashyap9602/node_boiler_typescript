@@ -7,7 +7,7 @@ import { showResponse } from '../../utils/response.util';
 
 
 @Tags('User Auth')
-@Route('api/v1/user')
+@Route('api/v1/user/auth')
 
 export default class UserAuthController extends Controller {
     req: Request;

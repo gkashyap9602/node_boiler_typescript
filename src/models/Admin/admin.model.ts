@@ -18,6 +18,21 @@ const AdminSchema = new Schema(
         updated_on: { type: Number, default: 0 }
 
     },
-    // { timestamps: true, versionKey: false }
+    {
+        toJSON: { virtuals: true },
+        toObject: { virtuals: true },
+        id: false,
+        versionKey: false,
+        // collection: 'admin'
+        // timestamps: true
+    },
 )
+
+// Define a virtual property for full_name
+AdminSchema.virtual('full_name').get(function () {
+    return `${this.first_name} ${this.last_name}`.trim();
+});
+
+
+
 export default model('admin', AdminSchema)

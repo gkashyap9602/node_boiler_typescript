@@ -25,11 +25,10 @@ export const bootstrapAdmin = async function (cb: Function) {
     created_on: moment().unix(),
   };
 
-  const adminDoc = await findOne(adminModel, { email: adminData.email });
-  // console.log(adminDoc,"adminDocc")
+  const adminDoc = await findOne(adminModel, {});
   if (!adminDoc.status) {
     let adminRef = new adminModel(adminData)
-    await createOne(adminRef)
+    let save = await createOne(adminRef)
   }
 
 

@@ -141,12 +141,12 @@ export const findByIdAndRemove = (Model: Model<any>, id: string): Promise<ApiRes
 //example how to use
 //  let result = await removeItemFromArray(ModelName, { _id: sizeCategoryId }, 'parameters', sizeParamId)
 //1st param  =>> model 
-//2nd param =>> main arrayOfObject Id
+//2nd param =>> main Object Id
 //3rd param =>> array feild name 
-//4th param =>> objectId that you want to delete in array of object  
-export const removeItemFromArray = (Model: Model<any>, mainIdObj: any, arrayKey: string, itemId: string): Promise<ApiResponse> => {
+//4th param =>> match condition objectId that you want to delete in array of object  
+export const removeItemFromArray = (Model: Model<any>, mainIdObj: any, arrayKey: string, itemIdObj: any): Promise<ApiResponse> => {
     return new Promise((resolve, reject) => {
-        Model.updateOne(mainIdObj, { $pull: { [arrayKey]: { _id: itemId } } }, (err: any, updatedData: any) => {
+        Model.updateOne(mainIdObj, { $pull: { [arrayKey]: itemIdObj } }, (err: any, updatedData: any) => {
             if (err) {
                 let response = showResponse(false, err, {});
                 return resolve(response);
@@ -185,13 +185,13 @@ export const bulkOperationQuery = async (Model: Model<any>, bulkOperations: any[
 //example how to use
 // let result = await addItemInArray(ModelName, matchObj, 'parameters', parameters)
 //1st param  =>> model 
-//2nd param =>> main arrayOfObject Id
+//2nd param =>> main Object Id
 //3rd param =>> array feild name 
 //4th param =>> object that you want to add in array of object  
 
-export const addItemInArray = (Model: Model<any>, mainIdObj: any, arrayKey: string, itemToAdd: any): Promise<ApiResponse> => {
+export const addItemInArray = (Model: Model<any>, mainIdObj: any, arrayKey: string, itemToAddObj: any): Promise<ApiResponse> => {
     return new Promise((resolve, reject) => {
-        Model.updateOne(mainIdObj, { $push: { [arrayKey]: itemToAdd } }, (err: any, updatedData: any) => {
+        Model.updateOne(mainIdObj, { $push: { [arrayKey]: itemToAddObj } }, (err: any, updatedData: any) => {
             if (err) {
                 let response = showResponse(false, err, {});
                 return resolve(response);

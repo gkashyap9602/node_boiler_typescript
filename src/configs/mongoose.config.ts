@@ -6,6 +6,8 @@ export const connection = async () => {
 
   console.log(MONGO_URI, "MONGO_URI_CONNECTION_SIDE")
 
+  console.log(DB.DB_NAME, "DB_NAME_CONNECTION_SIDE")
+
   mongoose.connect(MONGO_URI as string, {
     useNewUrlParser: true,
     useUnifiedTopology: true,

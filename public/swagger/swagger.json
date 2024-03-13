@@ -52,7 +52,7 @@
 		}
 	},
 	"paths": {
-		"/api/v1/user/login": {
+		"/api/v1/user/auth/login": {
 			"post": {
 				"operationId": "Login",
 				"responses": {
@@ -97,7 +97,7 @@
 				}
 			}
 		},
-		"/api/v1/user/register": {
+		"/api/v1/user/auth/register": {
 			"post": {
 				"operationId": "Register",
 				"responses": {
@@ -160,7 +160,7 @@
 				}
 			}
 		},
-		"/api/v1/user/upload_file": {
+		"/api/v1/user/auth/upload_file": {
 			"post": {
 				"operationId": "UploadFile",
 				"responses": {
@@ -206,7 +206,7 @@
 				}
 			}
 		},
-		"/api/v1/user/forgot_password": {
+		"/api/v1/user/auth/forgot_password": {
 			"post": {
 				"operationId": "ForgotPassword",
 				"responses": {
@@ -247,7 +247,7 @@
 				}
 			}
 		},
-		"/api/v1/user/reset_password": {
+		"/api/v1/user/auth/reset_password": {
 			"post": {
 				"operationId": "ResetPassword",
 				"responses": {
@@ -296,7 +296,7 @@
 				}
 			}
 		},
-		"/api/v1/user/verify_otp": {
+		"/api/v1/user/auth/verify_otp": {
 			"post": {
 				"operationId": "VerifyOtp",
 				"responses": {
@@ -346,7 +346,7 @@
 				}
 			}
 		},
-		"/api/v1/user/resend_otp": {
+		"/api/v1/user/auth/resend_otp": {
 			"post": {
 				"operationId": "ResendOtp",
 				"responses": {
@@ -391,7 +391,7 @@
 				}
 			}
 		},
-		"/api/v1/user/change_password": {
+		"/api/v1/user/auth/change_password": {
 			"post": {
 				"operationId": "ChangePassword",
 				"responses": {
@@ -440,7 +440,7 @@
 				}
 			}
 		},
-		"/api/v1/user/details": {
+		"/api/v1/user/auth/details": {
 			"get": {
 				"operationId": "GetUserDetails",
 				"responses": {
@@ -467,7 +467,7 @@
 				"parameters": []
 			}
 		},
-		"/api/v1/user/profile": {
+		"/api/v1/user/auth/profile": {
 			"put": {
 				"operationId": "UpdateUserProfile",
 				"responses": {
