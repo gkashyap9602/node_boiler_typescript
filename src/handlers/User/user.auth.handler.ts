@@ -15,6 +15,7 @@ const UserAuthHandler = {
 
     async login(data: any): Promise<ApiResponse> {
         try {
+            
             const { email, password } = data;
             console.log(email, password, "emailpassss")
             const exists = await findOne(userModel, { email });

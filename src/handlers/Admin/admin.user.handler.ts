@@ -20,7 +20,7 @@ const AdminUserHandler = {
     async getUserDetails(user_id: string): Promise<ApiResponse> {
         try {
 
-            let getResponse = await findOne(userModel, { _id: user_id }, { password: 0 });
+            let getResponse = await findOne(userModel, { _id: user_id, status: { $ne: USER_STATUS.DELETED } }, { password: 0 });
 
             if (!getResponse.status) {
                 return showResponse(false, responseMessage.users.invalid_user, null, null, 400)
@@ -43,6 +43,7 @@ const AdminUserHandler = {
 
             let matchObj: any = {
                 user_type: ROLE.USER, // 3 for users
+                status: { $ne: USER_STATUS.DELETED },
                 $or: [
                     { email: { $regex: search_key, $options: 'i' } },
                     { first_name: { $regex: search_key, $options: 'i' } },
