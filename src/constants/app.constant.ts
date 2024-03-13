@@ -65,17 +65,18 @@ const REDIS_CREDENTIAL = {
 //call this function when paramters are stored to aws 
 let initializeAwsCredential = async () => {
 
-  DB.MONGODB_URI = services.awsService.getParameterFromAWS({ name: db_uri })
-  DB.DB_NAME = services.awsService.getParameterFromAWS({ name: db_name })
-  APP.JWT_SECRET = services.awsService.getParameterFromAWS({ name: "JWT_SECRET" })
+  // DB.MONGODB_URI = services.awsService.getParameterFromAWS({ name: db_uri })
+  // DB.DB_NAME = services.awsService.getParameterFromAWS({ name: db_name })
+
+  APP.JWT_SECRET = services.awsService.getParameterFromAWS({ name: "API_SECRET" })
   EMAIL_CREDENTIAL.SENDGRID_API = services.awsService.getParameterFromAWS({ name: 'STMP_EMAIL' })
   EMAIL_CREDENTIAL.SENDGRID_API_KEY = services.awsService.getParameterFromAWS({ name: 'SMTP_APP_PASSWORD' })
 
   AWS_CREDENTIAL = {
     ACCESSID: services.awsService.getParameterFromAWS({ name: "ACCESSID" }),
     REGION: services.awsService.getParameterFromAWS({ name: "REGION" }),
-    AWS_SECRET: services.awsService.getSecretFromAWS("rockingham_secret"),
-    BUCKET_NAME: services.awsService.getParameterFromAWS({ name: bucket }),
+    AWS_SECRET: services.awsService.getSecretFromAWS("digismart"),
+    BUCKET_NAME: services.awsService.getParameterFromAWS({ name: 'DIGISMART-BUCKET' }),
   };
 
 

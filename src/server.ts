@@ -14,7 +14,7 @@ import { connection } from './configs/mongoose.config'
 const app: Application = express();
 
 // Call it when Paramters are stored to AWS
-// initializeAwsCredential()
+initializeAwsCredential()
 
 //initialize database connection 
 connection()

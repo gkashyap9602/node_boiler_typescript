@@ -1,13 +1,11 @@
 import rateLimit from 'express-rate-limit'
 import Queue from 'bull'
 import { REDIS_CREDENTIAL } from '../constants/app.constant'
-import { capitalize } from '../helpers/common.helper';
-
 
 //get params according to your environment
 export const getEnvironmentParams = (env: any, project_name: string) => {
 
-    let admin_email = capitalize(project_name.toLowerCase())
+    let admin_email = project_name.toLowerCase()
 
     console.log(admin_email, "admin_email")
 
