@@ -5,9 +5,7 @@ export const connection = async () => {
   let MONGO_URI = await DB.MONGODB_URI
 
   console.log(MONGO_URI, "MONGO_URI_CONNECTION_SIDE")
-
-  console.log(DB.DB_NAME, "DB_NAME_CONNECTION_SIDE")
-
+  // console.log(DB.DB_NAME, "DB_NAME_CONNECTION_SIDE")
   mongoose.connect(MONGO_URI as string, {
     useNewUrlParser: true,
     useUnifiedTopology: true,

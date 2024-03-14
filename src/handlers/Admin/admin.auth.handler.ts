@@ -288,6 +288,8 @@ const AdminAuthHandler = {
 
             let findAdmin = await findOne(adminModel, { user_type: ROLE.ADMIN, _id: admin_id })
 
+            console.log(findAdmin,"findAdmin")
+
             if (!findAdmin.status) {
                 return showResponse(false, responseMessage.admin.invalid_admin, null, null, 400);
             }

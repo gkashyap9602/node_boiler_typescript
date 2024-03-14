@@ -16,7 +16,7 @@ const app: Application = express();
 // Call it when Paramters are stored to AWS
 initializeAwsCredential()
 
-//initialize database connection 
+// initialize database connection 
 connection()
 
 
