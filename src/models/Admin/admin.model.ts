@@ -19,7 +19,7 @@ const AdminSchema = new Schema(
 
     },
     {
-        toJSON: { virtuals: true },
+        toJSON: { virtuals: true},
         toObject: { virtuals: true },
         id: false,
         versionKey: false,
@@ -27,6 +27,7 @@ const AdminSchema = new Schema(
         // timestamps: true
     },
 )
+
 
 // Define a virtual property for full_name
 AdminSchema.virtual('full_name').get(function () {

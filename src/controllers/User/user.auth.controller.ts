@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { Route, Controller, Tags, Post, Body, Get, Security, Query, UploadedFile, FormField, Put } from 'tsoa'
+import { Route, Controller, Tags, Post, Body, Get, Security, Query, UploadedFile, FormField, Put,Example } from 'tsoa'
 import { ApiResponse } from '../../utils/interfaces.util';
 import { validateChangePassword, validateForgotPassword, validateUpdateProfile, validateRegister, validateResetPassword, validateUser, validateResendOtp, validateVerifyOtp } from '../../validations/User/user.auth.validator';
 import handlers from '../../handlers/User/user.auth.handler'

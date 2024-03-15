@@ -22,6 +22,7 @@ const AdminAuthHandler = {
             const { email, password } = data;
 
             const exists = await findOne(adminModel, { email });
+
             if (!exists.status) {
                 return showResponse(false, responseMessage.admin.does_not_exist, null, null, 400)
             }
@@ -264,7 +265,14 @@ const AdminAuthHandler = {
     async getAdminDetails(userId: string): Promise<ApiResponse> {
         try {
 
-            let getResponse = await findOne(adminModel, { _id: userId }, { password: 0 });
+            let getResponse = await findOne(adminModel, { _id: userId }, { password: 0 }, null, { lean: false });
+
+            console.log(getResponse, "getResponse")
+
+            let findd = await adminModel.findOne({ _id: userId })
+
+            console.log(findd, "finddfinddfinddfindd")
+
 
             if (!getResponse.status) {
                 return showResponse(false, responseMessage.admin.invalid_admin, null, null, 400)
@@ -288,7 +296,7 @@ const AdminAuthHandler = {
 
             let findAdmin = await findOne(adminModel, { user_type: ROLE.ADMIN, _id: admin_id })
 
-            console.log(findAdmin,"findAdmin")
+            console.log(findAdmin, "findAdmin")
 
             if (!findAdmin.status) {
                 return showResponse(false, responseMessage.admin.invalid_admin, null, null, 400);
@@ -336,7 +344,7 @@ const AdminAuthHandler = {
         }
     },
 
-  
+
 }
 
 export default AdminAuthHandler 

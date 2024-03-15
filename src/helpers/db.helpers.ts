@@ -2,16 +2,16 @@ import { Model } from 'mongoose'
 import { showResponse } from '../utils/response.util';
 import { ApiResponse } from '../utils/interfaces.util';
 
-export const findOne = (Model: Model<any>, query: object, fields: object = {}, populate?: string | null): Promise<ApiResponse> => {
+export const findOne = (Model: Model<any>, query: object, fields: object = {}, populate?: string | null, lean_obj: object = { lean: true }): Promise<ApiResponse> => {
     return new Promise((resolve, reject) => {
-        let queryBuilder = Model.findOne(query, fields);
+        let queryBuilder = Model.findOne(query, fields, lean_obj)
 
         if (populate) {
             queryBuilder = queryBuilder.populate(populate);
         }
 
         // Enable lean and virtuals
-        queryBuilder = queryBuilder.lean({ virtuals: true });
+        // queryBuilder = queryBuilder.lean({ virtuals: true });
 
         queryBuilder.exec()
             .then(data => {
@@ -33,16 +33,18 @@ export const findOne = (Model: Model<any>, query: object, fields: object = {}, p
 
 export const createOne = (modalReference: any): Promise<ApiResponse> => {
     return new Promise((resolve, reject) => {
-        modalReference.save((err: any, savedData: any) => {
-            if (err) {
+        modalReference.save()
+            .then((savedData: any) => {
+                let response = showResponse(true, 'Data Saved Successfully', savedData);
+                resolve(response);
+            })
+            .catch((err: any) => {
                 let response = showResponse(false, 'Data Save Failed', err);
-                return resolve(response);
-            }
-            let response = showResponse(true, 'Data Saved Successfully', savedData);
-            return resolve(response);
-        })
+                reject(response);
+            });
     });
 };
+
 
 
 export const insertMany = (Model: Model<any>, dataArray: any[]): Promise<ApiResponse> => {

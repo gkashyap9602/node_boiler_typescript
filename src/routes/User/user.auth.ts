@@ -11,7 +11,7 @@ const router = express.Router()
 router.post('/login', async (req: Request | any, res: Response) => {
     const { email, password } = req.body;
     const userAuthController = new UserAuthController(req, res)
-    const result: ApiResponse = await userAuthController.login({ email, password });
+    const result: ApiResponse = await userAuthController.login({email, password });
     return showOutput(res, result, result.code)
 })
 
