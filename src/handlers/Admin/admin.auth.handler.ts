@@ -265,7 +265,7 @@ const AdminAuthHandler = {
     async getAdminDetails(userId: string): Promise<ApiResponse> {
         try {
 
-            let getResponse = await findOne(adminModel, { _id: userId }, { password: 0 }, null, { lean: false });
+            let getResponse = await findOne(adminModel, { _id: userId }, { password: 0 });
 
             console.log(getResponse, "getResponse")
 

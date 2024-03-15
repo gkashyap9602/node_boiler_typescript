@@ -2,9 +2,9 @@ import { Model } from 'mongoose'
 import { showResponse } from '../utils/response.util';
 import { ApiResponse } from '../utils/interfaces.util';
 
-export const findOne = (Model: Model<any>, query: object, fields: object = {}, populate?: string | null, lean_obj: object = { lean: false }): Promise<ApiResponse> => {
+export const findOne = (Model: Model<any>, query: object, fields: object = {}, populate?: string | null): Promise<ApiResponse> => {
     return new Promise((resolve, reject) => {
-        let queryBuilder = Model.findOne(query, fields, lean_obj)
+        let queryBuilder = Model.findOne(query, fields)
 
         if (populate) {
             queryBuilder = queryBuilder.populate(populate);
@@ -16,7 +16,8 @@ export const findOne = (Model: Model<any>, query: object, fields: object = {}, p
                     let response = showResponse(false, 'Data Retrieval Failed', 'error occured');
                     resolve(response);
                 } else {
-                    let response = showResponse(true, 'Data Found', data);
+                    const doc = data?.toObject();
+                    let response = showResponse(true, 'Data Found', doc);
                     resolve(response);
                 }
             })
@@ -217,9 +218,9 @@ export const addItemInArray = (Model: Model<any>, mainIdObj: any, arrayKey: stri
     });
 };
 
-export const findAll = (Model: Model<any>, query: object, project_field?: string, pagination?: number | null, sort?: any | null, populate?: string | null, lean_obj: object = { lean: false }): Promise<ApiResponse> => {
+export const findAll = (Model: Model<any>, query: object, project_field?: string, pagination?: number | null, sort?: any | null, populate?: string | null): Promise<ApiResponse> => {
     return new Promise((resolve, reject) => {
-        let queryBuilder = Model.find(query, project_field, lean_obj);
+        let queryBuilder = Model.find(query, project_field);
 
         if (pagination) {
             queryBuilder = queryBuilder.limit(pagination);
@@ -234,7 +235,7 @@ export const findAll = (Model: Model<any>, query: object, project_field?: string
         }
 
         // Enable lean and virtuals
-        queryBuilder = queryBuilder.lean({ virtuals: true });
+        // queryBuilder = queryBuilder.lean({ virtuals: true });
 
         queryBuilder.exec()
             .then(data => {

@@ -314,7 +314,7 @@ const UserAuthHandler = {
     async getUserDetails(userId: string): Promise<ApiResponse> {
         try {
 
-            let getResponse = await findOne(userModel, { _id: userId }, { password: 0 },null, { lean: false });
+            let getResponse = await findOne(userModel, { _id: userId }, { password: 0 });
 
             console.log("handlerrrrrr", userId)
             if (!getResponse.status) {
