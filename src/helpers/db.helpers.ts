@@ -2,16 +2,13 @@ import { Model } from 'mongoose'
 import { showResponse } from '../utils/response.util';
 import { ApiResponse } from '../utils/interfaces.util';
 
-export const findOne = (Model: Model<any>, query: object, fields: object = {}, populate?: string | null, lean_obj: object = { lean: true }): Promise<ApiResponse> => {
+export const findOne = (Model: Model<any>, query: object, fields: object = {}, populate?: string | null, lean_obj: object = { lean: false }): Promise<ApiResponse> => {
     return new Promise((resolve, reject) => {
         let queryBuilder = Model.findOne(query, fields, lean_obj)
 
         if (populate) {
             queryBuilder = queryBuilder.populate(populate);
         }
-
-        // Enable lean and virtuals
-        // queryBuilder = queryBuilder.lean({ virtuals: true });
 
         queryBuilder.exec()
             .then(data => {
@@ -220,9 +217,9 @@ export const addItemInArray = (Model: Model<any>, mainIdObj: any, arrayKey: stri
     });
 };
 
-export const findAll = (Model: Model<any>, query: object, project_field?: string, pagination?: number | null, sort?: any | null, populate?: string | null): Promise<ApiResponse> => {
+export const findAll = (Model: Model<any>, query: object, project_field?: string, pagination?: number | null, sort?: any | null, populate?: string | null, lean_obj: object = { lean: false }): Promise<ApiResponse> => {
     return new Promise((resolve, reject) => {
-        let queryBuilder = Model.find(query, project_field);
+        let queryBuilder = Model.find(query, project_field, lean_obj);
 
         if (pagination) {
             queryBuilder = queryBuilder.limit(pagination);
