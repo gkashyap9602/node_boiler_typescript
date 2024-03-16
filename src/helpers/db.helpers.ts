@@ -10,86 +10,91 @@ export const findOne = (Model: Model<any>, query: object, fields: object = {}, p
             queryBuilder = queryBuilder.populate(populate);
         }
 
-        // Enable lean and virtuals
-        queryBuilder = queryBuilder.lean({ virtuals: true });
-
-        queryBuilder.exec((err, data) => {
-            if (err || !data) {
+        queryBuilder.exec()
+            .then(data => {
+                if (!data) {
+                    let response = showResponse(false, 'Data Retrieval Failed', 'error occured');
+                    resolve(response);
+                } else {
+                    const doc = data?.toObject();
+                    let response = showResponse(true, 'Data Found', doc);
+                    resolve(response);
+                }
+            })
+            .catch(err => {
                 let response = showResponse(false, 'Data Retrieval Failed', err);
-                return resolve(response);
-            }
-            let response = showResponse(true, 'Data Found', data);
-            return resolve(response);
-        });
+                resolve(response);
+            });
     });
 };
 
 
 export const createOne = (modalReference: any): Promise<ApiResponse> => {
     return new Promise((resolve, reject) => {
-        modalReference.save((err: any, savedData: any) => {
-            if (err) {
+        modalReference.save()
+            .then((savedData: any) => {
+                let response = showResponse(true, 'Data Saved Successfully', savedData);
+                resolve(response);
+            })
+            .catch((err: any) => {
                 let response = showResponse(false, 'Data Save Failed', err);
-                return resolve(response);
-            }
-            let response = showResponse(true, 'Data Saved Successfully', savedData);
-            return resolve(response);
-        })
+                reject(response);
+            });
     });
 };
+
 
 
 export const insertMany = (Model: Model<any>, dataArray: any[]): Promise<ApiResponse> => {
     return new Promise((resolve, reject) => {
-        try {
-            Model.insertMany(dataArray, (err: any, data: any) => {
-                if (err) {
-                    let response = showResponse(false, 'Data Save Failed', err);
-                    return resolve(response);
-                }
+        Model.insertMany(dataArray)
+            .then(data => {
                 let response = showResponse(true, 'Success', data);
-                return resolve(response);
+                resolve(response);
             })
-        } catch (err) {
-            let response = showResponse(false, 'Data Save Failed', err);
-            return resolve(response);
-        }
+            .catch(err => {
+                let response = showResponse(false, 'Data Save Failed', err);
+                resolve(response);
+            });
     });
 };
+
 
 
 export const findOneAndUpdate = (Model: Model<any>, matchObj: any, updateObject: any): Promise<ApiResponse> => {
     return new Promise((resolve, reject) => {
-        Model.findOneAndUpdate(matchObj, { $set: updateObject }, { new: true }, (err: any, updatedData: any) => {
-            if (err) {
+        Model.findOneAndUpdate(matchObj, { $set: updateObject }, { new: true })
+            .lean()
+            .then(updatedData => {
+                if (updatedData) {
+                    let response = showResponse(true, 'Success', updatedData);
+                    resolve(response);
+                } else {
+                    let response = showResponse(false, 'Failed', null);
+                    resolve(response);
+                }
+            })
+            .catch(err => {
                 let response = showResponse(false, 'Failed error', err);
-                return resolve(response);
-            }
-            if (updatedData) {
-                let response = showResponse(true, 'Success', updatedData);
-                return resolve(response);
-            }
-            let response = showResponse(false, 'Failed', null);
-            return resolve(response);
-        }).lean() //return plane object
+                resolve(response);
+            });
     });
 };
 
 
-
-
 export const findByIdAndUpdate = (Model: Model<any>, DataObject: any, _id: string): Promise<ApiResponse> => {
     return new Promise((resolve, reject) => {
-        Model.findByIdAndUpdate(_id, { $set: DataObject }, { new: true }, (err: any, updatedData: any) => {
-            if (err) {
-                let response = showResponse(false, "Failed", err);
-                return resolve(response);
-            }
-
-            let response = showResponse(true, 'Success', updatedData);
-            return resolve(response);
-        }).lean()
-    })
+        Model.findByIdAndUpdate(_id, { $set: DataObject }, { new: true })
+            .lean()
+            .then(updatedData => {
+                let response = showResponse(true, 'Success', updatedData);
+                resolve(response);
+            })
+            .catch(err => {
+                let response = showResponse(false, 'Failed', err);
+                resolve(response);
+            });
+    });
 };
 
 
@@ -122,23 +127,38 @@ export const deleteMany = (Model: Model<any>, query: any): Promise<ApiResponse> 
     });
 };
 
-
 export const findByIdAndRemove = (Model: Model<any>, id: string): Promise<ApiResponse> => {
     return new Promise((resolve, reject) => {
-        Model.findByIdAndRemove(id, (err: any, result: any) => {
-            if (err || !result) {
+        Model.findOneAndDelete({ _id: id })
+            .lean()
+            .then(result => {
+                if (!result) {
+                    let response = showResponse(false, 'Failed', null);
+                    resolve(response);
+                } else {
+                    let response = showResponse(true, 'Success', result);
+                    resolve(response);
+                }
+            })
+            .catch(err => {
                 let response = showResponse(false, 'Failed', err);
-                return resolve(response);
-            }
-            let response = showResponse(true, 'Success', result);
-            return resolve(response);
-        }).lean()
+                resolve(response);
+            });
     });
 };
 
-export const removeItemFromArray = (Model: Model<any>, mainIdObj: any, arrayKey: string, itemId: string): Promise<ApiResponse> => {
+
+
+
+//example how to use
+//  let result = await removeItemFromArray(ModelName, { _id: sizeCategoryId }, 'parameters', sizeParamId)
+//1st param  =>> model 
+//2nd param =>> main Object Id
+//3rd param =>> array feild name 
+//4th param =>> match condition objectId that you want to delete in array of object  
+export const removeItemFromArray = (Model: Model<any>, mainIdObj: any, arrayKey: string, itemIdObj: any): Promise<ApiResponse> => {
     return new Promise((resolve, reject) => {
-        Model.updateOne(mainIdObj, { $pull: { [arrayKey]: { _id: itemId } } }, (err: any, updatedData: any) => {
+        Model.updateOne(mainIdObj, { $pull: { [arrayKey]: itemIdObj } }, (err: any, updatedData: any) => {
             if (err) {
                 let response = showResponse(false, err, {});
                 return resolve(response);
@@ -152,10 +172,6 @@ export const removeItemFromArray = (Model: Model<any>, mainIdObj: any, arrayKey:
         }).lean()
     });
 };
-
-
-
-
 
 
 export const bulkOperationQuery = async (Model: Model<any>, bulkOperations: any[]): Promise<ApiResponse> => {
@@ -177,9 +193,34 @@ export const bulkOperationQuery = async (Model: Model<any>, bulkOperations: any[
     });
 };
 
+
+//example how to use
+// let result = await addItemInArray(ModelName, matchObj, 'parameters', parameters)
+//1st param  =>> model 
+//2nd param =>> main Object Id
+//3rd param =>> array feild name 
+//4th param =>> object that you want to add in array of object  
+
+export const addItemInArray = (Model: Model<any>, mainIdObj: any, arrayKey: string, itemToAddObj: any): Promise<ApiResponse> => {
+    return new Promise((resolve, reject) => {
+        Model.updateOne(mainIdObj, { $push: { [arrayKey]: itemToAddObj } }, (err: any, updatedData: any) => {
+            if (err) {
+                let response = showResponse(false, err, {});
+                return resolve(response);
+            }
+            if (updatedData?.modifiedCount && updatedData.modifiedCount > 0) {
+                let response = showResponse(true, 'Success', updatedData);
+                return resolve(response);
+            }
+            let response = showResponse(false, 'Update failed', {});
+            return resolve(response);
+        });
+    });
+};
+
 export const findAll = (Model: Model<any>, query: object, project_field?: string, pagination?: number | null, sort?: any | null, populate?: string | null): Promise<ApiResponse> => {
     return new Promise((resolve, reject) => {
-        let queryBuilder = Model.find(query, project_field)
+        let queryBuilder = Model.find(query, project_field);
 
         if (pagination) {
             queryBuilder = queryBuilder.limit(pagination);
@@ -194,16 +235,22 @@ export const findAll = (Model: Model<any>, query: object, project_field?: string
         }
 
         // Enable lean and virtuals
-        queryBuilder = queryBuilder.lean({ virtuals: true });
+        // queryBuilder = queryBuilder.lean({ virtuals: true });
 
-        queryBuilder.exec((err: any, data: any) => {
-            if (err || !data || data.length === 0) {
+        queryBuilder.exec()
+            .then(data => {
+                if (!data || data.length === 0) {
+                    let response = showResponse(false, "No data found");
+                    resolve(response);
+                } else {
+                    let response = showResponse(true, "Data found", data);
+                    resolve(response);
+                }
+            })
+            .catch(err => {
                 let response = showResponse(false, err);
-                return resolve(response);
-            }
-            let response = showResponse(true, "Data found", data);
-            return resolve(response);
-        });
+                resolve(response);
+            });
     });
 };
 

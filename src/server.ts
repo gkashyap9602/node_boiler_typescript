@@ -7,16 +7,17 @@ import helmet from "helmet";
 import { serve, setup } from "swagger-ui-express";
 import Routes from "./routes";
 import { bootstrapAdmin } from "./utils/bootstrap.util";
-import { rateLimiter } from "./utils/common.util";
-import { APP, AWS_CREDENTIAL } from './constants/app.constant' //priority 1
-require('../src/configs/mongoose.config') //priority 2
+import { rateLimiter } from "./utils/config.util";
+import { APP, initializeAwsCredential } from './constants/app.constant'
+import { connection } from './configs/mongoose.config'
 const app: Application = express();
-import AWS from 'aws-sdk'
 
-AWS.config.update({
-  region: "us-east-1",
-  credentials: new AWS.SharedIniFileCredentials({ profile: "digismart" }),
-});
+// Call it when Paramters are stored to AWS
+initializeAwsCredential()
+
+// initialize database connection 
+connection()
+
 
 app.use(helmet())
 
@@ -55,9 +56,9 @@ app.use("/swagger", serve,
   })
 );
 
-console.log(APP.API_PREFIX,"API_PREFIX")
+console.log(APP.API_PREFIX, "API_PREFIX")
 
-app.use("/api", Routes);
+app.use("/api/v1", Routes);
 bootstrapAdmin(() => {
   console.log("Bootstraping finished!");
 });

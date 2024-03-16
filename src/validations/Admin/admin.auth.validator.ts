@@ -17,11 +17,11 @@ const forgotPasswordSchema = joi.object({
     email: joi.string().trim().email().min(4).max(35).required()
 })
 
-const validateResetPasswordSchema = joi.object({
+const resetPasswordSchema = joi.object({
     email: joi.string().trim().email().min(4).max(35).required(),
     new_password: joi.string().min(4).max(20).required(),
 })
-const validateChangePasswordSchema = joi.object({
+const changePasswordSchema = joi.object({
     old_password: joi.string().min(4).max(20).required(),
     new_password: joi.string().min(4).max(20).required(),
 })
@@ -36,31 +36,6 @@ const resendOtpSchema = joi.object({
     email: joi.string().trim().email().min(4).max(35).required(),
 })
 
-const commonContentSchema = joi.object({
-    about: joi.string().required(),
-    privacy_policy: joi.string().required(),
-    terms_conditions: joi.string().required(),
-})
-
-const addQuestionSchema = joi.object({
-    question: joi.string().required(),
-    answer: joi.string().required(),
-})
-const updateQuestionSchema = joi.object({
-    question_id: joi.string().required(),
-    question: joi.string().optional(),
-    answer: joi.string().optional(),
-})
-
-const getCustomerDetails = joi.object({
-    user_id: joi.string().required(),
-})
-
-const updateUserStatus = joi.object({
-    user_id: joi.string().required(),
-    status: joi.number().valid(1, 2, 3).required(),
-
-})
 
 const updateProfileSchema = joi.object({
     first_name: joi.string().optional().allow(''),
@@ -68,6 +43,7 @@ const updateProfileSchema = joi.object({
     phone_number: joi.string().optional().allow(''),
     country_code: joi.string().optional().allow(''),
 })
+
 
 export const validateVerifyOtp = (user: any) => {
     return verifyOtpSchema.validate(user)
@@ -77,7 +53,7 @@ export const validateResendOtp = (user: any) => {
 }
 
 
-export const validateAdmin = (admin: any) => {
+export const validateAdminLogin = (admin: any) => {
     return loginSchema.validate(admin)
 }
 
@@ -90,31 +66,13 @@ export const validateForgotPassword = (admin: any) => {
 }
 
 export const validateResetPassword = (admin: any) => {
-    return validateResetPasswordSchema.validate(admin)
+    return resetPasswordSchema.validate(admin)
 }
 
 export const validateChangePassword = (admin: any) => {
-    return validateChangePasswordSchema.validate(admin)
+    return changePasswordSchema.validate(admin)
 }
 
-export const validateCommonContent = (admin: any) => {
-    return commonContentSchema.validate(admin)
-}
-
-export const validateAddQuestion = (admin: any) => {
-    return addQuestionSchema.validate(admin)
-}
-
-export const validateUpdateQuestion = (admin: any) => {
-    return updateQuestionSchema.validate(admin)
-}
-
-export const validateGetCustomerDetails = (admin: any) => {
-    return getCustomerDetails.validate(admin)
-}
-export const validateUpdateUserStatus = (admin: any) => {
-    return updateUserStatus.validate(admin)
-}
 export const validateUpdateProfile = (admin: any) => {
     return updateProfileSchema.validate(admin)
 }

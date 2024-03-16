@@ -15,13 +15,14 @@ import faqModel from '../../models/Admin/faq.model';
 import userModel from '../../models/User/user.model';
 import { ROLE, USER_STATUS } from '../../constants/app.constant'
 
-const AdminHandler = {
+const AdminAuthHandler = {
 
     async login(data: any): Promise<ApiResponse> {
         try {
             const { email, password } = data;
 
             const exists = await findOne(adminModel, { email });
+
             if (!exists.status) {
                 return showResponse(false, responseMessage.admin.does_not_exist, null, null, 400)
             }
@@ -266,6 +267,13 @@ const AdminHandler = {
 
             let getResponse = await findOne(adminModel, { _id: userId }, { password: 0 });
 
+            console.log(getResponse, "getResponse")
+
+            let findd = await adminModel.findOne({ _id: userId })
+
+            console.log(findd, "finddfinddfinddfindd")
+
+
             if (!getResponse.status) {
                 return showResponse(false, responseMessage.admin.invalid_admin, null, null, 400)
             }
@@ -287,6 +295,8 @@ const AdminHandler = {
             let { first_name, last_name, phone_number, country_code } = data
 
             let findAdmin = await findOne(adminModel, { user_type: ROLE.ADMIN, _id: admin_id })
+
+            console.log(findAdmin, "findAdmin")
 
             if (!findAdmin.status) {
                 return showResponse(false, responseMessage.admin.invalid_admin, null, null, 400);
@@ -334,193 +344,7 @@ const AdminHandler = {
         }
     },
 
-    async getUserDetails(user_id: string): Promise<ApiResponse> {
-        try {
-
-            let getResponse = await findOne(userModel, { _id: user_id }, { password: 0 });
-
-            if (!getResponse.status) {
-                return showResponse(false, responseMessage.users.invalid_user, null, null, 400)
-            }
-
-            return showResponse(true, responseMessage.users.user_detail, getResponse.data, null, 200)
-
-        }
-        catch (err: any) {
-            //   logger.error(`${this.req.ip} ${err.message}`)
-            return err
-
-        }
-    },
-
-    async getUsersList(sort_column: string = 'created_on', sort_direction: string = 'desc', page: number = 1, limit: number = 10, search_key: string = '', status?: number): Promise<ApiResponse> {
-        try {
-            page = Number(page)
-            limit = Number(limit)
-
-            let matchObj: any = {
-                user_type: ROLE.USER, // 3 for users
-                $or: [
-                    { email: { $regex: search_key, $options: 'i' } },
-                    { first_name: { $regex: search_key, $options: 'i' } },
-                ]
-            }
-
-            if (status) {
-                matchObj.status = status
-            }
-
-            let aggregate = [
-                {
-                    $match: {
-                        ...matchObj
-                    }
-                },
-                {
-                    $sort: {
-                        [sort_column]: sort_direction == 'asc' ? 1 : -1
-                    }
-                },
-                {
-                    $project: {
-                        password: 0,
-                        device_info: 0,
-                        social_account: 0
-                    }
-                }
-
-            ]
-
-            //add this function where we cannot add query to get count of document example searchKey and add pagination at the end of query
-            let { totalCount, aggregation } = await commonHelper.getCountAndPagination(userModel, aggregate, page, limit)
-
-            let result = await userModel.aggregate(aggregation)
-
-            return showResponse(true, responseMessage?.common.data_retreive_sucess, { result, totalCount }, null, 200);
-
-        }
-        catch (err: any) {
-            //   logger.error(`${this.req.ip} ${err.message}`)
-            return err
-
-        }
-    },
-    async updateUserStatus(data: any): Promise<ApiResponse> {
-        try {
-            let { user_id, status } = data;
-
-            status = Number(status)
-            let queryObject = { _id: user_id, user_type: ROLE.USER } //usertype should be USER  = 3
-
-            let result = await findOne(userModel, queryObject);
-
-            if (!result.status) {
-                return showResponse(false, responseMessage.users.invalid_user, null, null, 400);
-            }
-            let editObj = {
-                status,
-                updated_on: moment().unix()
-            }
-
-            let response = await findOneAndUpdate(userModel, queryObject, editObj);
-            if (response.status) {
-                let msg = status == 2 ? "Deleted" : status == 1 ? "Activated" : "Deactivated"
-                return showResponse(true, `User Account Has Been ${msg}`, {}, null, 200);
-            }
-
-            return showResponse(false, "Error While Updating User Status", null, null, 400);
-
-
-        }
-        catch (err: any) {
-            // logger.error(`${this.req.ip} ${err.message}`)
-            return showResponse(false, err?.message ?? err, null, null, 400)
-
-        }
-    },
-
-    async addQuestion(data: any): Promise<ApiResponse> {
-        try {
-            const { question, answer } = data;
-
-            const exists = await findOne(faqModel, { question })
-
-            if (exists.status) {
-                return showResponse(false, responseMessage.common.already_existed, null, null, 400)
-
-            }
-
-            let newObj = {
-                question,
-                answer,
-                status: 1,
-                created_on: moment().unix()
-            }
-            let quesRef = new faqModel(newObj)
-            let response = await createOne(quesRef);
-
-            if (response.status) {
-                return showResponse(true, responseMessage.admin.question_added, null, null, 200);
-            }
-            return showResponse(false, responseMessage.admin.failed_question_add, response, null, 400);
-
-        }
-        catch (err: any) {
-            // logger.error(`${this.req.ip} ${err.message}`)
-            return showResponse(false, err?.message ?? err, null, null, 400)
-
-        }
-    },
-    async updateQuestion(data: any): Promise<ApiResponse> {
-        try {
-            const { answer, question, question_id } = data;
-
-            let updateObj: any = {
-                updated_on: moment().unix()
-            }
-
-            if (answer) {
-                updateObj.answer = answer
-            }
-            if (question) {
-                updateObj.question = question
-            }
-
-            let response = await findByIdAndUpdate(faqModel, updateObj, question_id);
-            if (response.status) {
-                return showResponse(true, responseMessage.common.update_sucess, null, null, 200);
-            }
-            return showResponse(false, responseMessage.common.update_failed, null, null, 400);
-
-
-        }
-        catch (err: any) {
-            // logger.error(`${this.req.ip} ${err.message}`)
-            return showResponse(false, err?.message ?? err, null, null, 400)
-
-        }
-    },
-
-
-    async updateCommonContent(data: any): Promise<ApiResponse> {
-        try {
-
-            data.updated_on = moment().unix()
-            let response = await updateMany(commonContentModel, data, {});
-            if (response.status) {
-                return showResponse(true, responseMessage.admin.common_content_updated, null, null, 200);
-            }
-
-            return showResponse(false, responseMessage.common.update_failed, {}, null, 400);
-
-        }
-        catch (err: any) {
-            // logger.error(`${this.req.ip} ${err.message}`)
-            return showResponse(false, err?.message ?? err, null, null, 400)
-
-        }
-    },
 
 }
 
-export default AdminHandler 
+export default AdminAuthHandler 

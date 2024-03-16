@@ -9,8 +9,9 @@ import { APP } from '../constants/app.constant';
 import { ApiResponse } from './interfaces.util';
 
 export const generateJwtToken = async (id: string, extras = {}, expiresIn = '24h') => {
+    let API_SECRET = await APP.JWT_SECRET
     return new Promise((res, rej) => {
-        jwt.sign({ id, ...extras }, APP.JWT_SECRET as string, {
+        jwt.sign({ id, ...extras }, API_SECRET as string, {
             expiresIn
         }, (err: any, encoded: any) => {
             if (err) {
@@ -37,7 +38,7 @@ export const verifyToken = async (req: Request, res: Response): Promise<ApiRespo
         }
 
         if (token) {
-            let API_SECRET = APP.JWT_SECRET
+            let API_SECRET = await APP.JWT_SECRET
 
             // Use await with jwt.verify and findOne as they are asynchronous
             let decoded_result = await new Promise((resolve, reject) => {

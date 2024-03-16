@@ -7,14 +7,40 @@ export interface ApiResponse {
     code: number;
 }
 
+
 export interface AwsCredential {
-    MONGO_URI: any
-    DB_NAME: any
     ACCESSID: any;
     REGION: any;
     BUCKET_NAME: any;
     AWS_SECRET: any;
 }
+
+
+export interface AppConstant {
+    ACCESS_EXPIRY: string;
+    REFRESH_EXPIRY: string;
+    PORT: number | string;
+    API_PREFIX: string;
+    FRONTEND_URL: string;
+    BITBUCKET_URL: string;
+    ADMIN_CRED_EMAIL:string
+    JWT_SECRET: any
+}
+
+export interface DbConstant {
+    DB_NAME: any;
+    MONGODB_URI: any;
+
+}
+
+export interface EmailConstant {
+    SENDGRID_API: any;
+    SENDGRID_API_KEY: any;
+    EMAIL_HOST: any;
+
+}
+
+
 
 
 export interface postParameter {

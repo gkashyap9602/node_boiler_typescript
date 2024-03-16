@@ -11,13 +11,16 @@ import responseMessage from "../../constants/responseMessage.constant";
 import { APP, ROLE, USER_STATUS } from '../../constants/app.constant';
 import services from '../../services';
 
-const UserHandler = {
+const UserAuthHandler = {
 
     async login(data: any): Promise<ApiResponse> {
         try {
+            
             const { email, password } = data;
-
+            console.log(email, password, "emailpassss")
             const exists = await findOne(userModel, { email });
+
+            console.log(exists, "exists")
             if (!exists.status) {
                 return showResponse(false, responseMessage.users.invalid_email, null, null, 400)
             }
@@ -151,7 +154,7 @@ const UserHandler = {
         try {
             const { file } = data;
 
-            console.log(file,"fileeeAw")
+            console.log(file, "fileeeAw")
 
             const s3Upload = await services.awsService.uploadFileToS3([file])
             if (!s3Upload.status) {
@@ -384,4 +387,4 @@ const UserHandler = {
 
 }
 
-export default UserHandler 
+export default UserAuthHandler 

@@ -39,7 +39,8 @@ export const verifyTokenAdmin = async (req: Request, res: Response, next: NextFu
             if (decoded?.data?.data?.user_type == 'user') {
                 return showOutput(res, { status: false, message: "Unauthorized Access By User", data: null, other: null, code: 401 }, 401)
             }
-
+             
+            console.log(decoded,"decoeddee")
             return showOutput(res, decoded, decoded?.code)
 
         }

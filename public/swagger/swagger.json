@@ -52,7 +52,7 @@
 		}
 	},
 	"paths": {
-		"/api/user/login": {
+		"/api/v1/user/auth/login": {
 			"post": {
 				"operationId": "Login",
 				"responses": {
@@ -69,7 +69,7 @@
 				},
 				"description": "Get User login",
 				"tags": [
-					"User"
+					"User Auth"
 				],
 				"security": [],
 				"parameters": [],
@@ -97,7 +97,7 @@
 				}
 			}
 		},
-		"/api/user/register": {
+		"/api/v1/user/auth/register": {
 			"post": {
 				"operationId": "Register",
 				"responses": {
@@ -114,7 +114,7 @@
 				},
 				"description": "Save a User",
 				"tags": [
-					"User"
+					"User Auth"
 				],
 				"security": [],
 				"parameters": [],
@@ -160,7 +160,7 @@
 				}
 			}
 		},
-		"/api/user/upload_file": {
+		"/api/v1/user/auth/upload_file": {
 			"post": {
 				"operationId": "UploadFile",
 				"responses": {
@@ -177,7 +177,7 @@
 				},
 				"description": "Upload a file",
 				"tags": [
-					"User"
+					"User Auth"
 				],
 				"security": [
 					{
@@ -206,7 +206,7 @@
 				}
 			}
 		},
-		"/api/user/forgot_password": {
+		"/api/v1/user/auth/forgot_password": {
 			"post": {
 				"operationId": "ForgotPassword",
 				"responses": {
@@ -223,7 +223,7 @@
 				},
 				"description": "Forgot password api endpoint",
 				"tags": [
-					"User"
+					"User Auth"
 				],
 				"security": [],
 				"parameters": [],
@@ -247,7 +247,7 @@
 				}
 			}
 		},
-		"/api/user/reset_password": {
+		"/api/v1/user/auth/reset_password": {
 			"post": {
 				"operationId": "ResetPassword",
 				"responses": {
@@ -264,7 +264,7 @@
 				},
 				"description": "Reset password api endpoint",
 				"tags": [
-					"User"
+					"User Auth"
 				],
 				"security": [
 					{
@@ -296,7 +296,7 @@
 				}
 			}
 		},
-		"/api/user/verify_otp": {
+		"/api/v1/user/auth/verify_otp": {
 			"post": {
 				"operationId": "VerifyOtp",
 				"responses": {
@@ -313,7 +313,7 @@
 				},
 				"description": "Verify Otp Route  api endpoint",
 				"tags": [
-					"User"
+					"User Auth"
 				],
 				"security": [
 					{
@@ -346,7 +346,7 @@
 				}
 			}
 		},
-		"/api/user/resend_otp": {
+		"/api/v1/user/auth/resend_otp": {
 			"post": {
 				"operationId": "ResendOtp",
 				"responses": {
@@ -363,7 +363,7 @@
 				},
 				"description": "Resend Otp Route  api endpoint",
 				"tags": [
-					"User"
+					"User Auth"
 				],
 				"security": [
 					{
@@ -391,7 +391,7 @@
 				}
 			}
 		},
-		"/api/user/change_password": {
+		"/api/v1/user/auth/change_password": {
 			"post": {
 				"operationId": "ChangePassword",
 				"responses": {
@@ -408,7 +408,7 @@
 				},
 				"description": "Change Password endpoint",
 				"tags": [
-					"User"
+					"User Auth"
 				],
 				"security": [
 					{
@@ -440,7 +440,7 @@
 				}
 			}
 		},
-		"/api/user/get_details": {
+		"/api/v1/user/auth/details": {
 			"get": {
 				"operationId": "GetUserDetails",
 				"responses": {
@@ -457,7 +457,7 @@
 				},
 				"description": "Get Admin info",
 				"tags": [
-					"User"
+					"User Auth"
 				],
 				"security": [
 					{
@@ -467,7 +467,7 @@
 				"parameters": []
 			}
 		},
-		"/api/user/update_profile": {
+		"/api/v1/user/auth/profile": {
 			"put": {
 				"operationId": "UpdateUserProfile",
 				"responses": {
@@ -484,7 +484,7 @@
 				},
 				"description": "Update User Profile",
 				"tags": [
-					"User"
+					"User Auth"
 				],
 				"security": [
 					{
@@ -522,7 +522,7 @@
 				}
 			}
 		},
-		"/api/common/get_common_content": {
+		"/api/v1/common/common_content": {
 			"get": {
 				"operationId": "GetCommonContent",
 				"responses": {
@@ -549,7 +549,7 @@
 				"parameters": []
 			}
 		},
-		"/api/common/get_questions": {
+		"/api/v1/common/questions": {
 			"get": {
 				"operationId": "GetQuestions",
 				"responses": {
@@ -576,9 +576,9 @@
 				"parameters": []
 			}
 		},
-		"/api/common/store_paramter_to_store": {
+		"/api/v1/common/store_paramter_to_aws": {
 			"post": {
-				"operationId": "StoreParameterToStore",
+				"operationId": "StoreParameterToAws",
 				"responses": {
 					"200": {
 						"description": "Ok",
@@ -591,7 +591,7 @@
 						}
 					}
 				},
-				"description": "Post parameterto store",
+				"description": "Post parameter to aws",
 				"tags": [
 					"Common"
 				],
@@ -621,368 +621,7 @@
 				}
 			}
 		},
-		"/api/admin/login": {
-			"post": {
-				"operationId": "Login",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiResponse"
-								}
-							}
-						}
-					}
-				},
-				"description": "Get Admin login",
-				"tags": [
-					"Admin"
-				],
-				"security": [],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"properties": {
-									"password": {
-										"type": "string"
-									},
-									"email": {
-										"type": "string"
-									}
-								},
-								"required": [
-									"password",
-									"email"
-								],
-								"type": "object"
-							}
-						}
-					}
-				}
-			}
-		},
-		"/api/admin/forgot_password": {
-			"post": {
-				"operationId": "ForgotPassword",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiResponse"
-								}
-							}
-						}
-					}
-				},
-				"description": "Save a Admin",
-				"tags": [
-					"Admin"
-				],
-				"security": [],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"properties": {
-									"email": {
-										"type": "string"
-									}
-								},
-								"required": [
-									"email"
-								],
-								"type": "object"
-							}
-						}
-					}
-				}
-			}
-		},
-		"/api/admin/reset_password": {
-			"post": {
-				"operationId": "ResetPassword",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiResponse"
-								}
-							}
-						}
-					}
-				},
-				"description": "Reset password api endpoint",
-				"tags": [
-					"Admin"
-				],
-				"security": [
-					{
-						"Bearer": []
-					}
-				],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"properties": {
-									"new_password": {
-										"type": "string"
-									},
-									"email": {
-										"type": "string"
-									}
-								},
-								"required": [
-									"new_password",
-									"email"
-								],
-								"type": "object"
-							}
-						}
-					}
-				}
-			}
-		},
-		"/api/admin/verify_otp": {
-			"post": {
-				"operationId": "VerifyOtp",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiResponse"
-								}
-							}
-						}
-					}
-				},
-				"description": "Verify Otp Route  api endpoint",
-				"tags": [
-					"Admin"
-				],
-				"security": [
-					{
-						"Bearer": []
-					}
-				],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"properties": {
-									"otp": {
-										"type": "number",
-										"format": "double"
-									},
-									"email": {
-										"type": "string"
-									}
-								},
-								"required": [
-									"otp",
-									"email"
-								],
-								"type": "object"
-							}
-						}
-					}
-				}
-			}
-		},
-		"/api/admin/resend_otp": {
-			"post": {
-				"operationId": "ResendOtp",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiResponse"
-								}
-							}
-						}
-					}
-				},
-				"description": "Resend Otp Route  api endpoint",
-				"tags": [
-					"Admin"
-				],
-				"security": [
-					{
-						"Bearer": []
-					}
-				],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"properties": {
-									"email": {
-										"type": "string"
-									}
-								},
-								"required": [
-									"email"
-								],
-								"type": "object"
-							}
-						}
-					}
-				}
-			}
-		},
-		"/api/admin/change_password": {
-			"post": {
-				"operationId": "ChangePassword",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiResponse"
-								}
-							}
-						}
-					}
-				},
-				"description": "Change Password endpoint",
-				"tags": [
-					"Admin"
-				],
-				"security": [
-					{
-						"Bearer": []
-					}
-				],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"properties": {
-									"new_password": {
-										"type": "string"
-									},
-									"old_password": {
-										"type": "string"
-									}
-								},
-								"required": [
-									"new_password",
-									"old_password"
-								],
-								"type": "object"
-							}
-						}
-					}
-				}
-			}
-		},
-		"/api/admin/get_details": {
-			"get": {
-				"operationId": "GetAdminDetails",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiResponse"
-								}
-							}
-						}
-					}
-				},
-				"description": "Get Admin info",
-				"tags": [
-					"Admin"
-				],
-				"security": [
-					{
-						"Bearer": []
-					}
-				],
-				"parameters": []
-			}
-		},
-		"/api/admin/update_profile": {
-			"put": {
-				"operationId": "UpdateAdminProfile",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiResponse"
-								}
-							}
-						}
-					}
-				},
-				"description": "Update Admin Profile",
-				"tags": [
-					"Admin"
-				],
-				"security": [
-					{
-						"Bearer": []
-					}
-				],
-				"parameters": [],
-				"requestBody": {
-					"required": false,
-					"content": {
-						"multipart/form-data": {
-							"schema": {
-								"type": "object",
-								"properties": {
-									"first_name": {
-										"type": "string"
-									},
-									"last_name": {
-										"type": "string"
-									},
-									"phone_number": {
-										"type": "string"
-									},
-									"country_code": {
-										"type": "string"
-									},
-									"profile_pic": {
-										"type": "string",
-										"format": "binary"
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/api/admin/get_users_list": {
+		"/api/v1/admin/user/list": {
 			"get": {
 				"operationId": "GetUsersList",
 				"responses": {
@@ -999,7 +638,7 @@
 				},
 				"description": "Get User List",
 				"tags": [
-					"Admin"
+					"Admin User"
 				],
 				"security": [
 					{
@@ -1061,7 +700,7 @@
 				]
 			}
 		},
-		"/api/admin/get_user_details": {
+		"/api/v1/admin/user/details": {
 			"get": {
 				"operationId": "GetUserDetails",
 				"responses": {
@@ -1078,7 +717,7 @@
 				},
 				"description": "Get User Details",
 				"tags": [
-					"Admin"
+					"Admin User"
 				],
 				"security": [
 					{
@@ -1097,7 +736,7 @@
 				]
 			}
 		},
-		"/api/admin/update_user_status": {
+		"/api/v1/admin/user/status": {
 			"put": {
 				"operationId": "UpdateUserStatus",
 				"responses": {
@@ -1114,7 +753,7 @@
 				},
 				"description": "Update User Status",
 				"tags": [
-					"Admin"
+					"Admin User"
 				],
 				"security": [
 					{
@@ -1147,7 +786,7 @@
 				}
 			}
 		},
-		"/api/admin/add_question": {
+		"/api/v1/admin/common/question": {
 			"post": {
 				"operationId": "AddQuestion",
 				"responses": {
@@ -1164,7 +803,7 @@
 				},
 				"description": "Add Question  endpoint",
 				"tags": [
-					"Admin"
+					"Admin Common"
 				],
 				"security": [
 					{
@@ -1194,9 +833,7 @@
 						}
 					}
 				}
-			}
-		},
-		"/api/admin/update_question": {
+			},
 			"put": {
 				"operationId": "UpdateQuestion",
 				"responses": {
@@ -1213,7 +850,7 @@
 				},
 				"description": "Update Question endpoint",
 				"tags": [
-					"Admin"
+					"Admin Common"
 				],
 				"security": [
 					{
@@ -1249,7 +886,7 @@
 				}
 			}
 		},
-		"/api/admin/update_common_content": {
+		"/api/v1/admin/common/common_content": {
 			"put": {
 				"operationId": "UpdateCommonContent",
 				"responses": {
@@ -1266,7 +903,7 @@
 				},
 				"description": "Update Common Content endpoint",
 				"tags": [
-					"Admin"
+					"Admin Common"
 				],
 				"security": [
 					{
@@ -1296,6 +933,367 @@
 									"about"
 								],
 								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/admin/auth/login": {
+			"post": {
+				"operationId": "Login",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get Admin login",
+				"tags": [
+					"Admin Auth"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"password": {
+										"type": "string"
+									},
+									"email": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"password",
+									"email"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/admin/auth/forgot_password": {
+			"post": {
+				"operationId": "ForgotPassword",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Save a Admin",
+				"tags": [
+					"Admin Auth"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"email": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"email"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/admin/auth/reset_password": {
+			"post": {
+				"operationId": "ResetPassword",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Reset password api endpoint",
+				"tags": [
+					"Admin Auth"
+				],
+				"security": [
+					{
+						"Bearer": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"new_password": {
+										"type": "string"
+									},
+									"email": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"new_password",
+									"email"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/admin/auth/verify_otp": {
+			"post": {
+				"operationId": "VerifyOtp",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Verify Otp Route  api endpoint",
+				"tags": [
+					"Admin Auth"
+				],
+				"security": [
+					{
+						"Bearer": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"otp": {
+										"type": "number",
+										"format": "double"
+									},
+									"email": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"otp",
+									"email"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/admin/auth/resend_otp": {
+			"post": {
+				"operationId": "ResendOtp",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Resend Otp Route  api endpoint",
+				"tags": [
+					"Admin Auth"
+				],
+				"security": [
+					{
+						"Bearer": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"email": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"email"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/admin/auth/change_password": {
+			"post": {
+				"operationId": "ChangePassword",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Change Password endpoint",
+				"tags": [
+					"Admin Auth"
+				],
+				"security": [
+					{
+						"Bearer": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"new_password": {
+										"type": "string"
+									},
+									"old_password": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"new_password",
+									"old_password"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/admin/auth/details": {
+			"get": {
+				"operationId": "GetAdminDetails",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get Admin info",
+				"tags": [
+					"Admin Auth"
+				],
+				"security": [
+					{
+						"Bearer": []
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/api/v1/admin/auth/profile": {
+			"put": {
+				"operationId": "UpdateAdminProfile",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Update Admin Profile",
+				"tags": [
+					"Admin Auth"
+				],
+				"security": [
+					{
+						"Bearer": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": false,
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"first_name": {
+										"type": "string"
+									},
+									"last_name": {
+										"type": "string"
+									},
+									"phone_number": {
+										"type": "string"
+									},
+									"country_code": {
+										"type": "string"
+									},
+									"profile_pic": {
+										"type": "string",
+										"format": "binary"
+									}
+								}
 							}
 						}
 					}

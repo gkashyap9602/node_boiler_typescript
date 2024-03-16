@@ -1,5 +1,11 @@
 import NodeCache from "node-cache";
 import AWS from 'aws-sdk'
+
+AWS.config.update({
+    region: "us-east-1",
+    credentials: new AWS.SharedIniFileCredentials({ profile: "digismart" }),
+});
+
 import mimeTypes from 'mime-types'
 import path from 'path'
 import responseMessage from "../constants/responseMessage.constant";

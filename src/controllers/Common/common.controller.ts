@@ -1,12 +1,13 @@
 import { Request, Response } from 'express'
-import { Route, Controller, Tags, Post, Body, Get, Security, Query, FormField } from 'tsoa'
+import { Route, Controller, Tags, Post, Body, Get, Security, Query, FormField, Request as TSOA_Request } from 'tsoa'
 import { ApiResponse } from '../../utils/interfaces.util';
 // import { validateChangePassword, validateForgotPassword, validateRegister, validateResetPassword, validateAdmin, validateResendOtp, validateVerifyOtp } from '../../validations/admin.validator';
 import handlers from '../../handlers/Common/common.handler'
 import { showResponse } from '../../utils/response.util';
+import { validateStoreParmeterToAws } from '../../validations/Common/common.validator';
 
 @Tags('Common')
-@Route('api/common')
+@Route('api/v1/common')
 
 export default class CommonController extends Controller {
     req: Request;
@@ -23,7 +24,7 @@ export default class CommonController extends Controller {
    * Get Common Content info
    */
     @Security('Bearer')
-    @Get("/get_common_content")
+    @Get("/common_content")
     public async getCommonContent(): Promise<ApiResponse> {
         try {
 
@@ -42,7 +43,7 @@ export default class CommonController extends Controller {
    * Get Faq Questions
    */
     @Security('Bearer')
-    @Get("/get_questions")
+    @Get("/questions")
     public async getQuestions(): Promise<ApiResponse> {
         try {
 
@@ -57,31 +58,32 @@ export default class CommonController extends Controller {
     }
     //ends
 
-      /**
-  * Post parameterto store 
-  */
+    /**
+* Post parameter to aws 
+*/
 
-      @Post("/store_paramter_to_store")
-      public async storeParameterToStore(@FormField() name: string, @FormField() value: string): Promise<ApiResponse> {
-          try {
-              // let body = { name, value }
-  
-              // const validatedSignup = validateRegister(body);
-  
-              // if (validatedSignup.error) {
-              //     return showResponse(false, validatedSignup.error.message, null, null, 400)
-              // }
-  
-              return handlers.storeParameterToStore(name, value)
-  
-          }
-          catch (err: any) {
-              // logger.error(`${this.req.ip} ${err.message}`)
-              return err
-  
-          }
-      }
-      //ends
+    @Post("/store_paramter_to_aws")
+    public async storeParameterToAws(@FormField() name: string, @FormField() value: string): Promise<ApiResponse> {
+        try {
+
+            console.log(name, "nameeeeeee")
+            console.log(value, "valueeeeeee")
+            const validatedStoreParmeterToAws = validateStoreParmeterToAws({ name, value });
+
+            if (validatedStoreParmeterToAws.error) {
+                return showResponse(false, validatedStoreParmeterToAws.error.message, null, null, 400)
+            }
+
+            return handlers.storeParameterToAws(name, value)
+
+        }
+        catch (err: any) {
+            // logger.error(`${this.req.ip} ${err.message}`)
+            return err
+
+        }
+    }
+    //ends
 
 }
 

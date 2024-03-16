@@ -52,6 +52,20 @@ const UserSchema = new Schema(
         updated_on: { type: Number, default: 0 }
 
     },
-    // { timestamps: true, versionKey: false }
+    {
+        toJSON: { virtuals: true },
+        toObject: { virtuals: true },
+        id: false,
+        versionKey: false,
+        // timestamps: true
+    },
+
 )
+
+// Define the virtual property for full name
+UserSchema.virtual('full_name').get(function () {
+    return `${this.first_name} ${this.last_name}`.trim();
+});
+
+
 export default model('user', UserSchema)
