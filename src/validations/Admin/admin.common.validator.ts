@@ -1,9 +1,9 @@
 import joi from '@hapi/joi';
 
 const commonContentSchema = joi.object({
-    about: joi.string().required(),
-    privacy_policy: joi.string().required(),
-    terms_conditions: joi.string().required(),
+    about: joi.string().optional(),
+    privacy_policy: joi.string().optional(),
+    terms_conditions: joi.string().optional(),
 })
 
 const addQuestionSchema = joi.object({

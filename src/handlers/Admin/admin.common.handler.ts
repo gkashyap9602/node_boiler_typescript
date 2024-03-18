@@ -75,9 +75,9 @@ const AdminCommonHandler = {
         try {
 
             data.updated_on = moment().unix()
-            let response = await updateMany(commonContentModel, data, {});
+            let response = await findOneAndUpdate(commonContentModel, {}, data);
             if (response.status) {
-                return showResponse(true, responseMessage.admin.common_content_updated, null, null, 200);
+                return showResponse(true, responseMessage.admin.common_content_updated, response?.data, null, 200);
             }
 
             return showResponse(false, responseMessage.common.update_failed, {}, null, 400);

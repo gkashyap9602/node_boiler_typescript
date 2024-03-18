@@ -10,7 +10,6 @@ import { bootstrapAdmin } from "./utils/bootstrap.util";
 import { rateLimiter } from "./utils/config.util";
 import { APP, initializeAwsCredential } from './constants/app.constant'
 import { connection } from './configs/mongoose.config'
-
 const app: Application = express();
 
 // Call it when Paramters are stored to AWS
