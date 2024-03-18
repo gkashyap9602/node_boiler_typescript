@@ -115,6 +115,7 @@ export default {
         invalid_otp: "Invalid code (One Time Password)",
         admin_details: "Here is an admin details",
         invalid_admin: "Unauthorised access",
+        invalid_admin_msg: "Invalid Admin",
         does_not_exist: "Admin does not exist",
         password_changed: "Administrator password updated",
         password_change_error: "Error while updating administrator password",

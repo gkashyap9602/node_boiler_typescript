@@ -23,7 +23,7 @@ export default class AdminAuthController extends Controller {
      * Get Admin login
      */
     @Post("/login")
-    public async login(@Body() request: { email: string, password: string }): Promise<ApiResponse> {
+    public async login(@Body() request: { email: string, password: string, os_type: string }): Promise<ApiResponse> {
         try {
 
             const validatedAdmin = validateAdminLogin(request);

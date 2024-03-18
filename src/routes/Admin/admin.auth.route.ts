@@ -11,9 +11,9 @@ let { addToMulter } = middlewares.fileUpload.multer
 const router = express.Router()
 
 router.post('/login', async (req: Request | any, res: Response) => {
-    const { email, password } = req.body;
+    const { email, password, os_type } = req.body;
     const adminAuthController = new AdminAuthController(req, res)
-    const result: ApiResponse = await adminAuthController.login({ email, password });
+    const result: ApiResponse = await adminAuthController.login({ email, password, os_type });
     return showOutput(res, result, result.code)
 })
 

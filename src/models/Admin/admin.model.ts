@@ -13,13 +13,17 @@ const AdminSchema = new Schema(
         phone_number: { type: String, default: null },
         country_code: { type: String, default: null },
         is_verified: { type: Boolean, default: true },
+        os_type: {
+            type: String,
+            default: ''
+        },
         status: { type: Number, default: USER_STATUS.ACTIVE },
         created_on: { type: Number, default: 0 },
         updated_on: { type: Number, default: 0 }
 
     },
     {
-        toJSON: { virtuals: true},
+        toJSON: { virtuals: true },
         toObject: { virtuals: true },
         id: false,
         versionKey: false,

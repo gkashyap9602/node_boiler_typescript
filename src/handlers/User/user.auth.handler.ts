@@ -15,8 +15,8 @@ const UserAuthHandler = {
 
     async login(data: any): Promise<ApiResponse> {
         try {
-            
-            const { email, password } = data;
+
+            const { email, password, os_type } = data;
             console.log(email, password, "emailpassss")
             const exists = await findOne(userModel, { email });
 
@@ -30,8 +30,16 @@ const UserAuthHandler = {
                 return showResponse(false, responseMessage.common.password_incorrect, null, null, 400)
             }
 
+            let os_update = await findOneAndUpdate(userModel, { _id: exists?.data?._id }, { os_type })
+
+            if (!os_update) {
+                return showResponse(false, responseMessage.users.login_error, null, null, 400)
+            }
+
             const token = await generateJwtToken(exists.data._id, { user_type: 'user', type: "access" }, APP.ACCESS_EXPIRY)
             delete exists.data.password
+
+
 
             return showResponse(true, responseMessage.users.login_success, { ...exists.data, token }, null, 200)
 

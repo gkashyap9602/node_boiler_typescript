@@ -13,6 +13,10 @@ const UserSchema = new Schema(
         phone_number: { type: String, default: null },
         country_code: { type: String, default: null },
         is_verified: { type: Boolean, default: false },
+        os_type: {
+            type: String,
+            default: ''
+        },
         // social_account: [{
         //     source: {
         //         type: String,

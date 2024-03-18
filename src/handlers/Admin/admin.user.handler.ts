@@ -1,17 +1,9 @@
-import ejs from 'ejs'
-import path from 'path'
 import moment from "moment";
 import { ApiResponse } from "../../utils/interfaces.util";
 import { showResponse } from "../../utils/response.util";
-import { findOne, createOne, findByIdAndUpdate, findOneAndUpdate, updateMany } from "../../helpers/db.helpers";
-import { generateJwtToken } from "../../utils/auth.util";
+import { findOne, findOneAndUpdate } from "../../helpers/db.helpers";
 import * as commonHelper from "../../helpers/common.helper";
-import adminModel from "../../models/Admin/admin.model";
-import commonContentModel from "../../models/Admin/commonContent.model";
-import services from '../../services';
 import responseMessage from "../../constants/responseMessage.constant";
-import { APP } from '../../constants/app.constant';
-import faqModel from '../../models/Admin/faq.model';
 import userModel from '../../models/User/user.model';
 import { ROLE, USER_STATUS } from '../../constants/app.constant'
 

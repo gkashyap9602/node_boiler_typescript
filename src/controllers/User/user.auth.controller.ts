@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { Route, Controller, Tags, Post, Body, Get, Security, Query, UploadedFile, FormField, Put,Example } from 'tsoa'
+import { Route, Controller, Tags, Post, Body, Get, Security, Query, UploadedFile, FormField, Put, Example } from 'tsoa'
 import { ApiResponse } from '../../utils/interfaces.util';
 import { validateChangePassword, validateForgotPassword, validateUpdateProfile, validateRegister, validateResetPassword, validateUser, validateResendOtp, validateVerifyOtp } from '../../validations/User/user.auth.validator';
 import handlers from '../../handlers/User/user.auth.handler'
@@ -24,7 +24,7 @@ export default class UserAuthController extends Controller {
      * Get User login
      */
     @Post("/login")
-    public async login(@Body() request: { email: string, password: string }): Promise<ApiResponse> {
+    public async login(@Body() request: { email: string, password: string, os_type: string }): Promise<ApiResponse> {
         try {
 
             const validatedUser = validateUser(request);
@@ -47,9 +47,9 @@ export default class UserAuthController extends Controller {
     */
 
     @Post("/register")
-    public async register(@FormField() first_name: string, @FormField() last_name: string, @FormField() email: string, @FormField() password: string, @FormField() phone_number?: string, @FormField() country_code?: string, @UploadedFile() profile_pic?: Express.Multer.File): Promise<ApiResponse> {
+    public async register(@FormField() first_name: string, @FormField() last_name: string, @FormField() email: string, @FormField() password: string, @FormField() os_type: string, @FormField() phone_number?: string, @FormField() country_code?: string, @UploadedFile() profile_pic?: Express.Multer.File): Promise<ApiResponse> {
         try {
-            let body = { first_name, last_name, email, password, phone_number, country_code }
+            let body = { first_name, last_name, email, password, phone_number, country_code, os_type }
 
             const validatedSignup = validateRegister(body);
 

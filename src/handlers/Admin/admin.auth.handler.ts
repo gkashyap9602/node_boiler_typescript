@@ -7,19 +7,17 @@ import { findOne, createOne, findByIdAndUpdate, findOneAndUpdate, updateMany } f
 import { generateJwtToken } from "../../utils/auth.util";
 import * as commonHelper from "../../helpers/common.helper";
 import adminModel from "../../models/Admin/admin.model";
-import commonContentModel from "../../models/Admin/commonContent.model";
 import services from '../../services';
 import responseMessage from "../../constants/responseMessage.constant";
 import { APP } from '../../constants/app.constant';
-import faqModel from '../../models/Admin/faq.model';
 import userModel from '../../models/User/user.model';
-import { ROLE, USER_STATUS } from '../../constants/app.constant'
+import { ROLE} from '../../constants/app.constant'
 
 const AdminAuthHandler = {
 
     async login(data: any): Promise<ApiResponse> {
         try {
-            const { email, password } = data;
+            const { email, password, os_type } = data;
 
             const exists = await findOne(adminModel, { email });
 
@@ -30,6 +28,12 @@ const AdminAuthHandler = {
             const isValid = await commonHelper.verifyBycryptHash(password, exists.data.password);
             if (!isValid) {
                 return showResponse(false, responseMessage.common.password_incorrect, null, null, 400)
+            }
+
+            let os_update = await findOneAndUpdate(userModel, { _id: exists?.data?._id }, { os_type })
+
+            if (!os_update) {
+                return showResponse(false, responseMessage.users.login_error, null, null, 400)
             }
 
             const token = await generateJwtToken(exists.data._id, { user_type: 'admin', type: "access" }, APP.ACCESS_EXPIRY)

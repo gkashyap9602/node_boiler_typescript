@@ -9,16 +9,16 @@ let { addToMulter } = middlewares.fileUpload.multer
 const router = express.Router()
 
 router.post('/login', async (req: Request | any, res: Response) => {
-    const { email, password } = req.body;
+    const { email, password, os_type } = req.body;
     const userAuthController = new UserAuthController(req, res)
-    const result: ApiResponse = await userAuthController.login({email, password });
+    const result: ApiResponse = await userAuthController.login({ email, password, os_type });
     return showOutput(res, result, result.code)
 })
 
 router.post('/register', addToMulter.single('profile_pic'), async (req: Request | any, res: Response) => {
-    const { first_name, last_name, email, password, phone_number, country_code } = req.body;
+    const { first_name, last_name, email, password, phone_number, country_code, os_type } = req.body;
     const userAuthController = new UserAuthController(req, res)
-    const result: ApiResponse = await userAuthController.register(first_name, last_name, email, password, phone_number, country_code, req.file);
+    const result: ApiResponse = await userAuthController.register(first_name, last_name, email, password, os_type, phone_number, country_code, req.file);
     return showOutput(res, result, result.code)
 })
 

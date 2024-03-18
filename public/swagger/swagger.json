@@ -79,6 +79,9 @@
 						"application/json": {
 							"schema": {
 								"properties": {
+									"os_type": {
+										"type": "string"
+									},
 									"password": {
 										"type": "string"
 									},
@@ -87,6 +90,7 @@
 									}
 								},
 								"required": [
+									"os_type",
 									"password",
 									"email"
 								],
@@ -137,6 +141,9 @@
 									"password": {
 										"type": "string"
 									},
+									"os_type": {
+										"type": "string"
+									},
 									"phone_number": {
 										"type": "string"
 									},
@@ -152,7 +159,8 @@
 									"first_name",
 									"last_name",
 									"email",
-									"password"
+									"password",
+									"os_type"
 								]
 							}
 						}
@@ -966,6 +974,9 @@
 						"application/json": {
 							"schema": {
 								"properties": {
+									"os_type": {
+										"type": "string"
+									},
 									"password": {
 										"type": "string"
 									},
@@ -974,6 +985,7 @@
 									}
 								},
 								"required": [
+									"os_type",
 									"password",
 									"email"
 								],
