@@ -33,10 +33,10 @@ const CommonHandler = {
             let getResponse = await findAll(faqModel, {});
 
             if (getResponse.status) {
-                return showResponse(false, responseMessage.admin.here_is_question, getResponse?.data, null, 400)
+                return showResponse(true, responseMessage.admin.here_is_question, getResponse?.data, null, 200)
             }
 
-            return showResponse(true, responseMessage.common.data_not_found, null, null, 200)
+            return showResponse(false, responseMessage.common.data_not_found, null, null, 400)
 
         }
         catch (err: any) {
