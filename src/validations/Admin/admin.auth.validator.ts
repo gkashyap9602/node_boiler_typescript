@@ -42,6 +42,7 @@ const updateProfileSchema = joi.object({
     last_name: joi.string().optional().allow(''),
     phone_number: joi.string().optional().allow(''),
     country_code: joi.string().optional().allow(''),
+    greet_msg: joi.boolean().optional().allow(''),
 })
 
 

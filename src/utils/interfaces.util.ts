@@ -41,8 +41,6 @@ export interface EmailConstant {
 }
 
 
-
-
 export interface postParameter {
     name: string;
     value: string;
