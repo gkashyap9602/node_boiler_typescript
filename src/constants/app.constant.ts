@@ -1,7 +1,7 @@
 import services from "../services";
 import dotenv from "dotenv";
 import path from "path";
-import { AwsCredential, RoleType, AppConstant, DbConstant, EmailConstant } from "../utils/interfaces.util";
+import { AwsCredential, RoleType, AppConstant, DbConstant, EmailConstant, SMSConstant } from "../utils/interfaces.util";
 import { getEnvironmentParams } from "../utils/config.util";
 const envConfig = dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
@@ -38,6 +38,12 @@ const EMAIL_CREDENTIAL: EmailConstant = {
   EMAIL_HOST: process.env.EMAIL_HOST
 }
 
+const SMS_CREDENTIAL: SMSConstant = {
+  TWILIO_ACCOUNT_SID: process.env.TWILIO_ACCOUNT_SID,
+  TWILIO_AUTH_TOKEN: process.env.TWILIO_AUTH_TOKEN,
+  SEND_FROM_HOST: process.env.SEND_FROM_HOST,
+}
+
 
 const ROLE: RoleType = {
   ADMIN: 1,
@@ -71,6 +77,9 @@ let initializeAwsCredential = async () => {
   APP.JWT_SECRET = services.awsService.getParameterFromAWS({ name: "API_SECRET" })
   EMAIL_CREDENTIAL.SENDGRID_API = services.awsService.getParameterFromAWS({ name: 'STMP_EMAIL' })
   EMAIL_CREDENTIAL.SENDGRID_API_KEY = services.awsService.getParameterFromAWS({ name: 'SMTP_APP_PASSWORD' })
+  
+  // SMS_CREDENTIAL.TWILIO_AUTH_TOKEN = services.awsService.getParameterFromAWS({ name: 'TWILIO_AUTH_TOKEN' })
+  // SMS_CREDENTIAL.TWILIO_AUTH_TOKEN = services.awsService.getParameterFromAWS({ name: 'TWILIO_AUTH_TOKEN' })
 
   AWS_CREDENTIAL = {
     ACCESSID: services.awsService.getParameterFromAWS({ name: "ACCESSID" }),
@@ -84,4 +93,4 @@ let initializeAwsCredential = async () => {
 
 
 
-export { DB, APP, ROLE, REDIS_CREDENTIAL, LOGS, USER_STATUS, AWS_CREDENTIAL, EMAIL_CREDENTIAL, initializeAwsCredential };
+export { DB, APP, ROLE, REDIS_CREDENTIAL, LOGS, USER_STATUS, AWS_CREDENTIAL, EMAIL_CREDENTIAL,SMS_CREDENTIAL, initializeAwsCredential };

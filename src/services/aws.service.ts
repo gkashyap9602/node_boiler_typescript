@@ -94,12 +94,6 @@ const getSecretFromAWS = (secret_key_param: string) => {
 const sendSMSService = async (to: number, Message: string) => {
     return new Promise(async (resolve, reject) => {
         try {
-            // AWS.config.update({
-            //     accessKeyId: ACCESSID,
-            //     secretAccessKey: SECRET,
-            //     region,
-            // });
-
             const sns = new AWS.SNS();
             const params: any = {
                 Message,

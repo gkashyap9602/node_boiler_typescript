@@ -37,7 +37,12 @@ export interface EmailConstant {
     SENDGRID_API: any;
     SENDGRID_API_KEY: any;
     EMAIL_HOST: any;
+}
 
+export interface SMSConstant {
+    TWILIO_ACCOUNT_SID: any;
+    TWILIO_AUTH_TOKEN: any;
+    SEND_FROM_HOST: any;
 }
 
 
