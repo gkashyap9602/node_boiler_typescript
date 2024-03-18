@@ -50,7 +50,7 @@ const AdminAuthHandler = {
 
     async register(data: any): Promise<ApiResponse> {
         try {
-            let { first_name, last_name, email, password } = data;
+            let { email, password } = data;
 
             // check if user exists
             const exists = await findOne(adminModel, { email });
@@ -149,7 +149,6 @@ const AdminAuthHandler = {
 
             if (!updated.status) {
                 return showResponse(false, responseMessage.users.password_reset_error, null, null, 400)
-
             }
 
             return showResponse(true, responseMessage.users.password_reset_success, null, null, 200)
@@ -175,7 +174,6 @@ const AdminAuthHandler = {
                 await findOneAndUpdate(adminModel, queryObject, { is_verified: true })
 
                 return showResponse(true, responseMessage.users.otp_verify_success, null, null, 200);
-
             }
 
             return showResponse(false, `${responseMessage.users.invalid_otp} or email`, null, null, 400);
@@ -221,7 +219,6 @@ const AdminAuthHandler = {
 
                     return showResponse(true, responseMessage.users.otp_resend, null, null, 200);
                 }
-
             }
 
             return showResponse(false, responseMessage.users.invalid_email, null, null, 400);
@@ -233,15 +230,14 @@ const AdminAuthHandler = {
         }
     },
 
-    async changePassword(data: any, userId: string): Promise<ApiResponse> {
+    async changePassword(data: any, adminId: string): Promise<ApiResponse> {
         try {
             const { old_password, new_password } = data;
 
-            const exists = await findOne(adminModel, { _id: userId })
+            const exists = await findOne(adminModel, { _id: adminId })
 
             if (!exists.status) {
                 return showResponse(false, responseMessage.admin.invalid_admin, null, null, 400)
-
             }
 
             const isValid = await commonHelper.verifyBycryptHash(old_password, exists.data?.password);
@@ -251,8 +247,7 @@ const AdminAuthHandler = {
 
             const hashed = await commonHelper.bycrptPasswordHash(new_password)
 
-
-            const updated = await findByIdAndUpdate(adminModel, { password: hashed }, userId)
+            const updated = await findByIdAndUpdate(adminModel, { password: hashed }, adminId)
 
             if (!updated.status) {
                 return showResponse(false, responseMessage.users.password_change_failed, null, null, 400)
@@ -266,17 +261,10 @@ const AdminAuthHandler = {
 
         }
     },
-    async getAdminDetails(userId: string): Promise<ApiResponse> {
+    async getAdminDetails(adminId: string): Promise<ApiResponse> {
         try {
 
-            let getResponse = await findOne(adminModel, { _id: userId }, { password: 0 });
-
-            console.log(getResponse, "getResponse")
-
-            let findd = await adminModel.findOne({ _id: userId })
-
-            console.log(findd, "finddfinddfinddfindd")
-
+            let getResponse = await findOne(adminModel, { _id: adminId }, { password: 0 });
 
             if (!getResponse.status) {
                 return showResponse(false, responseMessage.admin.invalid_admin, null, null, 400)
@@ -299,8 +287,6 @@ const AdminAuthHandler = {
             let { first_name, last_name, phone_number, country_code, greet_msg } = data
 
             let findAdmin = await findOne(adminModel, { user_type: ROLE.ADMIN, _id: admin_id })
-
-            console.log(findAdmin, "findAdmin")
 
             if (!findAdmin.status) {
                 return showResponse(false, responseMessage.admin.invalid_admin, null, null, 400);

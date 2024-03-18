@@ -44,7 +44,6 @@ export const createOne = (modalReference: any): Promise<ApiResponse> => {
 };
 
 
-
 export const insertMany = (Model: Model<any>, dataArray: any[]): Promise<ApiResponse> => {
     return new Promise((resolve, reject) => {
         Model.insertMany(dataArray)

@@ -1,7 +1,6 @@
 import { Request, Response } from 'express'
-import { Route, Controller, Tags, Post, Body, Get, Security, Query, FormField, Request as TSOA_Request } from 'tsoa'
+import { Route, Controller, Tags, Post, Body, Get, Security, Query, FormField } from 'tsoa'
 import { ApiResponse } from '../../utils/interfaces.util';
-// import { validateChangePassword, validateForgotPassword, validateRegister, validateResetPassword, validateAdmin, validateResendOtp, validateVerifyOtp } from '../../validations/admin.validator';
 import handlers from '../../handlers/Common/common.handler'
 import { showResponse } from '../../utils/response.util';
 import { validateStoreParmeterToAws } from '../../validations/Common/common.validator';
