@@ -1301,6 +1301,9 @@
 									"country_code": {
 										"type": "string"
 									},
+									"greet_msg": {
+										"type": "string"
+									},
 									"profile_pic": {
 										"type": "string",
 										"format": "binary"

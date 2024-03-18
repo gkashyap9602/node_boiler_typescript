@@ -213,9 +213,8 @@ export default class AdminAuthController extends Controller {
 */
     @Security('Bearer')
     @Put("/profile")
-    public async updateAdminProfile(@FormField() first_name?: string, @FormField() last_name?: string, @FormField() phone_number?: string, @FormField() country_code?: string, greet_msg?: boolean, @UploadedFile() profile_pic?: Express.Multer.File): Promise<ApiResponse> {
+    public async updateAdminProfile(@FormField() first_name?: string, @FormField() last_name?: string, @FormField() phone_number?: string, @FormField() country_code?: string, @FormField() greet_msg?: boolean, @UploadedFile() profile_pic?: Express.Multer.File): Promise<ApiResponse> {
         try {
-
             let body = { first_name, last_name, phone_number, country_code, greet_msg }
 
             const validatedUpdateProfile = validateUpdateProfile(body);

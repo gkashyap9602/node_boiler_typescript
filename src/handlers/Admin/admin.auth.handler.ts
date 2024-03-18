@@ -11,7 +11,7 @@ import services from '../../services';
 import responseMessage from "../../constants/responseMessage.constant";
 import { APP } from '../../constants/app.constant';
 import userModel from '../../models/User/user.model';
-import { ROLE} from '../../constants/app.constant'
+import { ROLE } from '../../constants/app.constant'
 
 const AdminAuthHandler = {
 
@@ -296,7 +296,7 @@ const AdminAuthHandler = {
     async updateAdminProfile(data: any, admin_id: string, profile_pic: any): Promise<ApiResponse> {
         try {
 
-            let { first_name, last_name, phone_number, country_code } = data
+            let { first_name, last_name, phone_number, country_code, greet_msg } = data
 
             let findAdmin = await findOne(adminModel, { user_type: ROLE.ADMIN, _id: admin_id })
 
@@ -320,6 +320,9 @@ const AdminAuthHandler = {
             }
             if (country_code) {
                 updateObj.country_code = country_code
+            }
+            if (greet_msg) {
+                updateObj.greet_msg = greet_msg
             }
 
             if (profile_pic) {
