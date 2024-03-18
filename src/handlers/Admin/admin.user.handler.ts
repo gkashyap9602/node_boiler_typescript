@@ -58,6 +58,11 @@ const AdminUserHandler = {
                     }
                 },
                 {
+                    $addFields: {
+                        full_name: { $concat: ["$first_name", " ", "$last_name"] }
+                    }
+                },
+                {
                     $project: {
                         password: 0,
                         device_info: 0,
@@ -66,6 +71,7 @@ const AdminUserHandler = {
                 }
 
             ]
+
 
             //add this function where we cannot add query to get count of document example searchKey and add pagination at the end of query
             let { totalCount, aggregation } = await commonHelper.getCountAndPagination(userModel, aggregate, page, limit)

@@ -64,10 +64,10 @@ export const insertMany = (Model: Model<any>, dataArray: any[]): Promise<ApiResp
 export const findOneAndUpdate = (Model: Model<any>, matchObj: any, updateObject: any): Promise<ApiResponse> => {
     return new Promise((resolve, reject) => {
         Model.findOneAndUpdate(matchObj, { $set: updateObject }, { new: true })
-            .lean()
             .then(updatedData => {
                 if (updatedData) {
-                    let response = showResponse(true, 'Success', updatedData);
+                    const doc = updatedData?.toObject();
+                    let response = showResponse(true, 'Success', doc);
                     resolve(response);
                 } else {
                     let response = showResponse(false, 'Failed', null);
@@ -85,9 +85,9 @@ export const findOneAndUpdate = (Model: Model<any>, matchObj: any, updateObject:
 export const findByIdAndUpdate = (Model: Model<any>, DataObject: any, _id: string): Promise<ApiResponse> => {
     return new Promise((resolve, reject) => {
         Model.findByIdAndUpdate(_id, { $set: DataObject }, { new: true })
-            .lean()
             .then(updatedData => {
-                let response = showResponse(true, 'Success', updatedData);
+                const doc = updatedData?.toObject();
+                let response = showResponse(true, 'Success', doc);
                 resolve(response);
             })
             .catch(err => {
