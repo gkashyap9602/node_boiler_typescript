@@ -6,7 +6,7 @@ import { showResponse } from '../../utils/response.util';
 import { validateStoreParmeterToAws } from '../../validations/Common/common.validator';
 
 @Tags('Common')
-@Route('api/v1/common')
+@Route('/common')
 
 export default class CommonController extends Controller {
     req: Request;

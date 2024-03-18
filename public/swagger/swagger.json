@@ -52,7 +52,7 @@
 		}
 	},
 	"paths": {
-		"/api/v1/user/auth/login": {
+		"/user/auth/login": {
 			"post": {
 				"operationId": "Login",
 				"responses": {
@@ -101,7 +101,7 @@
 				}
 			}
 		},
-		"/api/v1/user/auth/register": {
+		"/user/auth/register": {
 			"post": {
 				"operationId": "Register",
 				"responses": {
@@ -168,7 +168,7 @@
 				}
 			}
 		},
-		"/api/v1/user/auth/upload_file": {
+		"/user/auth/upload_file": {
 			"post": {
 				"operationId": "UploadFile",
 				"responses": {
@@ -214,7 +214,7 @@
 				}
 			}
 		},
-		"/api/v1/user/auth/forgot_password": {
+		"/user/auth/forgot_password": {
 			"post": {
 				"operationId": "ForgotPassword",
 				"responses": {
@@ -255,7 +255,7 @@
 				}
 			}
 		},
-		"/api/v1/user/auth/reset_password": {
+		"/user/auth/reset_password": {
 			"post": {
 				"operationId": "ResetPassword",
 				"responses": {
@@ -304,7 +304,7 @@
 				}
 			}
 		},
-		"/api/v1/user/auth/verify_otp": {
+		"/user/auth/verify_otp": {
 			"post": {
 				"operationId": "VerifyOtp",
 				"responses": {
@@ -354,7 +354,7 @@
 				}
 			}
 		},
-		"/api/v1/user/auth/resend_otp": {
+		"/user/auth/resend_otp": {
 			"post": {
 				"operationId": "ResendOtp",
 				"responses": {
@@ -399,7 +399,7 @@
 				}
 			}
 		},
-		"/api/v1/user/auth/change_password": {
+		"/user/auth/change_password": {
 			"post": {
 				"operationId": "ChangePassword",
 				"responses": {
@@ -448,7 +448,7 @@
 				}
 			}
 		},
-		"/api/v1/user/auth/details": {
+		"/user/auth/details": {
 			"get": {
 				"operationId": "GetUserDetails",
 				"responses": {
@@ -475,7 +475,7 @@
 				"parameters": []
 			}
 		},
-		"/api/v1/user/auth/profile": {
+		"/user/auth/profile": {
 			"put": {
 				"operationId": "UpdateUserProfile",
 				"responses": {
@@ -530,7 +530,7 @@
 				}
 			}
 		},
-		"/api/v1/common/common_content": {
+		"/common/common_content": {
 			"get": {
 				"operationId": "GetCommonContent",
 				"responses": {
@@ -557,7 +557,7 @@
 				"parameters": []
 			}
 		},
-		"/api/v1/common/questions": {
+		"/common/questions": {
 			"get": {
 				"operationId": "GetQuestions",
 				"responses": {
@@ -584,7 +584,7 @@
 				"parameters": []
 			}
 		},
-		"/api/v1/common/store_paramter_to_aws": {
+		"/common/store_paramter_to_aws": {
 			"post": {
 				"operationId": "StoreParameterToAws",
 				"responses": {
@@ -629,7 +629,7 @@
 				}
 			}
 		},
-		"/api/v1/admin/user/list": {
+		"/admin/user/list": {
 			"get": {
 				"operationId": "GetUsersList",
 				"responses": {
@@ -708,7 +708,7 @@
 				]
 			}
 		},
-		"/api/v1/admin/user/details": {
+		"/admin/user/details": {
 			"get": {
 				"operationId": "GetUserDetails",
 				"responses": {
@@ -744,7 +744,7 @@
 				]
 			}
 		},
-		"/api/v1/admin/user/status": {
+		"/admin/user/status": {
 			"put": {
 				"operationId": "UpdateUserStatus",
 				"responses": {
@@ -794,7 +794,7 @@
 				}
 			}
 		},
-		"/api/v1/admin/common/question": {
+		"/admin/common/question": {
 			"post": {
 				"operationId": "AddQuestion",
 				"responses": {
@@ -894,7 +894,7 @@
 				}
 			}
 		},
-		"/api/v1/admin/common/common_content": {
+		"/admin/common/common_content": {
 			"put": {
 				"operationId": "UpdateCommonContent",
 				"responses": {
@@ -947,7 +947,7 @@
 				}
 			}
 		},
-		"/api/v1/admin/auth/login": {
+		"/admin/auth/login": {
 			"post": {
 				"operationId": "Login",
 				"responses": {
@@ -996,7 +996,7 @@
 				}
 			}
 		},
-		"/api/v1/admin/auth/forgot_password": {
+		"/admin/auth/forgot_password": {
 			"post": {
 				"operationId": "ForgotPassword",
 				"responses": {
@@ -1037,7 +1037,7 @@
 				}
 			}
 		},
-		"/api/v1/admin/auth/reset_password": {
+		"/admin/auth/reset_password": {
 			"post": {
 				"operationId": "ResetPassword",
 				"responses": {
@@ -1086,7 +1086,7 @@
 				}
 			}
 		},
-		"/api/v1/admin/auth/verify_otp": {
+		"/admin/auth/verify_otp": {
 			"post": {
 				"operationId": "VerifyOtp",
 				"responses": {
@@ -1136,7 +1136,7 @@
 				}
 			}
 		},
-		"/api/v1/admin/auth/resend_otp": {
+		"/admin/auth/resend_otp": {
 			"post": {
 				"operationId": "ResendOtp",
 				"responses": {
@@ -1181,7 +1181,7 @@
 				}
 			}
 		},
-		"/api/v1/admin/auth/change_password": {
+		"/admin/auth/change_password": {
 			"post": {
 				"operationId": "ChangePassword",
 				"responses": {
@@ -1230,7 +1230,7 @@
 				}
 			}
 		},
-		"/api/v1/admin/auth/details": {
+		"/admin/auth/details": {
 			"get": {
 				"operationId": "GetAdminDetails",
 				"responses": {
@@ -1257,7 +1257,7 @@
 				"parameters": []
 			}
 		},
-		"/api/v1/admin/auth/profile": {
+		"/admin/auth/profile": {
 			"put": {
 				"operationId": "UpdateAdminProfile",
 				"responses": {
@@ -1318,7 +1318,7 @@
 	},
 	"servers": [
 		{
-			"url": "/"
+			"url": "/api/v1"
 		}
 	]
 }

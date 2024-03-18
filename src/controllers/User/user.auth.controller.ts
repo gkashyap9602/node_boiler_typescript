@@ -4,10 +4,11 @@ import { ApiResponse } from '../../utils/interfaces.util';
 import { validateChangePassword, validateForgotPassword, validateUpdateProfile, validateRegister, validateResetPassword, validateUser, validateResendOtp, validateVerifyOtp } from '../../validations/User/user.auth.validator';
 import handlers from '../../handlers/User/user.auth.handler'
 import { showResponse } from '../../utils/response.util';
+import { APP } from '../../constants/app.constant'
 
 
 @Tags('User Auth')
-@Route('api/v1/user/auth')
+@Route('/user/auth')
 
 export default class UserAuthController extends Controller {
     req: Request;

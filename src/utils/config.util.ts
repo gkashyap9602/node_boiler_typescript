@@ -1,6 +1,7 @@
 import rateLimit from 'express-rate-limit'
 import Queue from 'bull'
-import { REDIS_CREDENTIAL } from '../constants/app.constant'
+import { REDIS_CREDENTIAL, APP } from '../constants/app.constant'
+import os from 'os';
 
 //get params according to your environment
 export const getEnvironmentParams = (env: any, project_name: string) => {
@@ -18,7 +19,6 @@ export const getEnvironmentParams = (env: any, project_name: string) => {
         return { db_name: "DB_NAME_DEV", db_uri: "MONGODB_URI_DEV", bucket: `${project_name.toUpperCase()}_BUCKET_DEV`, admin_email: `admin${admin_email}@yopmail.com` }
     }
 };
-
 
 
 //generate bull queue 

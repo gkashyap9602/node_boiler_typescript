@@ -18,7 +18,6 @@ initializeAwsCredential()
 // initialize database connection 
 connection()
 
-
 app.use(helmet())
 
 app.use(function (req, res, next) {
@@ -57,6 +56,8 @@ app.use("/swagger", serve,
 );
 
 console.log(APP.API_PREFIX, "API_PREFIX")
+
+
 
 app.use("/api/v1", Routes);
 bootstrapAdmin(() => {

@@ -5,6 +5,7 @@
     "specVersion": 3,
     "outputDirectory": "public/swagger",
     "description": "Boilerplate apis",
+     "basePath":"/api/v1",
     "version": "1.0.0",
     "license": "license",
     "specMerging": "recursive",

@@ -6,7 +6,7 @@ import handlerAdminUser from '../../handlers/Admin/admin.user.handler'
 import { showResponse } from '../../utils/response.util';
 
 @Tags('Admin User')
-@Route('api/v1/admin/user')
+@Route('/admin/user')
 
 export default class AdminUserController extends Controller {
     req: Request;
