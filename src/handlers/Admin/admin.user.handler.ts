@@ -120,7 +120,7 @@ const AdminUserHandler = {
 
         }
     },
-    async getDashboardData(past_day: string = '6M'): Promise<ApiResponse> {
+    async getDashboardData(past_day: string = 'MAX'): Promise<ApiResponse> {
         try {
             // Calculate the timestamps for 30 days ago, 180 days ago, and 365 days ago
             let thirtyDaysAgo = moment().subtract(30, 'days').unix()
@@ -128,13 +128,13 @@ const AdminUserHandler = {
             let oneYearAgo = moment().subtract(365, 'days').unix()
             console.log(oneYearAgo, "oneYearAgo")
             console.log(past_day, "past_day")
-
             let maxDate = moment().unix();
+
             let dates: any = {
-                '1M': thirtyDaysAgo,
-                '6M': sixMonthAgo,
-                '1Y': oneYearAgo,
-                'MAX': maxDate,
+                '1M': { $gte: thirtyDaysAgo },
+                '6M': { $gte: sixMonthAgo },
+                '1Y': { $gte: oneYearAgo },
+                'MAX': { $lte: maxDate },
             }
 
             let fetch_data_date: any = dates[past_day]
@@ -146,7 +146,7 @@ const AdminUserHandler = {
                 {
                     $match: {
                         user_type: ROLE.USER,
-                        created_on: { $gte: fetch_data_date } // Filter documents within the last 30 days
+                        created_on: fetch_data_date // Filter documents within the last 30 days
                     }
                 },
                 {

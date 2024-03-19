@@ -824,7 +824,6 @@
 						"name": "past_day",
 						"required": false,
 						"schema": {
-							"default": "6M",
 							"type": "string"
 						}
 					}
