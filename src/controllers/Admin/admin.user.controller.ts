@@ -96,7 +96,7 @@ export default class AdminUserController extends Controller {
 */
     @Security('Bearer')
     @Get("/dashboard")
-    public async getDashboardData(@Query() past_day: string): Promise<ApiResponse> {
+    public async getDashboardData(@Query() past_day?: string): Promise<ApiResponse> {
         try {
 
             const validatedDashboard = validateDashboard({ past_day });

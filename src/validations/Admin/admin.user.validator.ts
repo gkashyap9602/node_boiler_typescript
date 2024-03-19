@@ -11,7 +11,7 @@ const updateUserStatus = joi.object({
 
 })
 const dashboardSchema = joi.object({
-    past_day: joi.string().required(),
+    past_day: joi.optional().allow(),
 })
 
 
