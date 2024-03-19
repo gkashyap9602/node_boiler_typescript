@@ -11,7 +11,7 @@ const updateUserStatus = joi.object({
 
 })
 const dashboardSchema = joi.object({
-    past_day: joi.optional().allow(),
+    past_day: joi.optional().valid('1M', '6M', '1Y', 'MAX'),
 })
 
 
