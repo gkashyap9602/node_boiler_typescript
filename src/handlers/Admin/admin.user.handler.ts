@@ -123,24 +123,21 @@ const AdminUserHandler = {
     async getDashboardData(past_day: string = 'MAX'): Promise<ApiResponse> {
         try {
             // Calculate the timestamps for 30 days ago, 180 days ago, and 365 days ago
-            let thirtyDaysAgo = moment().subtract(30, 'days').unix()
-            let sixMonthAgo = moment().subtract(180, 'days').unix()
-            let oneYearAgo = moment().subtract(365, 'days').unix()
+            let thirtyDaysAgo = moment().subtract(30, 'days').unix()  //last 30 days timestamp
+            let sixMonthAgo = moment().subtract(180, 'days').unix() //last 180 days timestamp
+            let oneYearAgo = moment().subtract(365, 'days').unix() //last 365 days timestamp
+            let maxDate = moment().unix(); //today timestamp
             console.log(oneYearAgo, "oneYearAgo")
             console.log(past_day, "past_day")
-            let maxDate = moment().unix();
 
             let dates: any = {
-                '1M': { $gte: thirtyDaysAgo },
-                '6M': { $gte: sixMonthAgo },
-                '1Y': { $gte: oneYearAgo },
-                'MAX': { $lte: maxDate },
+                '1M': { $gte: thirtyDaysAgo },//greater then last  1 month  date users registeration data
+                '6M': { $gte: sixMonthAgo }, //greater then last 6 month  date users registeration data
+                '1Y': { $gte: oneYearAgo }, //greater then last year date users registeration data
+                'MAX': { $lte: maxDate }, //if max then less then equal to current date users data
             }
 
             let fetch_data_date: any = dates[past_day]
-
-            console.log(fetch_data_date, "fetch_data_date")
-
 
             let dashboard = await userModel.aggregate([
                 {
@@ -182,62 +179,7 @@ const AdminUserHandler = {
 
         }
     }
-    // async getDashboardData(): Promise<ApiResponse> {
-    //     try {
-    //         // Calculate the timestamps for 30 days ago, 180 days ago, and 365 days ago
-    //         let thirtyDaysAgo = moment().subtract(30, 'days').unix()
-    //         let sixMonthAgo = moment().subtract(180, 'days').unix()
-    //         let oneYearAgo = moment().subtract(365, 'days').unix()
-
-    //         console.log(oneYearAgo, "oneYearAgo")
-
-    //         let dashboard = await userModel.aggregate([
-    //             {
-    //                 $match: {
-    //                     user_type: ROLE.USER,
-    //                     created_on: { $gte: thirtyDaysAgo } // Filter documents within the last 365 days
-    //                 }
-    //             },
-    //             {
-    //                 $addFields: {
-    //                     dayOfYear: { $dayOfYear: { $toDate: { $multiply: ["$created_on", 1000] } } }, // Extract day of the year
-    //                     yearAgo: { $cond: { if: { $gte: ["$created_on", oneYearAgo] }, then: 1, else: 0 } },
-    //                     sixMonthsAgo: { $cond: { if: { $gte: ["$created_on", sixMonthAgo] }, then: 1, else: 0 } },
-    //                     thirtyDaysAgo: { $cond: { if: { $gte: ["$created_on", thirtyDaysAgo] }, then: 1, else: 0 } }
-    //                 }
-    //             },
-    //             // {
-    //             //     $group: {
-    //             //         _id: { dayOfYear: "$dayOfYear" },
-    //             //         registrations: {
-    //             //             $push: {
-    //             //                 yearAgo: "$yearAgo",
-    //             //                 sixMonthsAgo: "$sixMonthsAgo",
-    //             //                 thirtyDaysAgo: "$thirtyDaysAgo"
-    //             //             }
-    //             //         }
-    //             //     }
-    //             // },
-    //             // {
-    //             //     $project: {
-    //             //         _id: 0,
-    //             //         day: "$_id.dayOfYear",
-    //             //         registrations: 1
-    //             //     }
-    //             // },
-    //             // {
-    //             //     $sort: { day: 1 }
-    //             // }
-    //         ]);
-
-    //         return showResponse(true, 'Dashboard data is here', { registrations: dashboard }, null, 200);
-    //     } catch (err: any) {
-    //         return err;
-    //     }
-    // }
-
-
-
+ 
 }
 
 export default AdminUserHandler 
