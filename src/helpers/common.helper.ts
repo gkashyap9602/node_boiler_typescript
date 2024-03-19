@@ -6,6 +6,7 @@ import XLSX from 'xlsx'
 import sharp from 'sharp';
 import fs from 'fs'
 import services from '../services';
+import mongoose from 'mongoose'
 
 const bycrptPasswordHash = (stringValue: string): Promise<string> => {
     console.log(stringValue, "stringValue")
@@ -30,9 +31,9 @@ const verifyBycryptHash = (password: string, hash_password: string) => {
 }
 
 
-// const convertIdToObjectId = (id: string) => {
-//     return mongoose.Types.ObjectId(id);
-// }
+const convertToObjectId = (id: string) => {
+    return new mongoose.Types.ObjectId(id);
+}
 
 const generateRandomOtp = (len: number) => {
     const digits = '0123456789';
@@ -393,7 +394,8 @@ export {
     convertImageToWebp,
     exportJsonToExcel,
     readFileAsyncChunks,
-    findClosestKey
+    findClosestKey,
+    convertToObjectId
 
 
 }

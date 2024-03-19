@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { Route, Controller, Tags, Post, Body, Get, Security, Query, Put, FormField, UploadedFile } from 'tsoa'
+import { Route, Controller, Tags, Body, Get, Security, Query, Put } from 'tsoa'
 import { ApiResponse } from '../../utils/interfaces.util';
 import { validateUpdateUserStatus, validateGetCustomerDetails, } from '../../validations/Admin/admin.user.validator';
 import handlerAdminUser from '../../handlers/Admin/admin.user.handler'
@@ -91,6 +91,24 @@ export default class AdminUserController extends Controller {
     }
     //ends
 
+    /**
+* Get Dashboard data
+*/
+    @Security('Bearer')
+    @Get("/dashboard")
+    public async getDashboardData(): Promise<ApiResponse> {
+        try {
+          
+            return handlerAdminUser.getDashboardData()
+
+        }
+        catch (err: any) {
+            //   logger.error(`${this.req.ip} ${err.message}`)
+            return err
+
+        }
+    }
+    //ends
 
 
 

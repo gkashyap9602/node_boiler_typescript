@@ -120,6 +120,48 @@ const AdminUserHandler = {
 
         }
     },
+    async getDashboardData(): Promise<ApiResponse> {
+        try {
+            let dashboard = await userModel.aggregate([
+                { $match: { user_type: ROLE.USER } },
+                {
+                    $addFields: {
+                        total_app_users: 1, // Increment total_app_users for each matched document
+                        total_active_users: { $cond: { if: { $eq: ["$status", 1] }, then: 1, else: 0 } }
+                    }
+                },
+                { $addFields: { created_on_date: { $toDate: { $multiply: ["$created_on", 1000] } } } },
+                // Group to calculate totals
+                {
+                    $group: {
+                        _id: { $dateToString: { format: "%Y-%m-%d", date: "$created_on_date" } }, // Group by registration date
+                        total_app_users: { $sum: "$total_app_users" },
+                        total_active_users: { $sum: "$total_active_users" }
+                    }
+                },
+                // Calculate max registered users
+                {
+                    $group: {
+                        _id: null,
+                        total_app_users: { $sum: "$total_app_users" },
+                        total_active_users: { $sum: "$total_active_users" },
+                        max_registered_users: { $max: "$total_app_users" } // Find max total app users
+                    }
+                }
+
+            ]);
+
+
+            return showResponse(true, 'dashboard data is here ', dashboard, null, 200)
+
+        }
+        catch (err: any) {
+            //   logger.error(`${this.req.ip} ${err.message}`)
+            return err
+
+        }
+    },
+
 
 
 }

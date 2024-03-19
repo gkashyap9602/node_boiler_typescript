@@ -34,6 +34,13 @@ router.put('/status', verifyTokenAdmin, async (req: Request | any, res: Response
 
 })
 
+router.get('/dashboard', verifyTokenAdmin, async (req: Request | any, res: Response) => {
+    const adminUserController = new AdminUserController(req, res)
+    const result: ApiResponse = await adminUserController.getDashboardData();
+    return showOutput(res, result, result.code)
+
+})
+
 
 
 export default router

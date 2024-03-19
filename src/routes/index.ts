@@ -4,7 +4,7 @@ const Route = express.Router();
 import adminAuthRoutes from './Admin/admin.auth.route'
 import adminCommonRoutes from './Admin/admin.common.route'
 import adminUserRoutes from './Admin/admin.user.route'
-import userAuthRoutes from './User/user.auth'
+import userAuthRoutes from './User/user.auth.route'
 import commonRoutes from './Common/common.route'
 
 //assign order of routes for swagger in last to show on first
