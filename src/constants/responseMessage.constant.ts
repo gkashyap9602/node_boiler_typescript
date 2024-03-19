@@ -27,7 +27,7 @@ export default {
         data_save: "Data Saved Successfully",
         save_failed: "Error Occured while saving Data",
         already_existed: "Data already existed",
-        not_exist: "Data not existed",
+        not_exist: "Data not existed or invalid id",
         invalid_id: "invalid id",
         created_successfully: "created Successfully",
         update_sucess: "Updated Successfully",

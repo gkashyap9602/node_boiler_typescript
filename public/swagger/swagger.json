@@ -892,6 +892,49 @@
 						}
 					}
 				}
+			},
+			"delete": {
+				"operationId": "DeleteQuestion",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Delete Question endpoint",
+				"tags": [
+					"Admin Common"
+				],
+				"security": [
+					{
+						"Bearer": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"question_id": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"question_id"
+								]
+							}
+						}
+					}
+				}
 			}
 		},
 		"/admin/common/common_content": {

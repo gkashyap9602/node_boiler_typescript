@@ -1,7 +1,7 @@
 import moment from "moment";
 import { ApiResponse } from "../../utils/interfaces.util";
 import { showResponse } from "../../utils/response.util";
-import { findOne, createOne, findByIdAndUpdate, findOneAndUpdate, updateMany } from "../../helpers/db.helpers";
+import { findOne, createOne, findByIdAndUpdate, findOneAndUpdate, updateMany, findByIdAndRemove } from "../../helpers/db.helpers";
 import commonContentModel from "../../models/Admin/commonContent.model";
 import responseMessage from "../../constants/responseMessage.constant";
 import faqModel from '../../models/Admin/faq.model';
@@ -61,6 +61,29 @@ const AdminCommonHandler = {
             }
             return showResponse(false, responseMessage.common.update_failed, null, null, 400);
 
+
+        }
+        catch (err: any) {
+            // logger.error(`${this.req.ip} ${err.message}`)
+            return showResponse(false, err?.message ?? err, null, null, 400)
+
+        }
+    },
+    async deleteQuestion(data: any): Promise<ApiResponse> {
+        try {
+            const { question_id } = data;
+
+            const exists = await findOne(faqModel, { _id: question_id })
+
+            if (!exists.status) {
+                return showResponse(false, responseMessage.common.not_exist, null, null, 400)
+            }
+
+            let response = await findByIdAndRemove(faqModel, question_id)
+            if (response.status) {
+                return showResponse(true, responseMessage.common.delete_sucess, null, null, 200);
+            }
+            return showResponse(false, responseMessage.common.delete_failed, response, null, 400);
 
         }
         catch (err: any) {

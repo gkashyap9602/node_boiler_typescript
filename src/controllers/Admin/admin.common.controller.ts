@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
-import { Route, Controller, Tags, Post, Body, Get, Security, Query, Put, FormField, UploadedFile } from 'tsoa'
+import { Route, Controller, Tags, Post, Body, Get, Security, Query, Put, FormField, UploadedFile, Delete } from 'tsoa'
 import { ApiResponse } from '../../utils/interfaces.util';
-import { validateUpdateQuestion, validateAddQuestion, validateCommonContent } from '../../validations/Admin/admin.common.validator';
+import { validateUpdateQuestion, validateAddQuestion, validateCommonContent, validateDeleteQuestion } from '../../validations/Admin/admin.common.validator';
 import handlerAdminCommon from '../../handlers/Admin/admin.common.handler'
 import { showResponse } from '../../utils/response.util';
 
@@ -63,6 +63,31 @@ export default class AdminCommonController extends Controller {
             }
 
             return handlerAdminCommon.updateQuestion(request)
+
+        }
+        catch (err: any) {
+            // logger.error(`${this.req.ip} ${err.message}`)
+            return err
+
+        }
+    }
+    //ends
+
+    /**
+    * Delete Question endpoint
+    */
+    @Security('Bearer')
+    @Delete("/question")
+    public async deleteQuestion(@FormField() question_id: string): Promise<ApiResponse> {
+        try {
+
+            const validatedDeleteQuestion = validateDeleteQuestion({ question_id });
+
+            if (validatedDeleteQuestion.error) {
+                return showResponse(false, validatedDeleteQuestion.error.message, null, null, 400)
+            }
+
+            return handlerAdminCommon.deleteQuestion({ question_id })
 
         }
         catch (err: any) {

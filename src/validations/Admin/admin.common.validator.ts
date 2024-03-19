@@ -15,6 +15,9 @@ const updateQuestionSchema = joi.object({
     question: joi.string().optional(),
     answer: joi.string().optional(),
 })
+const deleteQuestionSchema = joi.object({
+    question_id: joi.string().required()
+})
 
 
 export const validateCommonContent = (admin: any) => {
@@ -27,5 +30,8 @@ export const validateAddQuestion = (admin: any) => {
 
 export const validateUpdateQuestion = (admin: any) => {
     return updateQuestionSchema.validate(admin)
+}
+export const validateDeleteQuestion = (admin: any) => {
+    return deleteQuestionSchema.validate(admin)
 }
 
