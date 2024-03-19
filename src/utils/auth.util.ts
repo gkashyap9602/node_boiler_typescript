@@ -8,6 +8,7 @@ import responseMessage from '../constants/responseMessage.constant';
 import { APP } from '../constants/app.constant';
 import { ApiResponse } from './interfaces.util';
 
+//
 export const generateJwtToken = async (id: string, extras = {}, expiresIn = '24h') => {
     let API_SECRET = await APP.JWT_SECRET
     return new Promise((res, rej) => {
