@@ -294,13 +294,12 @@ export const getJoinData = async (
 
 export const getCount = (Model: Model<any>, query: any): Promise<ApiResponse> => {
     return new Promise((resolve, reject) => {
-        Model.countDocuments(query, (err: any, result: any) => {
-            if (err) {
-                let response = showResponse(false, 'Failed', err, null, 404);
-                return resolve(response);
-            }
+        Model.countDocuments(query).then((result: any) => {
             let response = showResponse(true, 'Success', result, null, 200);
-            return resolve(response);
+            resolve(response);
+        }).catch((err: any) => {
+            let response = showResponse(false, 'Failed', err, null, 404);
+            resolve(response);
         });
     });
 };

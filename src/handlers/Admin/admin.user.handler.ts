@@ -120,7 +120,7 @@ const AdminUserHandler = {
 
         }
     },
-    async getDashboardData(past_day: string): Promise<ApiResponse> {
+    async getDashboardData(past_day: string = 'MAX'): Promise<ApiResponse> {
         try {
             // Calculate the timestamps for 30 days ago, 180 days ago, and 365 days ago
             let thirtyDaysAgo = moment().subtract(30, 'days').unix()
