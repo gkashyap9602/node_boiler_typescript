@@ -27,10 +27,14 @@ export const generateJwtToken = async (id: string, extras = {}, expiresIn = '24h
 export const verifyToken = async (req: Request, res: Response): Promise<ApiResponse> => {
     try {
 
-        const token: any = req.headers['access_token'] || req.headers['authorization'] || req.headers['Authorization'];
+        let token: any = req.headers['access_token'] || req.headers['authorization'] || req.headers['Authorization'];
           
         if (!token) {
             return showResponse(false, "Token not provided ", {}, {}, 401);
+        }
+
+        if (token.startsWith('Bearer ')) {
+            token = token.slice(7, token.length);
         }
 
         const API_SECRET = await APP.JWT_SECRET;
