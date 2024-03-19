@@ -120,13 +120,14 @@ const AdminUserHandler = {
 
         }
     },
-    async getDashboardData(past_day: string = 'MAX'): Promise<ApiResponse> {
+    async getDashboardData(past_day: string = '6M'): Promise<ApiResponse> {
         try {
             // Calculate the timestamps for 30 days ago, 180 days ago, and 365 days ago
             let thirtyDaysAgo = moment().subtract(30, 'days').unix()
             let sixMonthAgo = moment().subtract(180, 'days').unix()
             let oneYearAgo = moment().subtract(365, 'days').unix()
             console.log(oneYearAgo, "oneYearAgo")
+            console.log(past_day, "past_day")
 
             let maxDate = moment().unix();
             let dates: any = {
@@ -137,6 +138,9 @@ const AdminUserHandler = {
             }
 
             let fetch_data_date: any = dates[past_day]
+
+            console.log(fetch_data_date, "fetch_data_date")
+
 
             let dashboard = await userModel.aggregate([
                 {

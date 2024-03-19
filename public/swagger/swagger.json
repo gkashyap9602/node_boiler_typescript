@@ -822,8 +822,9 @@
 					{
 						"in": "query",
 						"name": "past_day",
-						"required": true,
+						"required": false,
 						"schema": {
+							"default": "6M",
 							"type": "string"
 						}
 					}
