@@ -1,7 +1,7 @@
 import moment from "moment";
 import { ApiResponse } from "../../utils/interfaces.util";
 import { showResponse } from "../../utils/response.util";
-import { findOne, findOneAndUpdate } from "../../helpers/db.helpers";
+import { findOne, findOneAndUpdate, getCount } from "../../helpers/db.helpers";
 import * as commonHelper from "../../helpers/common.helper";
 import responseMessage from "../../constants/responseMessage.constant";
 import userModel from '../../models/User/user.model';
@@ -120,47 +120,117 @@ const AdminUserHandler = {
 
         }
     },
-    async getDashboardData(): Promise<ApiResponse> {
+    async getDashboardData(past_day: string): Promise<ApiResponse> {
         try {
+            // Calculate the timestamps for 30 days ago, 180 days ago, and 365 days ago
+            let thirtyDaysAgo = moment().subtract(30, 'days').unix()
+            let sixMonthAgo = moment().subtract(180, 'days').unix()
+            let oneYearAgo = moment().subtract(365, 'days').unix()
+            console.log(oneYearAgo, "oneYearAgo")
+
+            let maxDate = moment().unix();
+            let dates: any = {
+                '1M': thirtyDaysAgo,
+                '6M': sixMonthAgo,
+                '1Y': oneYearAgo,
+                'MAX': maxDate,
+            }
+
+            let fetch_data_date: any = dates[past_day]
+
             let dashboard = await userModel.aggregate([
-                { $match: { user_type: ROLE.USER } },
+                {
+                    $match: {
+                        user_type: ROLE.USER,
+                        created_on: { $gte: fetch_data_date } // Filter documents within the last 30 days
+                    }
+                },
                 {
                     $addFields: {
-                        total_app_users: 1, // Increment total_app_users for each matched document
-                        total_active_users: { $cond: { if: { $eq: ["$status", 1] }, then: 1, else: 0 } }
+                        created_date: { $toDate: { $multiply: ["$created_on", 1000] } } // Convert timestamp to date format
                     }
                 },
-                { $addFields: { created_on_date: { $toDate: { $multiply: ["$created_on", 1000] } } } },
-                // Group to calculate totals
                 {
                     $group: {
-                        _id: { $dateToString: { format: "%Y-%m-%d", date: "$created_on_date" } }, // Group by registration date
-                        total_app_users: { $sum: "$total_app_users" },
-                        total_active_users: { $sum: "$total_active_users" }
+                        _id: { $dayOfMonth: "$created_date" }, // Group by day of the month
+                        count: { $sum: 1 } // Count documents for each day
                     }
                 },
-                // Calculate max registered users
                 {
-                    $group: {
-                        _id: null,
-                        total_app_users: { $sum: "$total_app_users" },
-                        total_active_users: { $sum: "$total_active_users" },
-                        max_registered_users: { $max: "$total_app_users" } // Find max total app users
+                    $project: {
+                        _id: 0, // Exclude _id field
+                        day: "$_id",
+                        count: 1
                     }
+                },
+                {
+                    $sort: { day: 1 } // Sort by day of the month
                 }
-
             ]);
 
+            let all_users = await getCount(userModel, { status: { $ne: 2 } })
+            let all_active_users = await getCount(userModel, { status: 1 })
 
-            return showResponse(true, 'dashboard data is here ', dashboard, null, 200)
+
+            return showResponse(true, 'Dashboard data is here', { all_users: all_users.data, all_active_users: all_active_users.data, dashboard }, null, 200);
+        } catch (err: any) {
+            return showResponse(false, err?.message ?? err, null, null, 400)
 
         }
-        catch (err: any) {
-            //   logger.error(`${this.req.ip} ${err.message}`)
-            return err
+    }
+    // async getDashboardData(): Promise<ApiResponse> {
+    //     try {
+    //         // Calculate the timestamps for 30 days ago, 180 days ago, and 365 days ago
+    //         let thirtyDaysAgo = moment().subtract(30, 'days').unix()
+    //         let sixMonthAgo = moment().subtract(180, 'days').unix()
+    //         let oneYearAgo = moment().subtract(365, 'days').unix()
 
-        }
-    },
+    //         console.log(oneYearAgo, "oneYearAgo")
+
+    //         let dashboard = await userModel.aggregate([
+    //             {
+    //                 $match: {
+    //                     user_type: ROLE.USER,
+    //                     created_on: { $gte: thirtyDaysAgo } // Filter documents within the last 365 days
+    //                 }
+    //             },
+    //             {
+    //                 $addFields: {
+    //                     dayOfYear: { $dayOfYear: { $toDate: { $multiply: ["$created_on", 1000] } } }, // Extract day of the year
+    //                     yearAgo: { $cond: { if: { $gte: ["$created_on", oneYearAgo] }, then: 1, else: 0 } },
+    //                     sixMonthsAgo: { $cond: { if: { $gte: ["$created_on", sixMonthAgo] }, then: 1, else: 0 } },
+    //                     thirtyDaysAgo: { $cond: { if: { $gte: ["$created_on", thirtyDaysAgo] }, then: 1, else: 0 } }
+    //                 }
+    //             },
+    //             // {
+    //             //     $group: {
+    //             //         _id: { dayOfYear: "$dayOfYear" },
+    //             //         registrations: {
+    //             //             $push: {
+    //             //                 yearAgo: "$yearAgo",
+    //             //                 sixMonthsAgo: "$sixMonthsAgo",
+    //             //                 thirtyDaysAgo: "$thirtyDaysAgo"
+    //             //             }
+    //             //         }
+    //             //     }
+    //             // },
+    //             // {
+    //             //     $project: {
+    //             //         _id: 0,
+    //             //         day: "$_id.dayOfYear",
+    //             //         registrations: 1
+    //             //     }
+    //             // },
+    //             // {
+    //             //     $sort: { day: 1 }
+    //             // }
+    //         ]);
+
+    //         return showResponse(true, 'Dashboard data is here', { registrations: dashboard }, null, 200);
+    //     } catch (err: any) {
+    //         return err;
+    //     }
+    // }
 
 
 

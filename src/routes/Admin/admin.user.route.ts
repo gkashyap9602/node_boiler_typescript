@@ -35,8 +35,9 @@ router.put('/status', verifyTokenAdmin, async (req: Request | any, res: Response
 })
 
 router.get('/dashboard', verifyTokenAdmin, async (req: Request | any, res: Response) => {
+    const { past_day } = req.query
     const adminUserController = new AdminUserController(req, res)
-    const result: ApiResponse = await adminUserController.getDashboardData();
+    const result: ApiResponse = await adminUserController.getDashboardData(past_day);
     return showOutput(res, result, result.code)
 
 })

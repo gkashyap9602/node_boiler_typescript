@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import { Route, Controller, Tags, Body, Get, Security, Query, Put } from 'tsoa'
 import { ApiResponse } from '../../utils/interfaces.util';
-import { validateUpdateUserStatus, validateGetCustomerDetails, } from '../../validations/Admin/admin.user.validator';
+import { validateUpdateUserStatus, validateGetCustomerDetails, validateDashboard, } from '../../validations/Admin/admin.user.validator';
 import handlerAdminUser from '../../handlers/Admin/admin.user.handler'
 import { showResponse } from '../../utils/response.util';
 
@@ -96,10 +96,17 @@ export default class AdminUserController extends Controller {
 */
     @Security('Bearer')
     @Get("/dashboard")
-    public async getDashboardData(): Promise<ApiResponse> {
+    public async getDashboardData(@Query() past_day: string): Promise<ApiResponse> {
         try {
-          
-            return handlerAdminUser.getDashboardData()
+
+            const validatedDashboard = validateDashboard({ past_day });
+
+            if (validatedDashboard.error) {
+                return showResponse(false, validatedDashboard.error.message, null, null, 400)
+            }
+
+
+            return handlerAdminUser.getDashboardData(past_day)
 
         }
         catch (err: any) {

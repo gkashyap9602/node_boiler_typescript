@@ -10,6 +10,9 @@ const updateUserStatus = joi.object({
     status: joi.number().valid(1, 2, 3).required(),
 
 })
+const dashboardSchema = joi.object({
+    past_day: joi.string().required(),
+})
 
 
 export const validateGetCustomerDetails = (admin: any) => {
@@ -17,5 +20,10 @@ export const validateGetCustomerDetails = (admin: any) => {
 }
 export const validateUpdateUserStatus = (admin: any) => {
     return updateUserStatus.validate(admin)
+}
+
+
+export const validateDashboard = (admin: any) => {
+    return dashboardSchema.validate(admin)
 }
 
