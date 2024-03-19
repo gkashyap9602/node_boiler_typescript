@@ -169,17 +169,23 @@ const AdminUserHandler = {
                 }
             ]);
 
-            let all_users = await getCount(userModel, { status: { $ne: 2 } })
-            let all_active_users = await getCount(userModel, { status: 1 })
+            let all_users = await getCount(userModel, { status: { $ne: USER_STATUS.DELETED } })
+            let active_users = await getCount(userModel, { status: USER_STATUS.ACTIVE })
+            let deactivated_users = await getCount(userModel, { status: USER_STATUS.DEACTIVATED })
 
+            let user_summary = {
+                all_users: all_users.data,
+                active_users: active_users.data,
+                deactivated_users: deactivated_users.data
+            }
 
-            return showResponse(true, 'Dashboard data is here', { all_users: all_users.data, all_active_users: all_active_users.data, dashboard }, null, 200);
+            return showResponse(true, 'Dashboard data is here', { user_summary, dashboard }, null, 200);
         } catch (err: any) {
             return showResponse(false, err?.message ?? err, null, null, 400)
 
         }
     }
- 
+
 }
 
 export default AdminUserHandler 
