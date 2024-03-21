@@ -3,7 +3,7 @@ import { ApiResponse } from "../../utils/interfaces.util";
 import { showResponse } from "../../utils/response.util";
 import { findOne, createOne, findByIdAndUpdate, findOneAndUpdate, updateMany, findByIdAndRemove } from "../../helpers/db.helpers";
 import commonContentModel from "../../models/Admin/commonContent.model";
-import responseMessage from "../../constants/responseMessage.constant";
+import responseMessage from '../../constants/ResponseMessage'
 import faqModel from '../../models/Admin/faq.model';
 
 const AdminCommonHandler = {

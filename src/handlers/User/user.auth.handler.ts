@@ -7,9 +7,9 @@ import { findOne, createOne, findByIdAndUpdate, findOneAndUpdate } from "../../h
 import { generateJwtToken } from "../../utils/auth.util";
 import * as commonHelper from "../../helpers/common.helper";
 import userModel from "../../models/User/user.model";
-import responseMessage from "../../constants/responseMessage.constant";
 import { APP, ROLE, USER_STATUS } from '../../constants/app.constant';
 import services from '../../services';
+import responseMessage from '../../constants/ResponseMessage'
 
 const UserAuthHandler = {
 

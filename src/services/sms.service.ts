@@ -2,7 +2,7 @@
 import twillioClient from 'twilio'
 import { SMS_CREDENTIAL } from '../constants/app.constant';
 import { showResponse } from '../utils/response.util';
-import responseMessage from '../constants/responseMessage.constant'
+import responseMessage from '../constants/ResponseMessage'
 import AWS from 'aws-sdk'
 
 const sendSMSWithTwillio = async (to: string, body: string) => {

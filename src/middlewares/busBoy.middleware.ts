@@ -8,15 +8,15 @@ interface FileObject {
     // Add other properties as needed
 }
 
-interface BusboyFileEvent {
-    fieldName: string;
-    fileStream: NodeJS.ReadableStream;
-    fileObject: FileObject;
-}
+// interface BusboyFileEvent {
+//     fieldName: string;
+//     fileStream: NodeJS.ReadableStream;
+//     fileObject: FileObject;
+// }
 
-interface BusboyErrorEvent {
-    error: Error;
-}
+// interface BusboyErrorEvent {
+//     error: Error;
+// }
 
 const busboyMultipart = (request: Request): Promise<{ status: boolean; message: string; data?: FileObject[] }> => {
     return new Promise((resolve, reject) => {

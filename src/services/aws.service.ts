@@ -8,7 +8,7 @@ AWS.config.update({
 
 import mimeTypes from 'mime-types'
 import path from 'path'
-import responseMessage from "../constants/responseMessage.constant";
+import responseMessage from "../constants/ResponseMessage";
 import * as commonHelper from "../helpers/common.helper";
 import ffmpeg from 'fluent-ffmpeg'
 import fs from 'fs'

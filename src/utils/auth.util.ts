@@ -4,7 +4,7 @@ import { findOne } from "../helpers/db.helpers"
 import Users from '../models/User/user.model'
 import adminModel from '../models/Admin/admin.model'
 import { showResponse } from './response.util';
-import responseMessage from '../constants/responseMessage.constant';
+import responseMessage from '../constants/ResponseMessage';
 import { APP } from '../constants/app.constant';
 import { ApiResponse } from './interfaces.util';
 

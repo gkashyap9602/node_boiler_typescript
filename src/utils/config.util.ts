@@ -1,7 +1,6 @@
 import rateLimit from 'express-rate-limit'
 import Queue from 'bull'
 import { REDIS_CREDENTIAL, APP } from '../constants/app.constant'
-import os from 'os';
 
 //get params according to your environment
 export const getEnvironmentParams = (env: any, project_name: string) => {

@@ -1,8 +1,5 @@
-import { Request, Response, NextFunction } from 'express'
 
 const multer = require("multer");
-const path = require('path')
-
 
 const addToMulter = multer({
     storage: multer.memoryStorage(),
