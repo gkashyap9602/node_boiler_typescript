@@ -88,7 +88,7 @@ let initializeAwsCredential = async () => {
     BUCKET_NAME: services.awsService.getParameterFromAWS({ name: 'DIGISMART-BUCKET' }),
   };
 
-
+console.log(await EMAIL_CREDENTIAL.SENDGRID_API,"EMAIL_CREDENTIALEMAIL_CREDENTIAL")
 }
 
 

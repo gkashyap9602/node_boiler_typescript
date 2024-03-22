@@ -33,7 +33,8 @@ export const createOne = (modalReference: any): Promise<ApiResponse> => {
     return new Promise((resolve, reject) => {
         modalReference.save()
             .then((savedData: any) => {
-                let response = showResponse(true, 'Data Saved Successfully', savedData);
+                const doc = savedData?.toObject();
+                let response = showResponse(true, 'Data Saved Successfully', doc);
                 resolve(response);
             })
             .catch((err: any) => {

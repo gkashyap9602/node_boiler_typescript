@@ -44,12 +44,13 @@ app.use(express.static("public"));
 app.use(express.static(path.join(__dirname, "/public")));
 app.use("/files", express.static(__dirname + "/public/uploads"));
 
-app.use(rateLimiter); //limit the api hit with specific ip
+// app.use(rateLimiter); //limit the api hit with specific ip
 
 app.use("/swagger", serve,
   setup(undefined, {
     swaggerOptions: {
       url: "/swagger/swagger.json",
+      displayRequestDuration: true
     },
 
   })

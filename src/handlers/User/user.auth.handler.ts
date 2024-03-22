@@ -61,8 +61,10 @@ const UserAuthHandler = {
                 return showResponse(false, responseMessage.common.email_already, null, null, 400)
             }
 
+            let otp = commonHelper.generateRandomOtp(4)
             let hashed = await commonHelper.bycrptPasswordHash(password);
             data.password = hashed
+            data.otp = otp
             data.created_on = moment().unix()
 
             if (profile_pic) {
@@ -84,7 +86,6 @@ const UserAuthHandler = {
 
             }
 
-            let otp = commonHelper.generateRandomOtp(4)
 
             const template = await ejs.renderFile(path.join(process.cwd(), './src/templates', 'registration.ejs'), { user_name: result?.data?.first_name, cidLogo: 'unique@Logo', otp });
             const logoPath = path.join(process.cwd(), './public', 'logo.png');
