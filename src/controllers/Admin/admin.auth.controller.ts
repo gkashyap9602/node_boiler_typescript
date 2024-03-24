@@ -4,6 +4,7 @@ import { ApiResponse } from '../../utils/interfaces.util';
 import { validateChangePassword, validateForgotPassword, validateUpdateProfile, validateResetPassword, validateAdminLogin, validateResendOtp, validateVerifyOtp } from '../../validations/Admin/admin.auth.validator';
 import handlerAdminAuth from '../../handlers/Admin/admin.auth.handler'
 import { showResponse } from '../../utils/response.util';
+import statusCodes from 'http-status-codes'
 
 @Tags('Admin Auth')
 @Route('/admin/auth')
@@ -28,7 +29,7 @@ export default class AdminAuthController extends Controller {
         const validatedAdmin = validateAdminLogin(request);
 
         if (validatedAdmin.error) {
-            return showResponse(false, validatedAdmin.error.message, null, null, 400)
+            return showResponse(false, validatedAdmin.error.message, null, null, statusCodes.EXPECTATION_FAILED)
         }
 
         return handlerAdminAuth.login(request)
@@ -68,7 +69,7 @@ export default class AdminAuthController extends Controller {
         const validatedForgotPassword = validateForgotPassword(request);
 
         if (validatedForgotPassword.error) {
-            return showResponse(false, validatedForgotPassword.error.message, null, null, 400)
+            return showResponse(false, validatedForgotPassword.error.message, null, null, statusCodes.EXPECTATION_FAILED)
         }
 
         return handlerAdminAuth.forgotPassword(request)
@@ -85,7 +86,7 @@ export default class AdminAuthController extends Controller {
         const validatedResetPassword = validateResetPassword(request);
 
         if (validatedResetPassword.error) {
-            return showResponse(false, validatedResetPassword.error.message, null, null, 400)
+            return showResponse(false, validatedResetPassword.error.message, null, null, statusCodes.EXPECTATION_FAILED)
         }
 
         return handlerAdminAuth.resetPassword(request)
@@ -102,7 +103,7 @@ export default class AdminAuthController extends Controller {
         const validatedVerifyOtp = validateVerifyOtp(request);
 
         if (validatedVerifyOtp.error) {
-            return showResponse(false, validatedVerifyOtp.error.message, null, null, 400)
+            return showResponse(false, validatedVerifyOtp.error.message, null, null, statusCodes.EXPECTATION_FAILED)
         }
 
         return handlerAdminAuth.verifyOtp(request)
@@ -119,7 +120,7 @@ export default class AdminAuthController extends Controller {
         const validatedResendOtp = validateResendOtp(request);
 
         if (validatedResendOtp.error) {
-            return showResponse(false, validatedResendOtp.error.message, null, null, 400)
+            return showResponse(false, validatedResendOtp.error.message, null, null, statusCodes.EXPECTATION_FAILED)
         }
         return handlerAdminAuth.resendOtp(request)
     }
@@ -137,7 +138,7 @@ export default class AdminAuthController extends Controller {
         const validatedChangePassword = validateChangePassword({ old_password, new_password });
 
         if (validatedChangePassword.error) {
-            return showResponse(false, validatedChangePassword.error.message, null, null, 400)
+            return showResponse(false, validatedChangePassword.error.message, null, null, statusCodes.EXPECTATION_FAILED)
         }
 
         return handlerAdminAuth.changePassword({ old_password, new_password }, this.userId)
@@ -167,7 +168,7 @@ export default class AdminAuthController extends Controller {
             const validatedUpdateProfile = validateUpdateProfile(body);
 
             if (validatedUpdateProfile.error) {
-                return showResponse(false, validatedUpdateProfile.error.message, null, null, 400)
+                return showResponse(false, validatedUpdateProfile.error.message, null, null, statusCodes.EXPECTATION_FAILED)
             }
 
             return handlerAdminAuth.updateAdminProfile(body, this.userId, profile_pic)

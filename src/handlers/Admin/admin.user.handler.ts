@@ -7,6 +7,7 @@ import responseMessage from '../../constants/ResponseMessage'
 import userModel from '../../models/User/user.model';
 import { ROLE, USER_STATUS } from '../../constants/app.constant'
 import { tryCatchWrapper } from "../../utils/config.util";
+import statusCodes from 'http-status-codes'
 
 const AdminUserHandler = {
 
@@ -15,10 +16,10 @@ const AdminUserHandler = {
         let getResponse = await findOne(userModel, { _id: user_id, status: { $ne: USER_STATUS.DELETED } }, { password: 0 });
 
         if (!getResponse.status) {
-            return showResponse(false, responseMessage.users.invalid_user, null, null, 400)
+            return showResponse(false, responseMessage.users.invalid_user, null, null, statusCodes.UNAUTHORIZED)
         }
 
-        return showResponse(true, responseMessage.users.user_detail, getResponse.data, null, 200)
+        return showResponse(true, responseMessage.users.user_detail, getResponse.data, null, statusCodes.OK)
 
     }),
 
@@ -66,13 +67,15 @@ const AdminUserHandler = {
 
         ]
 
-
         //add this function where we cannot add query to get count of document example searchKey and add pagination at the end of query
         let { totalCount, aggregation } = await commonHelper.getCountAndPagination(userModel, aggregate, page, limit)
 
         let result = await userModel.aggregate(aggregation)
+        if (result.length === 0) {
+            return showResponse(true, responseMessage?.common.data_retreive_sucess, { result, totalCount }, null, statusCodes.NO_CONTENT);
+        }
 
-        return showResponse(true, responseMessage?.common.data_retreive_sucess, { result, totalCount }, null, 200);
+        return showResponse(true, responseMessage?.common.data_retreive_sucess, { result, totalCount }, null, statusCodes.OK);
 
     }),
 
@@ -86,7 +89,7 @@ const AdminUserHandler = {
         let result = await findOne(userModel, queryObject);
 
         if (!result.status) {
-            return showResponse(false, responseMessage.users.invalid_user, null, null, 400);
+            return showResponse(false, responseMessage.users.invalid_user, null, null, statusCodes.UNAUTHORIZED);
         }
         let editObj = {
             status,
@@ -96,12 +99,13 @@ const AdminUserHandler = {
         let response = await findOneAndUpdate(userModel, queryObject, editObj);
         if (response.status) {
             let msg = status == 2 ? "Deleted" : status == 1 ? "Activated" : "Deactivated"
-            return showResponse(true, `User Account Has Been ${msg}`, {}, null, 200);
+            return showResponse(true, `User Account Has Been ${msg}`, {}, null, statusCodes.OK);
         }
 
-        return showResponse(false, "Error While Updating User Status", null, null, 400);
+        return showResponse(false, "Error While Updating User Status", null, null, statusCodes.BAD_REQUEST);
 
     }),
+
     getDashboardData: tryCatchWrapper(async (past_day: string = 'MAX'): Promise<ApiResponse> => {
 
         // Calculate the timestamps for 30 days ago, 180 days ago, and 365 days ago
@@ -161,7 +165,7 @@ const AdminUserHandler = {
             deactivated_users: deactivated_users.data
         }
 
-        return showResponse(true, 'Dashboard data is here', { user_summary, dashboard }, null, 200);
+        return showResponse(true, 'Dashboard data is here', { user_summary, dashboard }, null, statusCodes.OK);
 
     }),
 

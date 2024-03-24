@@ -4,6 +4,8 @@ import { ApiResponse } from '../../utils/interfaces.util';
 import { validateUpdateUserStatus, validateGetCustomerDetails, validateDashboard, } from '../../validations/Admin/admin.user.validator';
 import handlerAdminUser from '../../handlers/Admin/admin.user.handler'
 import { showResponse } from '../../utils/response.util';
+import statusCodes from 'http-status-codes'
+
 
 @Tags('Admin User')
 @Route('/admin/user')
@@ -44,7 +46,7 @@ export default class AdminUserController extends Controller {
         const validatedCustomerDetails = validateGetCustomerDetails({ user_id });
 
         if (validatedCustomerDetails.error) {
-            return showResponse(false, validatedCustomerDetails.error.message, null, null, 400)
+            return showResponse(false, validatedCustomerDetails.error.message, null, null, statusCodes.EXPECTATION_FAILED)
         }
 
         return handlerAdminUser.getUserDetails(user_id)
@@ -63,7 +65,7 @@ export default class AdminUserController extends Controller {
         const validatedUpdateUserStatus = validateUpdateUserStatus(request);
 
         if (validatedUpdateUserStatus.error) {
-            return showResponse(false, validatedUpdateUserStatus.error.message, null, null, 400)
+            return showResponse(false, validatedUpdateUserStatus.error.message, null, null, statusCodes.EXPECTATION_FAILED)
         }
 
         return handlerAdminUser.updateUserStatus(request)
@@ -81,7 +83,7 @@ export default class AdminUserController extends Controller {
         const validatedDashboard = validateDashboard({ past_day });
 
         if (validatedDashboard.error) {
-            return showResponse(false, validatedDashboard.error.message, null, null, 400)
+            return showResponse(false, validatedDashboard.error.message, null, null, statusCodes.EXPECTATION_FAILED)
         }
 
 

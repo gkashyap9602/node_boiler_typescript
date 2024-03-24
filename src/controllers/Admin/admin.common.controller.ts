@@ -4,6 +4,8 @@ import { ApiResponse } from '../../utils/interfaces.util';
 import { validateUpdateQuestion, validateAddQuestion, validateCommonContent, validateDeleteQuestion } from '../../validations/Admin/admin.common.validator';
 import handlerAdminCommon from '../../handlers/Admin/admin.common.handler'
 import { showResponse } from '../../utils/response.util';
+import statusCodes from 'http-status-codes'
+
 
 @Tags('Admin Common')
 @Route('/admin/common')
@@ -30,7 +32,7 @@ export default class AdminCommonController extends Controller {
         const validatedAddQuestion = validateAddQuestion(request);
 
         if (validatedAddQuestion.error) {
-            return showResponse(false, validatedAddQuestion.error.message, null, null, 400)
+            return showResponse(false, validatedAddQuestion.error.message, null, null, statusCodes.EXPECTATION_FAILED)
         }
 
         return handlerAdminCommon.addQuestion(request)
@@ -47,7 +49,7 @@ export default class AdminCommonController extends Controller {
         const validatedUpdateQuestion = validateUpdateQuestion(request);
 
         if (validatedUpdateQuestion.error) {
-            return showResponse(false, validatedUpdateQuestion.error.message, null, null, 400)
+            return showResponse(false, validatedUpdateQuestion.error.message, null, null, statusCodes.EXPECTATION_FAILED)
         }
 
         return handlerAdminCommon.updateQuestion(request)
@@ -64,7 +66,7 @@ export default class AdminCommonController extends Controller {
         const validatedDeleteQuestion = validateDeleteQuestion({ question_id });
 
         if (validatedDeleteQuestion.error) {
-            return showResponse(false, validatedDeleteQuestion.error.message, null, null, 400)
+            return showResponse(false, validatedDeleteQuestion.error.message, null, null, statusCodes.EXPECTATION_FAILED)
         }
 
         return handlerAdminCommon.deleteQuestion({ question_id })
@@ -81,7 +83,7 @@ export default class AdminCommonController extends Controller {
         const validatedCommonContent = validateCommonContent(request);
 
         if (validatedCommonContent.error) {
-            return showResponse(false, validatedCommonContent.error.message, null, null, 400)
+            return showResponse(false, validatedCommonContent.error.message, null, null, statusCodes.EXPECTATION_FAILED)
         }
 
         return handlerAdminCommon.updateCommonContent(request)

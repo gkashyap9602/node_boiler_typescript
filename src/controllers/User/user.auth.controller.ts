@@ -1,10 +1,10 @@
 import { Request, Response } from 'express'
-import { Route, Controller, Tags, Post, Body, Get, Security, Query, UploadedFile, FormField, Put } from 'tsoa'
+import { Route, Controller, Tags, Post, Body, Get, Security, UploadedFile, FormField, Put } from 'tsoa'
 import { ApiResponse } from '../../utils/interfaces.util';
 import { validateChangePassword, validateForgotPassword, validateUpdateProfile, validateRegister, validateResetPassword, validateUser, validateResendOtp, validateVerifyOtp } from '../../validations/User/user.auth.validator';
 import handlers from '../../handlers/User/user.auth.handler'
 import { showResponse } from '../../utils/response.util';
-import { APP } from '../../constants/app.constant'
+import statusCodes from 'http-status-codes'
 
 
 @Tags('User Auth')
@@ -30,7 +30,7 @@ export default class UserAuthController extends Controller {
         const validatedUser = validateUser(request);
 
         if (validatedUser.error) {
-            return showResponse(false, validatedUser.error.message, null, null, 400)
+            return showResponse(false, validatedUser.error.message, null, null, statusCodes.EXPECTATION_FAILED)
         }
 
         return handlers.login(request)
@@ -41,7 +41,6 @@ export default class UserAuthController extends Controller {
     /**
     * Save a User
     */
-
     @Post("/register")
     public async register(@FormField() first_name: string, @FormField() last_name: string, @FormField() email: string, @FormField() password: string, @FormField() os_type: string, @FormField() phone_number?: string, @FormField() country_code?: string, @UploadedFile() profile_pic?: Express.Multer.File): Promise<ApiResponse> {
 
@@ -50,7 +49,7 @@ export default class UserAuthController extends Controller {
         const validatedSignup = validateRegister(body);
 
         if (validatedSignup.error) {
-            return showResponse(false, validatedSignup.error.message, null, null, 400)
+            return showResponse(false, validatedSignup.error.message, null, null, statusCodes.EXPECTATION_FAILED)
         }
 
         return handlers.register(body, profile_pic)
@@ -79,7 +78,7 @@ export default class UserAuthController extends Controller {
         const validatedForgotPassword = validateForgotPassword(request);
 
         if (validatedForgotPassword.error) {
-            return showResponse(false, validatedForgotPassword.error.message, null, null, 400)
+            return showResponse(false, validatedForgotPassword.error.message, null, null, statusCodes.EXPECTATION_FAILED)
         }
 
         return handlers.forgotPassword(request)
@@ -97,7 +96,7 @@ export default class UserAuthController extends Controller {
         const validatedResetPassword = validateResetPassword(request);
 
         if (validatedResetPassword.error) {
-            return showResponse(false, validatedResetPassword.error.message, null, null, 400)
+            return showResponse(false, validatedResetPassword.error.message, null, null, statusCodes.EXPECTATION_FAILED)
         }
 
         return handlers.resetPassword(request)
@@ -115,7 +114,7 @@ export default class UserAuthController extends Controller {
         const validatedVerifyOtp = validateVerifyOtp(request);
 
         if (validatedVerifyOtp.error) {
-            return showResponse(false, validatedVerifyOtp.error.message, null, null, 400)
+            return showResponse(false, validatedVerifyOtp.error.message, null, null, statusCodes.EXPECTATION_FAILED)
         }
 
         return handlers.verifyOtp(request)
@@ -133,7 +132,7 @@ export default class UserAuthController extends Controller {
         const validatedResendOtp = validateResendOtp(request);
 
         if (validatedResendOtp.error) {
-            return showResponse(false, validatedResendOtp.error.message, null, null, 400)
+            return showResponse(false, validatedResendOtp.error.message, null, null, statusCodes.EXPECTATION_FAILED)
         }
 
         return handlers.resendOtp(request)
@@ -152,7 +151,7 @@ export default class UserAuthController extends Controller {
         const validatedChangePassword = validateChangePassword({ old_password, new_password });
 
         if (validatedChangePassword.error) {
-            return showResponse(false, validatedChangePassword.error.message, null, null, 400)
+            return showResponse(false, validatedChangePassword.error.message, null, null, statusCodes.EXPECTATION_FAILED)
         }
 
         return handlers.changePassword({ old_password, new_password }, this.userId)
@@ -177,16 +176,16 @@ export default class UserAuthController extends Controller {
     @Security('Bearer')
     @Put("/profile")
     public async updateUserProfile(@FormField() first_name?: string, @FormField() last_name?: string, @FormField() phone_number?: string, @FormField() country_code?: string, @UploadedFile() profile_pic?: Express.Multer.File): Promise<ApiResponse> {
-        
-            let body = { first_name, last_name, phone_number, country_code }
 
-            const validatedUpdateProfile = validateUpdateProfile(body);
+        let body = { first_name, last_name, phone_number, country_code }
 
-            if (validatedUpdateProfile.error) {
-                return showResponse(false, validatedUpdateProfile.error.message, null, null, 400)
-            }
+        const validatedUpdateProfile = validateUpdateProfile(body);
 
-            return handlers.updateUserProfile(body, this.userId, profile_pic)
+        if (validatedUpdateProfile.error) {
+            return showResponse(false, validatedUpdateProfile.error.message, null, null, statusCodes.EXPECTATION_FAILED)
+        }
+
+        return handlers.updateUserProfile(body, this.userId, profile_pic)
 
 
     }

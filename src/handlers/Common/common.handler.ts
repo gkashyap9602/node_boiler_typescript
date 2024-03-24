@@ -6,6 +6,7 @@ import commonContentModel from "../../models/Admin/commonContent.model";
 import faqModel from "../../models/Admin/faq.model";
 import services from "../../services";
 import { tryCatchWrapper } from "../../utils/config.util";
+import statusCodes from 'http-status-codes'
 
 const CommonHandler = {
 
@@ -14,10 +15,10 @@ const CommonHandler = {
         let getResponse = await findOne(commonContentModel, {});
 
         if (!getResponse.status) {
-            return showResponse(false, responseMessage.users.invalid_user, null, null, 400)
+            return showResponse(false, responseMessage.common.data_not_found, null, null, statusCodes.NOT_FOUND)
         }
 
-        return showResponse(true, responseMessage.users.user_detail, getResponse.data, null, 200)
+        return showResponse(true, responseMessage.common.data_retreive_sucess, getResponse.data, null, statusCodes.OK)
 
     }),
 
@@ -26,10 +27,10 @@ const CommonHandler = {
         let getResponse = await findAll(faqModel, {});
 
         if (getResponse.status) {
-            return showResponse(true, responseMessage.admin.here_is_question, getResponse?.data, null, 200)
+            return showResponse(true, responseMessage.admin.here_is_question, getResponse?.data, null, statusCodes.OK)
         }
 
-        return showResponse(false, responseMessage.common.data_not_found, null, null, 400)
+        return showResponse(false, responseMessage.common.data_not_found, null, null, statusCodes.NO_CONTENT)
 
     }),
 
@@ -41,9 +42,9 @@ const CommonHandler = {
         })
 
         if (response) {
-            return showResponse(true, responseMessage?.common.parameter_store_post_success, null, null, 200);
+            return showResponse(true, responseMessage?.common.parameter_store_post_success, null, null, statusCodes.OK);
         }
-        return showResponse(false, responseMessage?.common.parameter_store_post_error, null, null, 400);
+        return showResponse(false, responseMessage?.common.parameter_store_post_error, null, null, statusCodes.BAD_REQUEST);
     }),
 
 

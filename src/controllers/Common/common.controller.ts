@@ -4,6 +4,8 @@ import { ApiResponse } from '../../utils/interfaces.util';
 import handlers from '../../handlers/Common/common.handler'
 import { showResponse } from '../../utils/response.util';
 import { validateStoreParmeterToAws } from '../../validations/Common/common.validator';
+import statusCodes from 'http-status-codes'
+
 
 @Tags('Common')
 @Route('/common')
@@ -55,7 +57,7 @@ export default class CommonController extends Controller {
             const validatedStoreParmeterToAws = validateStoreParmeterToAws({ name, value });
 
             if (validatedStoreParmeterToAws.error) {
-                return showResponse(false, validatedStoreParmeterToAws.error.message, null, null, 400)
+                return showResponse(false, validatedStoreParmeterToAws.error.message, null, null, statusCodes.EXPECTATION_FAILED)
             }
 
             return handlers.storeParameterToAws(name, value)
