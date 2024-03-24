@@ -25,16 +25,9 @@ export default class AdminUserController extends Controller {
     @Security('Bearer')
     @Get("/list")
     public async getUsersList(@Query() sort_column?: string, @Query() sort_direction?: string, @Query() page?: number, @Query() limit?: number, @Query() search_key?: string, @Query() status?: number): Promise<ApiResponse> {
-        try {
 
-            return handlerAdminUser.getUsersList(sort_column, sort_direction, page, limit, search_key, status)
+        return handlerAdminUser.getUsersList(sort_column, sort_direction, page, limit, search_key, status)
 
-        }
-        catch (err: any) {
-            //   logger.error(`${this.req.ip} ${err.message}`)
-            return err
-
-        }
     }
     //ends
 
@@ -46,22 +39,16 @@ export default class AdminUserController extends Controller {
     @Security('Bearer')
     @Get("/details")
     public async getUserDetails(@Query() user_id: string): Promise<ApiResponse> {
-        try {
-            console.log(user_id, "useriddd")
-            const validatedCustomerDetails = validateGetCustomerDetails({ user_id });
 
-            if (validatedCustomerDetails.error) {
-                return showResponse(false, validatedCustomerDetails.error.message, null, null, 400)
-            }
+        console.log(user_id, "useriddd")
+        const validatedCustomerDetails = validateGetCustomerDetails({ user_id });
 
-            return handlerAdminUser.getUserDetails(user_id)
-
+        if (validatedCustomerDetails.error) {
+            return showResponse(false, validatedCustomerDetails.error.message, null, null, 400)
         }
-        catch (err: any) {
-            //   logger.error(`${this.req.ip} ${err.message}`)
-            return err
 
-        }
+        return handlerAdminUser.getUserDetails(user_id)
+
     }
     //ends
 
@@ -72,22 +59,15 @@ export default class AdminUserController extends Controller {
     @Security('Bearer')
     @Put("/status")
     public async updateUserStatus(@Body() request: { user_id: string, status: number }): Promise<ApiResponse> {
-        try {
 
-            const validatedUpdateUserStatus = validateUpdateUserStatus(request);
+        const validatedUpdateUserStatus = validateUpdateUserStatus(request);
 
-            if (validatedUpdateUserStatus.error) {
-                return showResponse(false, validatedUpdateUserStatus.error.message, null, null, 400)
-            }
-
-            return handlerAdminUser.updateUserStatus(request)
-
+        if (validatedUpdateUserStatus.error) {
+            return showResponse(false, validatedUpdateUserStatus.error.message, null, null, 400)
         }
-        catch (err: any) {
-            // logger.error(`${this.req.ip} ${err.message}`)
-            return err
 
-        }
+        return handlerAdminUser.updateUserStatus(request)
+
     }
     //ends
 
@@ -97,23 +77,15 @@ export default class AdminUserController extends Controller {
     @Security('Bearer')
     @Get("/dashboard")
     public async getDashboardData(@Query() past_day?: string): Promise<ApiResponse> {
-        try {
 
-            const validatedDashboard = validateDashboard({ past_day });
+        const validatedDashboard = validateDashboard({ past_day });
 
-            if (validatedDashboard.error) {
-                return showResponse(false, validatedDashboard.error.message, null, null, 400)
-            }
-
-
-            return handlerAdminUser.getDashboardData(past_day)
-
+        if (validatedDashboard.error) {
+            return showResponse(false, validatedDashboard.error.message, null, null, 400)
         }
-        catch (err: any) {
-            //   logger.error(`${this.req.ip} ${err.message}`)
-            return err
 
-        }
+
+        return handlerAdminUser.getDashboardData(past_day)
     }
     //ends
 

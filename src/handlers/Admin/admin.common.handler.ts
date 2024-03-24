@@ -1,22 +1,22 @@
-import moment from "moment";
+import moment from 'moment';
 import { ApiResponse } from "../../utils/interfaces.util";
 import { showResponse } from "../../utils/response.util";
 import { findOne, createOne, findByIdAndUpdate, findOneAndUpdate, updateMany, findByIdAndRemove } from "../../helpers/db.helpers";
 import commonContentModel from "../../models/Admin/commonContent.model";
 import responseMessage from '../../constants/ResponseMessage'
 import faqModel from '../../models/Admin/faq.model';
+import { tryCatchWrapper } from '../../utils/config.util';
 
 const AdminCommonHandler = {
 
-    async addQuestion(data: any): Promise<ApiResponse> {
-        try {
+    addQuestion: tryCatchWrapper(async (data: any): Promise<ApiResponse> => {
+
             const { question, answer } = data;
 
             const exists = await findOne(faqModel, { question })
 
             if (exists.status) {
                 return showResponse(false, responseMessage.common.already_existed, null, null, 400)
-
             }
 
             let newObj = {
@@ -32,20 +32,14 @@ const AdminCommonHandler = {
                 return showResponse(true, responseMessage.admin.question_added, null, null, 200);
             }
             return showResponse(false, responseMessage.admin.failed_question_add, response, null, 400);
+    }),
 
-        }
-        catch (err: any) {
-            // logger.error(`${this.req.ip} ${err.message}`)
-            return showResponse(false, err?.message ?? err, null, null, 400)
+    updateQuestion: tryCatchWrapper(async (data: any): Promise<ApiResponse> => {
 
-        }
-    },
-    async updateQuestion(data: any): Promise<ApiResponse> {
-        try {
             const { answer, question, question_id } = data;
 
             let updateObj: any = {
-                updated_on: moment().unix()
+                // updated_on: moment().unix()
             }
 
             if (answer) {
@@ -60,17 +54,10 @@ const AdminCommonHandler = {
                 return showResponse(true, responseMessage.common.update_sucess, null, null, 200);
             }
             return showResponse(false, responseMessage.common.update_failed, null, null, 400);
+    }),
 
+    deleteQuestion: tryCatchWrapper(async (data: any): Promise<ApiResponse> => {
 
-        }
-        catch (err: any) {
-            // logger.error(`${this.req.ip} ${err.message}`)
-            return showResponse(false, err?.message ?? err, null, null, 400)
-
-        }
-    },
-    async deleteQuestion(data: any): Promise<ApiResponse> {
-        try {
             const { question_id } = data;
 
             const exists = await findOne(faqModel, { _id: question_id })
@@ -84,35 +71,18 @@ const AdminCommonHandler = {
                 return showResponse(true, responseMessage.common.delete_sucess, null, null, 200);
             }
             return showResponse(false, responseMessage.common.delete_failed, response, null, 400);
+    }),
 
-        }
-        catch (err: any) {
-            // logger.error(`${this.req.ip} ${err.message}`)
-            return showResponse(false, err?.message ?? err, null, null, 400)
+    updateCommonContent: tryCatchWrapper(async (data: any): Promise<ApiResponse> => {
 
-        }
-    },
-
-
-    async updateCommonContent(data: any): Promise<ApiResponse> {
-        try {
-
-            data.updated_on = moment().unix()
+            // data.updated_on = moment().unix()
             let response = await findOneAndUpdate(commonContentModel, {}, data);
             if (response.status) {
                 return showResponse(true, responseMessage.admin.common_content_updated, response?.data, null, 200);
             }
-
-            return showResponse(false, responseMessage.common.update_failed, {}, null, 400);
-
-        }
-        catch (err: any) {
-            // logger.error(`${this.req.ip} ${err.message}`)
-            return showResponse(false, err?.message ?? err, null, null, 400)
-
-        }
-    },
+            return showResponse(false, responseMessage.common.update_failed, {}, null, 400)
+    }),
 
 }
 
-export default AdminCommonHandler 
+export default AdminCommonHandler;

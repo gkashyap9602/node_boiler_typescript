@@ -25,16 +25,9 @@ export default class CommonController extends Controller {
     @Security('Bearer')
     @Get("/common_content")
     public async getCommonContent(): Promise<ApiResponse> {
-        try {
 
-            return handlers.getCommonContent()
+        return handlers.getCommonContent()
 
-        }
-        catch (err: any) {
-            //   logger.error(`${this.req.ip} ${err.message}`)
-            return err
-
-        }
     }
     //ends
 
@@ -44,16 +37,9 @@ export default class CommonController extends Controller {
     @Security('Bearer')
     @Get("/questions")
     public async getQuestions(): Promise<ApiResponse> {
-        try {
 
-            return handlers.getQuestions()
+        return handlers.getQuestions()
 
-        }
-        catch (err: any) {
-            //   logger.error(`${this.req.ip} ${err.message}`)
-            return err
-
-        }
     }
     //ends
 
@@ -63,8 +49,7 @@ export default class CommonController extends Controller {
 
     @Post("/store_paramter_to_aws")
     public async storeParameterToAws(@FormField() name: string, @FormField() value: string): Promise<ApiResponse> {
-        try {
-
+        
             console.log(name, "nameeeeeee")
             console.log(value, "valueeeeeee")
             const validatedStoreParmeterToAws = validateStoreParmeterToAws({ name, value });
@@ -75,12 +60,6 @@ export default class CommonController extends Controller {
 
             return handlers.storeParameterToAws(name, value)
 
-        }
-        catch (err: any) {
-            // logger.error(`${this.req.ip} ${err.message}`)
-            return err
-
-        }
     }
     //ends
 

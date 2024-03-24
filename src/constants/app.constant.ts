@@ -9,11 +9,16 @@ if (envConfig.error) {
   throw new Error("No .Env File Found");
 }
 
-let { db_name, db_uri, bucket, admin_email } = getEnvironmentParams(process.env.ENV_MODE, 'boilerplate') //2nd parm is project name 
-console.log(db_name, db_uri, bucket, admin_email, "parmsFetchFromAws")
+//1st parm is Environment mode -> DEV,PROD,STAG 
+//2nd parm is project name 
+//3rd parm is project Initial 
+let ENV_PARMAS = getEnvironmentParams(process.env.ENV_MODE, 'BOILERPLATE', 'BP')
+console.log(ENV_PARMAS, "Parms For Aws Parameter store")
 
+let { DB_NAME, DB_URI, BUCKET, ADMIN_EMAIL, REGION, ACCESSID, STMP_EMAIL, SMTP_APP_PASSWORD } = ENV_PARMAS
 
 let AWS_CREDENTIAL: AwsCredential
+
 
 const APP: AppConstant = {
   ACCESS_EXPIRY: "1d",
@@ -23,7 +28,7 @@ const APP: AppConstant = {
   FRONTEND_URL: process.env.FRONTEND_URL || '',
   BITBUCKET_URL: process.env.BITBUCKET_URL || '',
   JWT_SECRET: process.env.SECRET || "secret",
-  ADMIN_CRED_EMAIL: admin_email
+  ADMIN_CRED_EMAIL: ADMIN_EMAIL
 
 };
 
@@ -71,13 +76,13 @@ const REDIS_CREDENTIAL = {
 //call this function when paramters are stored to aws 
 let initializeAwsCredential = async () => {
 
-  // DB.MONGODB_URI = services.awsService.getParameterFromAWS({ name: db_uri })
-  // DB.DB_NAME = services.awsService.getParameterFromAWS({ name: db_name })
+  // DB.MONGODB_URI = services.awsService.getParameterFromAWS({ name: DB_URI })
+  // DB.DB_NAME = services.awsService.getParameterFromAWS({ name: DB_NAME })
 
   APP.JWT_SECRET = services.awsService.getParameterFromAWS({ name: "API_SECRET" })
   EMAIL_CREDENTIAL.SENDGRID_API = services.awsService.getParameterFromAWS({ name: 'STMP_EMAIL' })
   EMAIL_CREDENTIAL.SENDGRID_API_KEY = services.awsService.getParameterFromAWS({ name: 'SMTP_APP_PASSWORD' })
-  
+
   // SMS_CREDENTIAL.TWILIO_AUTH_TOKEN = services.awsService.getParameterFromAWS({ name: 'TWILIO_AUTH_TOKEN' })
   // SMS_CREDENTIAL.TWILIO_AUTH_TOKEN = services.awsService.getParameterFromAWS({ name: 'TWILIO_AUTH_TOKEN' })
 
@@ -88,9 +93,8 @@ let initializeAwsCredential = async () => {
     BUCKET_NAME: services.awsService.getParameterFromAWS({ name: 'DIGISMART-BUCKET' }),
   };
 
-console.log(await EMAIL_CREDENTIAL.SENDGRID_API,"EMAIL_CREDENTIALEMAIL_CREDENTIAL")
 }
 
 
 
-export { DB, APP, ROLE, REDIS_CREDENTIAL, LOGS, USER_STATUS, AWS_CREDENTIAL, EMAIL_CREDENTIAL,SMS_CREDENTIAL, initializeAwsCredential };
+export { DB, APP, ROLE, REDIS_CREDENTIAL, LOGS, USER_STATUS, AWS_CREDENTIAL, EMAIL_CREDENTIAL, SMS_CREDENTIAL, initializeAwsCredential };

@@ -23,5 +23,13 @@ export const showResponse = (status: boolean, message: string, data: any = null,
 
 export const showOutput = (res: Response, showResponse: ApiResponse, code: number) => {
     // delete response.code;
-    res.status(code).json(showResponse);
+    let res_msg: any = {
+        message: showResponse.message,
+        data: showResponse.data
+    }
+
+    if (showResponse.other) {
+        res_msg.other = showResponse.other
+    }
+    res.status(code).json(res_msg);
 };

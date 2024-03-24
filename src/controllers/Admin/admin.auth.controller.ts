@@ -24,20 +24,14 @@ export default class AdminAuthController extends Controller {
      */
     @Post("/login")
     public async login(@Body() request: { email: string, password: string, os_type: string }): Promise<ApiResponse> {
-        try {
 
-            const validatedAdmin = validateAdminLogin(request);
+        const validatedAdmin = validateAdminLogin(request);
 
-            if (validatedAdmin.error) {
-                return showResponse(false, validatedAdmin.error.message, null, null, 400)
-            }
-
-            return handlerAdminAuth.login(request)
+        if (validatedAdmin.error) {
+            return showResponse(false, validatedAdmin.error.message, null, null, 400)
         }
-        catch (err: any) {
-            // logger.error(`${this.req.ip} ${err.message}`)
-            return err
-        }
+
+        return handlerAdminAuth.login(request)
     }
     //ends
 
@@ -70,22 +64,14 @@ export default class AdminAuthController extends Controller {
     */
     @Post("/forgot_password")
     public async forgotPassword(@Body() request: { email: string }): Promise<ApiResponse> {
-        try {
-            const validatedForgotPassword = validateForgotPassword(request);
 
-            if (validatedForgotPassword.error) {
-                return showResponse(false, validatedForgotPassword.error.message, null, null, 400)
-            }
+        const validatedForgotPassword = validateForgotPassword(request);
 
-            return handlerAdminAuth.forgotPassword(request)
-
+        if (validatedForgotPassword.error) {
+            return showResponse(false, validatedForgotPassword.error.message, null, null, 400)
         }
-        catch (err: any) {
-            // logger.error(`${this.req.ip} ${err.message}`)
-            return err
 
-
-        }
+        return handlerAdminAuth.forgotPassword(request)
     }
     //ends
 
@@ -95,22 +81,14 @@ export default class AdminAuthController extends Controller {
     @Security('Bearer')
     @Post("/reset_password")
     public async resetPassword(@Body() request: { email: string, new_password: string }): Promise<ApiResponse> {
-        try {
 
-            const validatedResetPassword = validateResetPassword(request);
+        const validatedResetPassword = validateResetPassword(request);
 
-            if (validatedResetPassword.error) {
-                return showResponse(false, validatedResetPassword.error.message, null, null, 400)
-            }
-
-            return handlerAdminAuth.resetPassword(request)
-
+        if (validatedResetPassword.error) {
+            return showResponse(false, validatedResetPassword.error.message, null, null, 400)
         }
-        catch (err: any) {
-            // logger.error(`${this.req.ip} ${err.message}`)
-            return err
 
-        }
+        return handlerAdminAuth.resetPassword(request)
     }
     //ends
 
@@ -120,22 +98,14 @@ export default class AdminAuthController extends Controller {
     @Security('Bearer')
     @Post("/verify_otp")
     public async verifyOtp(@Body() request: { email: string, otp: number }): Promise<ApiResponse> {
-        try {
 
-            const validatedVerifyOtp = validateVerifyOtp(request);
+        const validatedVerifyOtp = validateVerifyOtp(request);
 
-            if (validatedVerifyOtp.error) {
-                return showResponse(false, validatedVerifyOtp.error.message, null, null, 400)
-            }
-
-            return handlerAdminAuth.verifyOtp(request)
-
+        if (validatedVerifyOtp.error) {
+            return showResponse(false, validatedVerifyOtp.error.message, null, null, 400)
         }
-        catch (err: any) {
-            // logger.error(`${this.req.ip} ${err.message}`)
-            return err
 
-        }
+        return handlerAdminAuth.verifyOtp(request)
     }
     //ends
 
@@ -145,21 +115,13 @@ export default class AdminAuthController extends Controller {
     @Security('Bearer')
     @Post("/resend_otp")
     public async resendOtp(@Body() request: { email: string }): Promise<ApiResponse> {
-        try {
 
-            const validatedResendOtp = validateResendOtp(request);
+        const validatedResendOtp = validateResendOtp(request);
 
-            if (validatedResendOtp.error) {
-                return showResponse(false, validatedResendOtp.error.message, null, null, 400)
-            }
-            return handlerAdminAuth.resendOtp(request)
-
+        if (validatedResendOtp.error) {
+            return showResponse(false, validatedResendOtp.error.message, null, null, 400)
         }
-        catch (err: any) {
-            // logger.error(`${this.req.ip} ${err.message}`)
-            return err
-
-        }
+        return handlerAdminAuth.resendOtp(request)
     }
     //ends
 
@@ -169,23 +131,16 @@ export default class AdminAuthController extends Controller {
     @Security('Bearer')
     @Post("/change_password")
     public async changePassword(@Body() request: { old_password: string, new_password: string }): Promise<ApiResponse> {
-        try {
-            const { old_password, new_password } = request;
 
-            const validatedChangePassword = validateChangePassword({ old_password, new_password });
+        const { old_password, new_password } = request;
 
-            if (validatedChangePassword.error) {
-                return showResponse(false, validatedChangePassword.error.message, null, null, 400)
-            }
+        const validatedChangePassword = validateChangePassword({ old_password, new_password });
 
-            return handlerAdminAuth.changePassword({ old_password, new_password }, this.userId)
-
+        if (validatedChangePassword.error) {
+            return showResponse(false, validatedChangePassword.error.message, null, null, 400)
         }
-        catch (err: any) {
-            // logger.error(`${this.req.ip} ${err.message}`)
-            return err
 
-        }
+        return handlerAdminAuth.changePassword({ old_password, new_password }, this.userId)
     }
     //ends
 
@@ -195,16 +150,8 @@ export default class AdminAuthController extends Controller {
     @Security('Bearer')
     @Get("/details")
     public async getAdminDetails(): Promise<ApiResponse> {
-        try {
 
-            return handlerAdminAuth.getAdminDetails(this.userId)
-
-        }
-        catch (err: any) {
-            //   logger.error(`${this.req.ip} ${err.message}`)
-            return err
-
-        }
+        return handlerAdminAuth.getAdminDetails(this.userId)
     }
     //ends
 
@@ -214,7 +161,7 @@ export default class AdminAuthController extends Controller {
     @Security('Bearer')
     @Put("/profile")
     public async updateAdminProfile(@FormField() first_name?: string, @FormField() last_name?: string, @FormField() phone_number?: string, @FormField() country_code?: string, @FormField() greet_msg?: boolean, @UploadedFile() profile_pic?: Express.Multer.File): Promise<ApiResponse> {
-        try {
+        
             let body = { first_name, last_name, phone_number, country_code, greet_msg }
 
             const validatedUpdateProfile = validateUpdateProfile(body);
@@ -224,17 +171,8 @@ export default class AdminAuthController extends Controller {
             }
 
             return handlerAdminAuth.updateAdminProfile(body, this.userId, profile_pic)
-
-        }
-        catch (err: any) {
-            // logger.error(`${this.req.ip} ${err.message}`)
-            return err
-
-        }
     }
     //ends
-
-
 
 }
 

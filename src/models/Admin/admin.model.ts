@@ -16,8 +16,8 @@ const AdminSchema = new Schema(
         os_type: { type: String, default: '' },
         greet_msg: { type: Boolean, default: true },
         status: { type: Number, default: USER_STATUS.ACTIVE },
-        created_on: { type: Number, default: 0 },
-        updated_on: { type: Number, default: 0 }
+        // created_on: { type: Number, default: 0 },
+        // updated_on: { type: Number, default: 0 }
 
     },
     {
@@ -26,7 +26,7 @@ const AdminSchema = new Schema(
         id: false,
         versionKey: false,
         // collection: 'admin'
-        // timestamps: true
+        timestamps: true
     },
 )
 

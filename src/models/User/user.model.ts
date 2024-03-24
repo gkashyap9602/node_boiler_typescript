@@ -52,8 +52,8 @@ const UserSchema = new Schema(
 
         // }],
         status: { type: Number, default: USER_STATUS.ACTIVE },
-        created_on: { type: Number, default: 0 },
-        updated_on: { type: Number, default: 0 }
+        // created_on: { type: Number, default: 0 },
+        // updated_on: { type: Number, default: 0 }
 
     },
     {
@@ -61,7 +61,7 @@ const UserSchema = new Schema(
         toObject: { virtuals: true },
         id: false,
         versionKey: false,
-        // timestamps: true
+        timestamps: true
     },
 
 )

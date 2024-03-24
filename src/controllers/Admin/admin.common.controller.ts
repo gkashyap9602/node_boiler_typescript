@@ -26,25 +26,14 @@ export default class AdminCommonController extends Controller {
     @Security('Bearer')
     @Post("/question")
     public async addQuestion(@Body() request: { question: string, answer: string }): Promise<ApiResponse> {
-        try {
-            // const { old_password, new_password } = request;
 
-            console.log(request, "requesttttt")
+        const validatedAddQuestion = validateAddQuestion(request);
 
-            const validatedAddQuestion = validateAddQuestion(request);
-
-            if (validatedAddQuestion.error) {
-                return showResponse(false, validatedAddQuestion.error.message, null, null, 400)
-            }
-
-            return handlerAdminCommon.addQuestion(request)
-
+        if (validatedAddQuestion.error) {
+            return showResponse(false, validatedAddQuestion.error.message, null, null, 400)
         }
-        catch (err: any) {
-            // logger.error(`${this.req.ip} ${err.message}`)
-            return err
 
-        }
+        return handlerAdminCommon.addQuestion(request)
     }
     //ends
 
@@ -54,22 +43,14 @@ export default class AdminCommonController extends Controller {
     @Security('Bearer')
     @Put("/question")
     public async updateQuestion(@Body() request: { question_id: string, question: string, answer: string }): Promise<ApiResponse> {
-        try {
 
-            const validatedUpdateQuestion = validateUpdateQuestion(request);
+        const validatedUpdateQuestion = validateUpdateQuestion(request);
 
-            if (validatedUpdateQuestion.error) {
-                return showResponse(false, validatedUpdateQuestion.error.message, null, null, 400)
-            }
-
-            return handlerAdminCommon.updateQuestion(request)
-
+        if (validatedUpdateQuestion.error) {
+            return showResponse(false, validatedUpdateQuestion.error.message, null, null, 400)
         }
-        catch (err: any) {
-            // logger.error(`${this.req.ip} ${err.message}`)
-            return err
 
-        }
+        return handlerAdminCommon.updateQuestion(request)
     }
     //ends
 
@@ -79,22 +60,14 @@ export default class AdminCommonController extends Controller {
     @Security('Bearer')
     @Delete("/question")
     public async deleteQuestion(@FormField() question_id: string): Promise<ApiResponse> {
-        try {
 
-            const validatedDeleteQuestion = validateDeleteQuestion({ question_id });
+        const validatedDeleteQuestion = validateDeleteQuestion({ question_id });
 
-            if (validatedDeleteQuestion.error) {
-                return showResponse(false, validatedDeleteQuestion.error.message, null, null, 400)
-            }
-
-            return handlerAdminCommon.deleteQuestion({ question_id })
-
+        if (validatedDeleteQuestion.error) {
+            return showResponse(false, validatedDeleteQuestion.error.message, null, null, 400)
         }
-        catch (err: any) {
-            // logger.error(`${this.req.ip} ${err.message}`)
-            return err
 
-        }
+        return handlerAdminCommon.deleteQuestion({ question_id })
     }
     //ends
 
@@ -104,22 +77,14 @@ export default class AdminCommonController extends Controller {
     @Security('Bearer')
     @Put("/common_content")
     public async updateCommonContent(@Body() request: { about: string, privacy_policy: string, terms_conditions: string }): Promise<ApiResponse> {
-        try {
 
-            const validatedCommonContent = validateCommonContent(request);
+        const validatedCommonContent = validateCommonContent(request);
 
-            if (validatedCommonContent.error) {
-                return showResponse(false, validatedCommonContent.error.message, null, null, 400)
-            }
-
-            return handlerAdminCommon.updateCommonContent(request)
-
+        if (validatedCommonContent.error) {
+            return showResponse(false, validatedCommonContent.error.message, null, null, 400)
         }
-        catch (err: any) {
-            // logger.error(`${this.req.ip} ${err.message}`)
-            return err
 
-        }
+        return handlerAdminCommon.updateCommonContent(request)
     }
     //ends
 

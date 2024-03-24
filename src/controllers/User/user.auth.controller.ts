@@ -7,7 +7,6 @@ import { showResponse } from '../../utils/response.util';
 import { APP } from '../../constants/app.constant'
 
 
-
 @Tags('User Auth')
 @Route('/user/auth')
 
@@ -27,20 +26,15 @@ export default class UserAuthController extends Controller {
      */
     @Post("/login")
     public async login(@Body() request: { email: string, password: string, os_type: string }): Promise<ApiResponse> {
-        try {
 
-            const validatedUser = validateUser(request);
+        const validatedUser = validateUser(request);
 
-            if (validatedUser.error) {
-                return showResponse(false, validatedUser.error.message, null, null, 400)
-            }
-
-            return handlers.login(request)
+        if (validatedUser.error) {
+            return showResponse(false, validatedUser.error.message, null, null, 400)
         }
-        catch (err: any) {
-            // logger.error(`${this.req.ip} ${err.message}`)
-            return err
-        }
+
+        return handlers.login(request)
+
     }
     //ends
 
@@ -50,23 +44,17 @@ export default class UserAuthController extends Controller {
 
     @Post("/register")
     public async register(@FormField() first_name: string, @FormField() last_name: string, @FormField() email: string, @FormField() password: string, @FormField() os_type: string, @FormField() phone_number?: string, @FormField() country_code?: string, @UploadedFile() profile_pic?: Express.Multer.File): Promise<ApiResponse> {
-        try {
-            let body = { first_name, last_name, email, password, phone_number, country_code, os_type }
 
-            const validatedSignup = validateRegister(body);
+        let body = { first_name, last_name, email, password, phone_number, country_code, os_type }
 
-            if (validatedSignup.error) {
-                return showResponse(false, validatedSignup.error.message, null, null, 400)
-            }
+        const validatedSignup = validateRegister(body);
 
-            return handlers.register(body, profile_pic)
-
+        if (validatedSignup.error) {
+            return showResponse(false, validatedSignup.error.message, null, null, 400)
         }
-        catch (err: any) {
-            // logger.error(`${this.req.ip} ${err.message}`)
-            return err
 
-        }
+        return handlers.register(body, profile_pic)
+
     }
     //ends
 
@@ -76,41 +64,26 @@ export default class UserAuthController extends Controller {
     @Security('Bearer')
     @Post("/upload_file")
     public async uploadFile(@UploadedFile() file: Express.Multer.File): Promise<ApiResponse> {
-        try {
 
-            return handlers.uploadFile({ file })
 
-        }
-
-        catch (err: any) {
-            // logger.error(`${this.req.ip} ${err.message}`)
-            return err
-
-        }
+        return handlers.uploadFile({ file })
     }
-
+    //ends
 
     /**
     * Forgot password api endpoint
     */
     @Post("/forgot_password")
     public async forgotPassword(@Body() request: { email: string }): Promise<ApiResponse> {
-        try {
-            const validatedForgotPassword = validateForgotPassword(request);
 
-            if (validatedForgotPassword.error) {
-                return showResponse(false, validatedForgotPassword.error.message, null, null, 400)
-            }
+        const validatedForgotPassword = validateForgotPassword(request);
 
-            return handlers.forgotPassword(request)
-
+        if (validatedForgotPassword.error) {
+            return showResponse(false, validatedForgotPassword.error.message, null, null, 400)
         }
-        catch (err: any) {
-            // logger.error(`${this.req.ip} ${err.message}`)
-            return err
 
+        return handlers.forgotPassword(request)
 
-        }
     }
     //ends
 
@@ -120,22 +93,15 @@ export default class UserAuthController extends Controller {
     @Security('Bearer')
     @Post("/reset_password")
     public async resetPassword(@Body() request: { email: string, new_password: string }): Promise<ApiResponse> {
-        try {
 
-            const validatedResetPassword = validateResetPassword(request);
+        const validatedResetPassword = validateResetPassword(request);
 
-            if (validatedResetPassword.error) {
-                return showResponse(false, validatedResetPassword.error.message, null, null, 400)
-            }
-
-            return handlers.resetPassword(request)
-
+        if (validatedResetPassword.error) {
+            return showResponse(false, validatedResetPassword.error.message, null, null, 400)
         }
-        catch (err: any) {
-            // logger.error(`${this.req.ip} ${err.message}`)
-            return err
 
-        }
+        return handlers.resetPassword(request)
+
     }
     //ends
 
@@ -145,21 +111,15 @@ export default class UserAuthController extends Controller {
     @Security('Bearer')
     @Post("/verify_otp")
     public async verifyOtp(@Body() request: { email: string, otp: number }): Promise<ApiResponse> {
-        try {
-            const validatedVerifyOtp = validateVerifyOtp(request);
 
-            if (validatedVerifyOtp.error) {
-                return showResponse(false, validatedVerifyOtp.error.message, null, null, 400)
-            }
+        const validatedVerifyOtp = validateVerifyOtp(request);
 
-            return handlers.verifyOtp(request)
-
+        if (validatedVerifyOtp.error) {
+            return showResponse(false, validatedVerifyOtp.error.message, null, null, 400)
         }
-        catch (err: any) {
-            // logger.error(`${this.req.ip} ${err.message}`)
-            return err
 
-        }
+        return handlers.verifyOtp(request)
+
     }
     //ends
 
@@ -169,22 +129,14 @@ export default class UserAuthController extends Controller {
     @Security('Bearer')
     @Post("/resend_otp")
     public async resendOtp(@Body() request: { email: string }): Promise<ApiResponse> {
-        try {
 
-            const validatedResendOtp = validateResendOtp(request);
+        const validatedResendOtp = validateResendOtp(request);
 
-            if (validatedResendOtp.error) {
-                return showResponse(false, validatedResendOtp.error.message, null, null, 400)
-            }
-
-            return handlers.resendOtp(request)
-
+        if (validatedResendOtp.error) {
+            return showResponse(false, validatedResendOtp.error.message, null, null, 400)
         }
-        catch (err: any) {
-            // logger.error(`${this.req.ip} ${err.message}`)
-            return err
 
-        }
+        return handlers.resendOtp(request)
     }
     //ends
 
@@ -194,23 +146,16 @@ export default class UserAuthController extends Controller {
     @Security('Bearer')
     @Post("/change_password")
     public async changePassword(@Body() request: { old_password: string, new_password: string }): Promise<ApiResponse> {
-        try {
-            const { old_password, new_password } = request;
 
-            const validatedChangePassword = validateChangePassword({ old_password, new_password });
+        const { old_password, new_password } = request;
 
-            if (validatedChangePassword.error) {
-                return showResponse(false, validatedChangePassword.error.message, null, null, 400)
-            }
+        const validatedChangePassword = validateChangePassword({ old_password, new_password });
 
-            return handlers.changePassword({ old_password, new_password }, this.userId)
-
+        if (validatedChangePassword.error) {
+            return showResponse(false, validatedChangePassword.error.message, null, null, 400)
         }
-        catch (err: any) {
-            // logger.error(`${this.req.ip} ${err.message}`)
-            return err
 
-        }
+        return handlers.changePassword({ old_password, new_password }, this.userId)
     }
     //ends
 
@@ -220,17 +165,9 @@ export default class UserAuthController extends Controller {
     @Security('Bearer')
     @Get("/details")
     public async getUserDetails(): Promise<ApiResponse> {
-        try {
-            // console.log(req.body.user, "")
+        // console.log(req.body.user, "")
+        return handlers.getUserDetails(this.userId)
 
-            return handlers.getUserDetails(this.userId)
-
-        }
-        catch (err: any) {
-            //   logger.error(`${this.req.ip} ${err.message}`)
-            return err
-
-        }
     }
     //ends
 
@@ -240,8 +177,7 @@ export default class UserAuthController extends Controller {
     @Security('Bearer')
     @Put("/profile")
     public async updateUserProfile(@FormField() first_name?: string, @FormField() last_name?: string, @FormField() phone_number?: string, @FormField() country_code?: string, @UploadedFile() profile_pic?: Express.Multer.File): Promise<ApiResponse> {
-        try {
-
+        
             let body = { first_name, last_name, phone_number, country_code }
 
             const validatedUpdateProfile = validateUpdateProfile(body);
@@ -252,12 +188,7 @@ export default class UserAuthController extends Controller {
 
             return handlers.updateUserProfile(body, this.userId, profile_pic)
 
-        }
-        catch (err: any) {
-            // logger.error(`${this.req.ip} ${err.message}`)
-            return err
 
-        }
     }
     //ends
 
