@@ -44,7 +44,7 @@ export default class UserAuthController extends Controller {
     @Post("/register")
     public async register(@FormField() first_name: string, @FormField() last_name: string, @FormField() email: string, @FormField() password: string, @FormField() os_type: string, @FormField() phone_number?: string, @FormField() country_code?: string, @UploadedFile() profile_pic?: Express.Multer.File): Promise<ApiResponse> {
 
-        let body = { first_name, last_name, email, password, phone_number, country_code, os_type }
+        const body = { first_name, last_name, email, password, phone_number, country_code, os_type }
 
         const validatedSignup = validateRegister(body);
 
@@ -177,7 +177,7 @@ export default class UserAuthController extends Controller {
     @Put("/profile")
     public async updateUserProfile(@FormField() first_name?: string, @FormField() last_name?: string, @FormField() phone_number?: string, @FormField() country_code?: string, @UploadedFile() profile_pic?: Express.Multer.File): Promise<ApiResponse> {
 
-        let body = { first_name, last_name, phone_number, country_code }
+        const body = { first_name, last_name, phone_number, country_code }
 
         const validatedUpdateProfile = validateUpdateProfile(body);
 

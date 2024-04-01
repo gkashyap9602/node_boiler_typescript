@@ -24,7 +24,8 @@ export interface AppConstant {
     FRONTEND_URL: string;
     BITBUCKET_URL: string;
     ADMIN_CRED_EMAIL:string
-    JWT_SECRET: any
+    JWT_SECRET: any,
+    FILE_SIZE: number
 }
 
 export interface DbConstant {

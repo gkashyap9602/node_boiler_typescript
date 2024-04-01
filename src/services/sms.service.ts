@@ -8,12 +8,12 @@ import AWS from 'aws-sdk'
 const sendSMSWithTwillio = async (to: string, body: string) => {
     try {
 
-        let twillio_sid = await SMS_CREDENTIAL.TWILIO_ACCOUNT_SID
-        let twillio_auth = await SMS_CREDENTIAL.TWILIO_AUTH_TOKEN
+        const twillio_sid = await SMS_CREDENTIAL.TWILIO_ACCOUNT_SID
+        const twillio_auth = await SMS_CREDENTIAL.TWILIO_AUTH_TOKEN
 
         const client = twillioClient(twillio_sid, twillio_auth);
 
-        let response = await client.messages.create({
+        const response = await client.messages.create({
             body,
             from: SMS_CREDENTIAL.SEND_FROM_HOST,
             to
@@ -26,8 +26,8 @@ const sendSMSWithTwillio = async (to: string, body: string) => {
 }
 
 
-const sendSMSWithAwsSNS = async (to: number, Message: string) => {
-    return new Promise(async (resolve, reject) => {
+const sendSMSWithAwsSNS = (to: number, Message: string) => {
+    return new Promise((resolve, reject) => {
         try {
             const sns = new AWS.SNS();
             const params: any = {
@@ -37,7 +37,7 @@ const sendSMSWithAwsSNS = async (to: number, Message: string) => {
             // Send the SMS
             sns.publish(params, (err, data) => {
                 if (err) {
-                    return resolve(
+                    return reject(
                         showResponse(
                             false,
                             responseMessage?.common?.sms_sent_error,
@@ -60,7 +60,7 @@ const sendSMSWithAwsSNS = async (to: number, Message: string) => {
             });
         } catch (err) {
             console.log("in catch err", err);
-            return resolve(
+            return reject(
                 showResponse(false, responseMessage?.common?.aws_error, err, null, 200)
             );
         }

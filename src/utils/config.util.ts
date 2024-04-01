@@ -1,19 +1,21 @@
 import rateLimit from 'express-rate-limit'
 import Queue from 'bull'
-import { REDIS_CREDENTIAL, APP } from '../constants/app.constant'
+import { APP, REDIS_CREDENTIAL } from '../constants/app.constant'
 import { showResponse } from './response.util';
 import statusCodes from 'http-status-codes'
+import { NextFunction, Response, Request } from 'express';
+import multer from 'multer'
 
 
 //get params according to your environment
 export const getEnvironmentParams = (env: any, project_name: string, project_initial: string) => {
 
     project_name = project_name.toUpperCase()
-    let admin_email = project_name.toLowerCase()
-    let initial_for_aws = project_initial.toUpperCase()
+    const admin_email = project_name.toLowerCase()
+    const initial_for_aws = project_initial.toUpperCase()
 
     console.log(admin_email, "admin_email")
-    let env_obj = <any>{
+    const env_obj = <any>{
         'PROD': {
             DB_NAME: `${initial_for_aws}_DB_NAME_PROD`,
             DB_URI: `${initial_for_aws}_MONGODB_URI_PROD`,
@@ -77,12 +79,24 @@ export const rateLimiter = rateLimit({
 export const tryCatchWrapper = (func: any) => {
     return async (...args: any[]) => {
         try {
-            console.log(...args, "argssssssss")
-            return await func(...args);
+            // console.log("Entering try block with arguments:", ...args);
+            const result = await func(...args);
+            console.log("Exiting try block with result:", result);
+            return result;
         } catch (err: any) {
-            console.log(err, "errKKKKK")
-            // logger.error(`${this.req.ip} ${err.message}`)
-            return showResponse(false, err?.message ?? err, null, null, statusCodes.BAD_REQUEST)
+            console.error("Caught an error:", err);
+            return showResponse(false, err?.message ?? err, null, statusCodes.BAD_REQUEST);
         }
     };
 };
+
+// Error handler middleware for handling file size limit exceeded error
+export const handleFileSize = (err: any, req: Request, res: Response, next: NextFunction) => {
+    // console.log(err, "errrrrfileside")
+
+    if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_SIZE') {
+        // File size limit exceeded error
+        return res.status(400).send({ message: `File size limit exceeded (Max: ${APP.FILE_SIZE}MB)` });
+    }
+    next(err);
+}

@@ -3,7 +3,7 @@ import { ApiResponse } from '../utils/interfaces.util'
 
 export const showResponse = (status: boolean, message: string, data: any = null, other: any = null, code: number | null = null) => {
 
-    let response: ApiResponse = {
+    const response: ApiResponse = {
         status: status,
         message: message,
         code: 400
@@ -23,7 +23,7 @@ export const showResponse = (status: boolean, message: string, data: any = null,
 
 export const showOutput = (res: Response, showResponse: ApiResponse, code: number) => {
     // delete response.code;
-    let res_msg: any = {
+    const res_msg: any = {
         message: showResponse.message,
         data: showResponse.data
     }

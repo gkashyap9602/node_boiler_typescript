@@ -1,18 +1,18 @@
 import fileSystem from 'fs'
-const fs = require('fs.promises');
+import fs from 'fs/promises'
 
-export const readHTMLFile = async function (path: string) {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const read = await fileSystem.promises.readFile(path, { encoding: 'utf-8' })
-            resolve(read)
-        }
-        catch (err) {
-            reject(err)
-        }
-
-    })
+export const readHTMLFile = function (path: string) {
+    return new Promise((resolve, reject) => {
+        fileSystem.promises.readFile(path, { encoding: 'utf-8' })
+            .then(read => {
+                resolve(read);
+            })
+            .catch(err => {
+                reject(err);
+            });
+    });
 };
+
 
 
 export const deleteFile = async function (filePath: string) {
@@ -22,12 +22,9 @@ export const deleteFile = async function (filePath: string) {
 export const readFile = async function (filePath: string) {
     try {
         // return fs.readFileSync(filePath)
-        fs.readFile(filePath, 'utf8', function (err: any, data: any) {
-
-            // Display the file content
-            console.log(data, "fs read side ");
-            return data
-        });
+        const data = await fs.readFile(filePath, 'utf8');
+        console.log(data, "fs read side ");
+        return data;
 
     } catch (error) {
         console.log(error, "error file path file system side ")
@@ -47,7 +44,7 @@ export const makeDirectory = async function (directoryPath: string) {
 
 
 export const deleteDirectory = async function (directoryPath: string) {
-    let files = await fs.readdir(directoryPath);
+    const files = await fs.readdir(directoryPath);
 
     for (const file of files) {
         await deleteFile(`${directoryPath}/${file}`);

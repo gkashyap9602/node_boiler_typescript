@@ -3,8 +3,8 @@ import CommonController from '../../controllers/Common/common.controller'
 import { showOutput } from '../../utils/response.util'
 import { ApiResponse } from '../../utils/interfaces.util'
 import middlewares from '../../middlewares'
-let { verifyTokenBoth } = middlewares.auth
-let { addToMulter } = middlewares.fileUpload.multer
+const { verifyTokenBoth } = middlewares.auth
+const { addToMulter } = middlewares.fileUpload.multer
 
 const router = express.Router()
 

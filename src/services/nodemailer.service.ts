@@ -1,32 +1,36 @@
-const nodemailer = require('nodemailer');
+import nodemailer from 'nodemailer'
 import { showResponse } from "../utils/response.util";
 import { ApiResponse } from "../utils/interfaces.util";
 import { EMAIL_CREDENTIAL } from "../constants/app.constant";
 
 const nodemail = async (to: string, subject: string, body: any, attachments: any = []): Promise<ApiResponse> => {
-    return new Promise(async (resolve, reject) => {
+    const EMAIL_HOST = await EMAIL_CREDENTIAL.EMAIL_HOST
+    const SENDGRID_API = await EMAIL_CREDENTIAL.SENDGRID_API
+    const SENDGRID_API_KEY = await EMAIL_CREDENTIAL.SENDGRID_API_KEY
+
+    return new Promise((resolve, reject) => {
 
         try {
             const transporter = nodemailer.createTransport({
-                host: await EMAIL_CREDENTIAL.EMAIL_HOST,
+                host: EMAIL_HOST,
                 port: 465,
                 secure: true,
                 auth: {
-                    user: await EMAIL_CREDENTIAL.SENDGRID_API,
-                    pass: await EMAIL_CREDENTIAL.SENDGRID_API_KEY
+                    user: SENDGRID_API,
+                    pass: SENDGRID_API_KEY
                 }
             });
 
-            let mailOptions = {
-                from: await EMAIL_CREDENTIAL.EMAIL_HOST,
+            const mailOptions = {
+                from: EMAIL_HOST,
                 to,
                 subject,
                 html: body,
                 attachments
             }
-            transporter.sendMail(mailOptions, (error: any, data: any) => {
+            transporter.sendMail(mailOptions, (error: any) => {
                 if (error) {
-                    return resolve(showResponse(false, 'Email Sent Error', error, null, 200));
+                    return reject(showResponse(false, 'Email Sent Error', error, null, 200));
                 }
 
                 // console.log(data, "datatatatataemail")
@@ -34,9 +38,9 @@ const nodemail = async (to: string, subject: string, body: any, attachments: any
             })
         } catch (err) {
             console.log("in catch err", err)
-            return resolve(showResponse(false, "Error while sending Email", err, null, 200));
+            return reject(showResponse(false, "Error while sending Email", err, null, 200));
         }
     });
 }
 
-export {nodemail} 
+export { nodemail } 

@@ -5,8 +5,8 @@ import { ApiResponse } from '../../utils/interfaces.util'
 // import { authenticate } from '../middlewares/auth.middleware'
 // import { verifyTokenAdmin } from '../middlewares/auth.middleware'
 import middlewares from '../../middlewares'
-let { verifyTokenAdmin } = middlewares.auth
-let { addToMulter } = middlewares.fileUpload.multer
+const { verifyTokenAdmin } = middlewares.auth
+const { addToMulter } = middlewares.fileUpload.multer
 
 const router = express.Router()
 
@@ -25,7 +25,7 @@ router.post('/login', async (req: Request | any, res: Response) => {
 // })
 
 router.post('/forgot_password', async (req: Request | any, res: Response) => {
-    const { email, mode } = req.body;
+    const { email } = req.body;
     const adminAuthController = new AdminAuthController(req, res)
     const result: ApiResponse = await adminAuthController.forgotPassword({ email });
     return showOutput(res, result, result.code)

@@ -3,8 +3,8 @@ import UserAuthController from '../../controllers/User/user.auth.controller'
 import { showOutput } from '../../utils/response.util'
 import { ApiResponse } from '../../utils/interfaces.util'
 import middlewares from '../../middlewares'
-let { verifyTokenUser } = middlewares.auth
-let { addToMulter } = middlewares.fileUpload.multer
+const { verifyTokenUser } = middlewares.auth
+const { addToMulter } = middlewares.fileUpload.multer
 
 const router = express.Router()
 
@@ -30,7 +30,7 @@ router.post('/upload_file', addToMulter.single('file'), async (req: Request | an
 })
 
 router.post('/forgot_password', async (req: Request | any, res: Response) => {
-    const { email, mode } = req.body;
+    const { email } = req.body;
     const userAuthController = new UserAuthController(req, res)
     const result: ApiResponse = await userAuthController.forgotPassword({ email });
     return showOutput(res, result, result.code)

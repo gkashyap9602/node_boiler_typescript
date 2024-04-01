@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { Route, Controller, Tags, Post, Body, Get, Security, Query, Put, FormField, UploadedFile } from 'tsoa'
+import { Route, Controller, Tags, Post, Body, Get, Security, Put, FormField, UploadedFile } from 'tsoa'
 import { ApiResponse } from '../../utils/interfaces.util';
 import { validateChangePassword, validateForgotPassword, validateUpdateProfile, validateResetPassword, validateAdminLogin, validateResendOtp, validateVerifyOtp } from '../../validations/Admin/admin.auth.validator';
 import handlerAdminAuth from '../../handlers/Admin/admin.auth.handler'
@@ -163,7 +163,7 @@ export default class AdminAuthController extends Controller {
     @Put("/profile")
     public async updateAdminProfile(@FormField() first_name?: string, @FormField() last_name?: string, @FormField() phone_number?: string, @FormField() country_code?: string, @FormField() greet_msg?: boolean, @UploadedFile() profile_pic?: Express.Multer.File): Promise<ApiResponse> {
         
-            let body = { first_name, last_name, phone_number, country_code, greet_msg }
+            const body = { first_name, last_name, phone_number, country_code, greet_msg }
 
             const validatedUpdateProfile = validateUpdateProfile(body);
 

@@ -12,10 +12,10 @@ if (envConfig.error) {
 //1st parm is Environment mode -> DEV,PROD,STAG 
 //2nd parm is project name 
 //3rd parm is project Initial 
-let ENV_PARMAS = getEnvironmentParams(process.env.ENV_MODE, 'BOILERPLATE', 'BP')
+const ENV_PARMAS = getEnvironmentParams(process.env.ENV_MODE, 'BOILERPLATE', 'BP')
 console.log(ENV_PARMAS, "Parms For Aws Parameter store")
 
-let { DB_NAME, DB_URI, BUCKET, ADMIN_EMAIL, REGION, ACCESSID, STMP_EMAIL, SMTP_APP_PASSWORD } = ENV_PARMAS
+const { ADMIN_EMAIL } = ENV_PARMAS
 
 let AWS_CREDENTIAL: AwsCredential
 
@@ -28,7 +28,8 @@ const APP: AppConstant = {
   FRONTEND_URL: process.env.FRONTEND_URL || '',
   BITBUCKET_URL: process.env.BITBUCKET_URL || '',
   JWT_SECRET: process.env.SECRET || "secret",
-  ADMIN_CRED_EMAIL: ADMIN_EMAIL
+  ADMIN_CRED_EMAIL: ADMIN_EMAIL,
+  FILE_SIZE: 100, //SPECIFY IN MB
 
 };
 
@@ -74,7 +75,7 @@ const REDIS_CREDENTIAL = {
 
 
 //call this function when paramters are stored to aws 
-let initializeAwsCredential = async () => {
+const initializeAwsCredential = async () => {
 
   // DB.MONGODB_URI = services.awsService.getParameterFromAWS({ name: DB_URI })
   // DB.DB_NAME = services.awsService.getParameterFromAWS({ name: DB_NAME })

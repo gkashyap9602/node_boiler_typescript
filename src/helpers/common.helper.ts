@@ -68,7 +68,7 @@ const getCSVFromJSON = (fields: any, json: any) => {
 }
 
 const dynamicSort = (property: any) => {
-    var sortOrder = 1;
+    let sortOrder = 1;
     if (property[0] === "-") {
         sortOrder = -1;
         property = property.substr(1);
@@ -104,23 +104,23 @@ const deg2rad = (deg: any) => {
 };
 
 const getDistanceFromLatLonInKm = (lat1: any, lon1: any, lat2: any, lon2: any) => {
-    var R = 6371; // Radius of the earth in km
-    var dLat = deg2rad(lat2 - lat1); // deg2rad below
-    var dLon = deg2rad(lon2 - lon1);
-    var a =
+    const R = 6371; // Radius of the earth in km
+    const dLat = deg2rad(lat2 - lat1); // deg2rad below
+    const dLon = deg2rad(lon2 - lon1);
+    const a =
         Math.sin(dLat / 2) * Math.sin(dLat / 2) +
         Math.cos(deg2rad(lat1)) *
         Math.cos(deg2rad(lat2)) *
         Math.sin(dLon / 2) *
         Math.sin(dLon / 2);
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    var d = R * c; // Distance in km
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const d = R * c; // Distance in km
     return d;
 };
 
 const Comma_seprator = (x: any) => {
     if (x) {
-        var parts = x.toString().split(".");
+        const parts = x.toString().split(".");
         parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         return parts.join(".");
     } else {
@@ -133,14 +133,14 @@ const Comma_seprator = (x: any) => {
 const getCountAndPagination = async (model: Model<any>, aggregate: any, page: number, limit: number) => {
 
     //this aggregation is for aggregate Model and add pagination at the end of the query aggregation
-    let aggregation = [...aggregate]
+    const aggregation = [...aggregate]
 
     //This Aggregation is for totalCount of aggregation query 
-    let pagePipelineCount = [...aggregate]
+    const pagePipelineCount = [...aggregate]
 
     pagePipelineCount.push({ $count: 'totalEntries' })
-    let countResult = await model.aggregate(pagePipelineCount)
-    let totalCount = countResult?.[0]?.totalEntries || 0;
+    const countResult = await model.aggregate(pagePipelineCount)
+    const totalCount = countResult?.[0]?.totalEntries || 0;
 
     //add pagination at the end of the queuries
     aggregation?.push(
@@ -204,14 +204,13 @@ const generateCsrfToken = () => {
 
 
 
-const exportJsonToExcel = async (filteredData: any) => {
-    return new Promise(async (resolve, reject) => {
+const exportJsonToExcel = (filteredData: any) => {
+    return new Promise((resolve, reject) => {
         try {
-            let filePath = `worksheet/${"Order"}-${new Date().getTime()}.xlsx`;
-            // let local_path = path.resolve(`./server/uploads/${filePath}`);
+            const filePath = `worksheet/${"Order"}-${new Date().getTime()}.xlsx`;
             const workbook = XLSX.utils.book_new();
 
-            let orderStatus: any = {
+            const orderStatus: any = {
                 1: "new",
                 2: "inProduction",
                 3: "shipped",
@@ -220,7 +219,7 @@ const exportJsonToExcel = async (filteredData: any) => {
                 6: "cancelled"
             }
 
-            let sheetArray = [
+            const sheetArray = [
                 'Merch Maker ID', 'Order Id', 'Customer Name', 'Customer Email', 'Customer Phone',
                 'Order Amount', 'Order Date', 'Order Status', "Shipping Method", 'Shipping Address',
                 "Shipping State", 'Shipping Country', "Freight Amount", "Tracking", "Ship Date",
@@ -229,10 +228,10 @@ const exportJsonToExcel = async (filteredData: any) => {
 
             const sheet: any = XLSX.utils.aoa_to_sheet([sheetArray]);
 
-            let rowData = [];
+            const rowData = [];
 
             for (let k = 0; k < filteredData?.length; k++) {
-                let row = [];
+                const row = [];
                 row.push(filteredData[k].displayId ?? '');
                 row.push(filteredData[k].mwwOrderId ?? '');
                 row.push(filteredData[k].userData.firstName ?? '');
@@ -253,12 +252,9 @@ const exportJsonToExcel = async (filteredData: any) => {
                 row.push(filteredData[k].sku ?? '');
 
                 if (filteredData[k]?.orderItems && filteredData[k]?.orderItems.length > 0) {
-
                     for (let j = 0; j < filteredData[k]?.orderItems?.length; j++) {
-                        console.log(filteredData[k]?.orderItems, "orderItems");
                         row.push(filteredData[k]?.orderItems[j]?.productTitle ?? '');
                         row.push(filteredData[k]?.orderItems[j]?.quantity ?? '');
-
                     }
                 }
 
@@ -270,23 +266,22 @@ const exportJsonToExcel = async (filteredData: any) => {
                 XLSX.utils.sheet_add_aoa(sheet, [rowData[k]], { origin: counter + 1 });
                 counter++;
             }
+
             XLSX.utils.book_append_sheet(workbook, sheet, 'Orders Data');
             const buffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'buffer' });
-            let excelLink = await services.awsService.uploadToS3ExcelSheet(buffer, filePath);
-            return resolve({ status: true, message: "Excel for members created Successfully!", data: excelLink, code: 200 });
-
-            //for local check use this 
-            // fs.writeFile(local_path, buffer, (err) => {
-            //     if (err) {
-            //         return resolve({ status: false, message: "Error Occured in exporting patients age distribution excel", data: err.message, code: 200 });
-            //     } else {
-            //         return resolve({ status: true, message: "Excel for members created Successfully!", data: filePath, code: 200 });
-            //     }
-            // });
+            
+            // Handling asynchronous operation directly inside Promise constructor
+            services.awsService.uploadToS3ExcelSheet(buffer, filePath)
+                .then(excelLink => {
+                    resolve({ status: true, message: "Excel for members created Successfully!", data: excelLink, code: 200 });
+                })
+                .catch(err => {
+                    reject({ status: false, message: "Error Occurred while uploading to S3", data: err.message, code: 200 });
+                });
 
         } catch (err: any) {
-            console.log(err)
-            return resolve({ status: false, message: "Error Occured, please try again", data: err.message, code: 200 });
+            console.log(err);
+            reject({ status: false, message: "Error Occurred, please try again", data: err.message, code: 200 });
         }
     });
 }
@@ -302,8 +297,8 @@ const convertImageToWebp = async (imageInBuffer: any) => {
             .then(async (newBuffer) => {
                 resolve(newBuffer);
             })
-            .catch((err) => {
-                resolve(false);
+            .catch(() => {
+                reject(false);
             });
     });
 };
@@ -338,7 +333,7 @@ const generateUsernames = (name: string, count: number, all_usernames: any = nul
             username += chars[Math.floor(Math.random() * chars.length)];
         }
         if (all_usernames) {
-            let idx = all_usernames?.findIndex((it: any) => it.username == username);
+            const idx = all_usernames?.findIndex((it: any) => it.username == username);
             if (idx < 0) {
                 usernames.push(username);
             }

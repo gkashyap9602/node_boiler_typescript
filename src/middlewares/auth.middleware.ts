@@ -5,7 +5,7 @@ import { ApiResponse } from '../utils/interfaces.util';
 
 export const verifyTokenUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const decoded: ApiResponse = await verifyToken(req, res)
+        const decoded: ApiResponse = await verifyToken(req)
 
         if (decoded.status && decoded?.data?.user_type == 'user') {
             req.body.user = decoded.data;
@@ -27,7 +27,7 @@ export const verifyTokenUser = async (req: Request, res: Response, next: NextFun
 
 export const verifyTokenAdmin = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const decoded: ApiResponse = await verifyToken(req, res)
+        const decoded: ApiResponse = await verifyToken(req)
 
         if (decoded.status && decoded?.data?.user_type == 'admin') {
             req.body.user = decoded.data;
@@ -49,7 +49,7 @@ export const verifyTokenAdmin = async (req: Request, res: Response, next: NextFu
 export const verifyTokenBoth = async (req: Request, res: Response, next: NextFunction) => {
     try {
 
-        const decoded: ApiResponse = await verifyToken(req, res)
+        const decoded: ApiResponse = await verifyToken(req)
 
         if (decoded.status && decoded?.data?.user_type == 'user' || decoded?.data?.user_type == 'admin') {
             req.body.user = decoded.data;

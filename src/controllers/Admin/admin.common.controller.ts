@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { Route, Controller, Tags, Post, Body, Get, Security, Query, Put, FormField, UploadedFile, Delete } from 'tsoa'
+import { Route, Controller, Tags, Post, Body, Security, Put, FormField, Delete } from 'tsoa'
 import { ApiResponse } from '../../utils/interfaces.util';
 import { validateUpdateQuestion, validateAddQuestion, validateCommonContent, validateDeleteQuestion } from '../../validations/Admin/admin.common.validator';
 import handlerAdminCommon from '../../handlers/Admin/admin.common.handler'

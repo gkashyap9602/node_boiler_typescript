@@ -5,8 +5,8 @@ import { ApiResponse } from '../../utils/interfaces.util'
 // import { authenticate } from '../middlewares/auth.middleware'
 // import { verifyTokenAdmin } from '../middlewares/auth.middleware'
 import middlewares from '../../middlewares'
-let { verifyTokenAdmin } = middlewares.auth
-let { addToMulter } = middlewares.fileUpload.multer
+const { verifyTokenAdmin } = middlewares.auth
+const { addToMulter } = middlewares.fileUpload.multer
 
 const router = express.Router()
 

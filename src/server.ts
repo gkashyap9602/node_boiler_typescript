@@ -7,9 +7,10 @@ import helmet from "helmet";
 import { serve, setup } from "swagger-ui-express";
 import Routes from "./routes";
 import { bootstrapAdmin } from "./utils/bootstrap.util";
-import { rateLimiter } from "./utils/config.util";
+// import { rateLimiter } from "./utils/config.util";
 import { APP, initializeAwsCredential } from './constants/app.constant'
 import { connection } from './configs/mongoose.config'
+import { handleFileSize } from "./utils/config.util";
 const app: Application = express();
 
 // Call it when Paramters are stored to AWS
@@ -60,6 +61,9 @@ app.use("/swagger", serve,
 console.log(APP.API_PREFIX, "API_PREFIX")
 
 app.use("/api/v1", Routes);
+
+app.use(handleFileSize) //use it after routes
+
 bootstrapAdmin(() => {
   console.log("Bootstraping finished!");
 });

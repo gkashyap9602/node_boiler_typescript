@@ -13,17 +13,17 @@ export const findOne = (Model: Model<any>, query: object, fields: object = {}, p
         queryBuilder.exec()
             .then(data => {
                 if (!data) {
-                    let response = showResponse(false, 'Data Retrieval Failed', 'error occured');
-                    resolve(response);
+                    const response = showResponse(false, 'Data Retrieval Failed', 'error occured');
+                    reject(response);
                 } else {
                     const doc = data?.toObject();
-                    let response = showResponse(true, 'Data Found', doc);
+                    const response = showResponse(true, 'Data Found', doc);
                     resolve(response);
                 }
             })
             .catch(err => {
-                let response = showResponse(false, 'Data Retrieval Failed', err);
-                resolve(response);
+                const response = showResponse(false, 'Data Retrieval Failed', err);
+                reject(response);
             });
     });
 };
@@ -34,11 +34,11 @@ export const createOne = (modalReference: any): Promise<ApiResponse> => {
         modalReference.save()
             .then((savedData: any) => {
                 const doc = savedData?.toObject();
-                let response = showResponse(true, 'Data Saved Successfully', doc);
+                const response = showResponse(true, 'Data Saved Successfully', doc);
                 resolve(response);
             })
             .catch((err: any) => {
-                let response = showResponse(false, 'Data Save Failed', err);
+                const response = showResponse(false, 'Data Save Failed', err);
                 reject(response);
             });
     });
@@ -49,12 +49,12 @@ export const insertMany = (Model: Model<any>, dataArray: any[]): Promise<ApiResp
     return new Promise((resolve, reject) => {
         Model.insertMany(dataArray)
             .then(data => {
-                let response = showResponse(true, 'Success', data);
+                const response = showResponse(true, 'Success', data);
                 resolve(response);
             })
             .catch(err => {
-                let response = showResponse(false, 'Data Save Failed', err);
-                resolve(response);
+                const response = showResponse(false, 'Data Save Failed', err);
+                reject(response);
             });
     });
 };
@@ -67,16 +67,16 @@ export const findOneAndUpdate = (Model: Model<any>, matchObj: any, updateObject:
             .then(updatedData => {
                 if (updatedData) {
                     const doc = updatedData?.toObject();
-                    let response = showResponse(true, 'Success', doc);
+                    const response = showResponse(true, 'Success', doc);
                     resolve(response);
                 } else {
-                    let response = showResponse(false, 'Failed', null);
-                    resolve(response);
+                    const response = showResponse(false, 'Failed', null);
+                    reject(response);
                 }
             })
             .catch(err => {
-                let response = showResponse(false, 'Failed error', err);
-                resolve(response);
+                const response = showResponse(false, 'Failed error', err);
+                reject(response);
             });
     });
 };
@@ -87,12 +87,12 @@ export const findByIdAndUpdate = (Model: Model<any>, DataObject: any, _id: strin
         Model.findByIdAndUpdate(_id, { $set: DataObject }, { new: true })
             .then(updatedData => {
                 const doc = updatedData?.toObject();
-                let response = showResponse(true, 'Success', doc);
+                const response = showResponse(true, 'Success', doc);
                 resolve(response);
             })
             .catch(err => {
-                let response = showResponse(false, 'Failed', err);
-                resolve(response);
+                const response = showResponse(false, 'Failed', err);
+                reject(response);
             });
     });
 };
@@ -103,12 +103,12 @@ export const updateMany = (Model: Model<any>, DataObject: any, filter: any): Pro
         Model.updateMany(filter, { $set: DataObject }, { multi: true, new: true }).lean()
             .exec()
             .then((updatedData: any) => {
-                let response = showResponse(true, 'Success', updatedData);
+                const response = showResponse(true, 'Success', updatedData);
                 return resolve(response);
             })
             .catch((err: any) => {
-                let response = showResponse(false, err);
-                return resolve(response);
+                const response = showResponse(false, err);
+                return reject(response);
             });
     });
 };
@@ -118,10 +118,10 @@ export const deleteMany = (Model: Model<any>, query: any): Promise<ApiResponse> 
     return new Promise((resolve, reject) => {
         Model.deleteMany(query, (err: any) => {
             if (err) {
-                let response = showResponse(false, 'Failed', err);
-                return resolve(response);
+                const response = showResponse(false, 'Failed', err);
+                return reject(response);
             }
-            let response = showResponse(true, 'Success');
+            const response = showResponse(true, 'Success');
             return resolve(response);
         }).lean()
     });
@@ -133,16 +133,16 @@ export const findByIdAndRemove = (Model: Model<any>, id: string): Promise<ApiRes
             .lean()
             .then(result => {
                 if (!result) {
-                    let response = showResponse(false, 'Failed', null);
-                    resolve(response);
+                    const response = showResponse(false, 'Failed', null);
+                    reject(response);
                 } else {
-                    let response = showResponse(true, 'Success', result);
+                    const response = showResponse(true, 'Success', result);
                     resolve(response);
                 }
             })
             .catch(err => {
-                let response = showResponse(false, 'Failed', err);
-                resolve(response);
+                const response = showResponse(false, 'Failed', err);
+                reject(response);
             });
     });
 };
@@ -160,38 +160,39 @@ export const removeItemFromArray = (Model: Model<any>, mainIdObj: any, arrayKey:
     return new Promise((resolve, reject) => {
         Model.updateOne(mainIdObj, { $pull: { [arrayKey]: itemIdObj } }, (err: any, updatedData: any) => {
             if (err) {
-                let response = showResponse(false, err, {});
-                return resolve(response);
+                const response = showResponse(false, err, {});
+                return reject(response);
             }
             if (updatedData?.modifiedCount && updatedData.modifiedCount > 0) {
-                let response = showResponse(true, 'Success', updatedData);
+                const response = showResponse(true, 'Success', updatedData);
                 return resolve(response);
             }
-            let response = showResponse(false, 'Update failed', {});
-            return resolve(response);
+            const response = showResponse(false, 'Update failed', {});
+            return reject(response);
         }).lean()
     });
 };
 
 
-export const bulkOperationQuery = async (Model: Model<any>, bulkOperations: any[]): Promise<ApiResponse> => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            // Execute bulk operation 
-            const result = await Model.bulkWrite(bulkOperations)
-            if (result?.ok == 1) {
-                let response = showResponse(true, 'Success', result);
-                return resolve(response);
-            }
-
-            let response = showResponse(false, 'Failed', result);
-            return resolve(response);
-        } catch (err: any) {
-            let response = showResponse(false, err);
-            return reject(response);
-        }
+export const bulkOperationQuery = (Model: Model<any>, bulkOperations: any) => {
+    return new Promise((resolve, reject) => {
+        Model.bulkWrite(bulkOperations)
+            .then(result => {
+                if (result?.ok === 1) {
+                    const response = showResponse(true, 'Success', result);
+                    resolve(response);
+                } else {
+                    const response = showResponse(false, 'Failed', result);
+                    reject(response);
+                }
+            })
+            .catch(err => {
+                const response = showResponse(false, err.message || err);
+                reject(response);
+            });
     });
 };
+
 
 
 //example how to use
@@ -205,15 +206,15 @@ export const addItemInArray = (Model: Model<any>, mainIdObj: any, arrayKey: stri
     return new Promise((resolve, reject) => {
         Model.updateOne(mainIdObj, { $push: { [arrayKey]: itemToAddObj } }, (err: any, updatedData: any) => {
             if (err) {
-                let response = showResponse(false, err, {});
-                return resolve(response);
+                const response = showResponse(false, err, {});
+                return reject(response);
             }
             if (updatedData?.modifiedCount && updatedData.modifiedCount > 0) {
-                let response = showResponse(true, 'Success', updatedData);
+                const response = showResponse(true, 'Success', updatedData);
                 return resolve(response);
             }
-            let response = showResponse(false, 'Update failed', {});
-            return resolve(response);
+            const response = showResponse(false, 'Update failed', {});
+            return reject(response);
         });
     });
 };
@@ -240,55 +241,17 @@ export const findAll = (Model: Model<any>, query: object, project_field?: string
         queryBuilder.exec()
             .then(data => {
                 if (!data || data.length === 0) {
-                    let response = showResponse(false, "No data found");
-                    resolve(response);
+                    const response = showResponse(false, "No data found");
+                    reject(response);
                 } else {
-                    let response = showResponse(true, "Data found", data);
+                    const response = showResponse(true, "Data found", data);
                     resolve(response);
                 }
             })
             .catch(err => {
-                let response = showResponse(false, err);
-                resolve(response);
+                const response = showResponse(false, err);
+                reject(response);
             });
-    });
-};
-
-
-export const getJoinData = async (
-    Model: Model<any>,
-    query: object,
-    fields: string | any,
-    lookup?: any | null, pagination?: { skip: number; limit: number } | null, sortObj?: any | null): Promise<ApiResponse> => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            let aggregation = Model.aggregate().match(query).project(fields);
-
-            if (lookup) {
-                aggregation = aggregation.lookup(lookup);
-            }
-
-            if (sortObj) {
-                aggregation = aggregation.sort(sortObj);
-            } else {
-                aggregation = aggregation.sort({ _id: -1 });
-            }
-
-            if (pagination) {
-                aggregation = aggregation.skip(pagination.skip).limit(pagination.limit);
-            }
-
-            let data = await aggregation.exec();
-
-            if (data.length > 0) {
-                return resolve(showResponse(true, "Data found", data));
-            } else {
-                return resolve(showResponse(false, 'NO_DATA'));
-            }
-        } catch (err: any) {
-            console.log(err);
-            return resolve(showResponse(false, err.message));
-        }
     });
 };
 
@@ -296,11 +259,11 @@ export const getJoinData = async (
 export const getCount = (Model: Model<any>, query: any): Promise<ApiResponse> => {
     return new Promise((resolve, reject) => {
         Model.countDocuments(query).then((result: any) => {
-            let response = showResponse(true, 'Success', result, null, 200);
+            const response = showResponse(true, 'Success', result, null, 200);
             resolve(response);
         }).catch((err: any) => {
-            let response = showResponse(false, 'Failed', err, null, 404);
-            resolve(response);
+            const response = showResponse(false, 'Failed', err, null, 404);
+            reject(response);
         });
     });
 };

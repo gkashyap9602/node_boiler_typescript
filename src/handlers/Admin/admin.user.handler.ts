@@ -13,7 +13,7 @@ const AdminUserHandler = {
 
     getUserDetails: tryCatchWrapper(async (user_id: string): Promise<ApiResponse> => {
 
-        let getResponse = await findOne(userModel, { _id: user_id, status: { $ne: USER_STATUS.DELETED } }, { password: 0 });
+        const getResponse = await findOne(userModel, { _id: user_id, status: { $ne: USER_STATUS.DELETED } }, { password: 0 });
 
         if (!getResponse.status) {
             return showResponse(false, responseMessage.users.invalid_user, null, null, statusCodes.UNAUTHORIZED)
@@ -28,7 +28,7 @@ const AdminUserHandler = {
         page = Number(page)
         limit = Number(limit)
 
-        let matchObj: any = {
+        const matchObj: any = {
             user_type: ROLE.USER, // 3 for users
             status: { $ne: USER_STATUS.DELETED },
             $or: [
@@ -41,7 +41,7 @@ const AdminUserHandler = {
             matchObj.status = status
         }
 
-        let aggregate = [
+        const aggregate = [
             {
                 $match: {
                     ...matchObj
@@ -68,9 +68,9 @@ const AdminUserHandler = {
         ]
 
         //add this function where we cannot add query to get count of document example searchKey and add pagination at the end of query
-        let { totalCount, aggregation } = await commonHelper.getCountAndPagination(userModel, aggregate, page, limit)
+        const { totalCount, aggregation } = await commonHelper.getCountAndPagination(userModel, aggregate, page, limit)
 
-        let result = await userModel.aggregate(aggregation)
+        const result = await userModel.aggregate(aggregation)
         if (result.length === 0) {
             return showResponse(true, responseMessage?.common.data_retreive_sucess, { result, totalCount }, null, statusCodes.NO_CONTENT);
         }
@@ -81,24 +81,24 @@ const AdminUserHandler = {
 
     updateUserStatus: tryCatchWrapper(async (data: any): Promise<ApiResponse> => {
 
-        let { user_id, status } = data;
+        const { user_id, status } = data;
 
-        status = Number(status)
-        let queryObject = { _id: user_id, user_type: ROLE.USER } //usertype should be USER  = 3
+        const parsedStatus = Number(status);
+        const queryObject = { _id: user_id, user_type: ROLE.USER } //usertype should be USER  = 3
 
-        let result = await findOne(userModel, queryObject);
+        const result = await findOne(userModel, queryObject);
 
         if (!result.status) {
             return showResponse(false, responseMessage.users.invalid_user, null, null, statusCodes.UNAUTHORIZED);
         }
-        let editObj = {
-            status,
+        const editObj = {
+            status: parsedStatus,
             // updated_on: moment().unix()
         }
 
-        let response = await findOneAndUpdate(userModel, queryObject, editObj);
+        const response = await findOneAndUpdate(userModel, queryObject, editObj);
         if (response.status) {
-            let msg = status == 2 ? "Deleted" : status == 1 ? "Activated" : "Deactivated"
+            const msg = parsedStatus == 2 ? "Deleted" : parsedStatus == 1 ? "Activated" : "Deactivated"
             return showResponse(true, `User Account Has Been ${msg}`, {}, null, statusCodes.OK);
         }
 
@@ -109,23 +109,23 @@ const AdminUserHandler = {
     getDashboardData: tryCatchWrapper(async (past_day: string = 'MAX'): Promise<ApiResponse> => {
 
         // Calculate the timestamps for 30 days ago, 180 days ago, and 365 days ago
-        let thirtyDaysAgo = moment().subtract(30, 'days').unix()  //last 30 days timestamp
-        let sixMonthAgo = moment().subtract(180, 'days').unix() //last 180 days timestamp
-        let oneYearAgo = moment().subtract(365, 'days').unix() //last 365 days timestamp
-        let maxDate = moment().unix(); //today timestamp
+        const thirtyDaysAgo = moment().subtract(30, 'days').unix()  //last 30 days timestamp
+        const sixMonthAgo = moment().subtract(180, 'days').unix() //last 180 days timestamp
+        const oneYearAgo = moment().subtract(365, 'days').unix() //last 365 days timestamp
+        const maxDate = moment().unix(); //today timestamp
         console.log(oneYearAgo, "oneYearAgo")
         console.log(past_day, "past_day")
 
-        let dates: any = {
+        const dates: any = {
             '1M': { $gte: thirtyDaysAgo },//greater then last  1 month  date users registeration data
             '6M': { $gte: sixMonthAgo }, //greater then last 6 month  date users registeration data
             '1Y': { $gte: oneYearAgo }, //greater then last year date users registeration data
             'MAX': { $lte: maxDate }, //if max then less then equal to current date users data
         }
 
-        let fetch_data_date: any = dates[past_day]
+        const fetch_data_date: any = dates[past_day]
 
-        let dashboard = await userModel.aggregate([
+        const dashboard = await userModel.aggregate([
             {
                 $match: {
                     user_type: ROLE.USER,
@@ -155,11 +155,11 @@ const AdminUserHandler = {
             }
         ]);
 
-        let all_users = await getCount(userModel, { status: { $ne: USER_STATUS.DELETED } })
-        let active_users = await getCount(userModel, { status: USER_STATUS.ACTIVE })
-        let deactivated_users = await getCount(userModel, { status: USER_STATUS.DEACTIVATED })
+        const all_users = await getCount(userModel, { status: { $ne: USER_STATUS.DELETED } })
+        const active_users = await getCount(userModel, { status: USER_STATUS.ACTIVE })
+        const deactivated_users = await getCount(userModel, { status: USER_STATUS.DEACTIVATED })
 
-        let user_summary = {
+        const user_summary = {
             all_users: all_users.data,
             active_users: active_users.data,
             deactivated_users: deactivated_users.data

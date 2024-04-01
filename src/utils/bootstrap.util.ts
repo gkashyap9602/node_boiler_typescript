@@ -1,13 +1,15 @@
 import { findOne, createOne } from '../helpers/db.helpers';
 import adminModel from '../models/Admin/admin.model';
-import userModel from '../models/User/user.model';
 import commonContentModel from '../models/Admin/commonContent.model';
 import * as commonHelper from '../helpers/common.helper';
 import moment from 'moment';
 import { APP } from '../constants/app.constant'
 
 
-export const bootstrapAdmin = async function (cb: Function) {
+type CallbackFunction = () => void; // Define the type of the callback function
+
+
+export const bootstrapAdmin = async function (cb: CallbackFunction) {
   const userPassword = await commonHelper.bycrptPasswordHash("123456");
   const adminData = {
     password: userPassword,
@@ -27,15 +29,15 @@ export const bootstrapAdmin = async function (cb: Function) {
 
   const adminDoc = await findOne(adminModel, {});
   if (!adminDoc.status) {
-    let adminRef = new adminModel(adminData)
-    let save = await createOne(adminRef)
+    const adminRef = new adminModel(adminData)
+    await createOne(adminRef)
   }
 
 
   const commonContent = await findOne(commonContentModel, {})
   if (!commonContent.status) {
 
-    let commonContentRef = new commonContentModel(commonContentData)
+    const commonContentRef = new commonContentModel(commonContentData)
     await createOne(commonContentRef)
   }
 

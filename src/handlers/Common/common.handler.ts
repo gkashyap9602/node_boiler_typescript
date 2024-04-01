@@ -12,7 +12,7 @@ const CommonHandler = {
 
     getCommonContent: tryCatchWrapper(async (): Promise<ApiResponse> => {
 
-        let getResponse = await findOne(commonContentModel, {});
+        const getResponse = await findOne(commonContentModel, {});
 
         if (!getResponse.status) {
             return showResponse(false, responseMessage.common.data_not_found, null, null, statusCodes.NOT_FOUND)
@@ -24,7 +24,7 @@ const CommonHandler = {
 
     getQuestions: tryCatchWrapper(async (): Promise<ApiResponse> => {
 
-        let getResponse = await findAll(faqModel, {});
+        const getResponse = await findAll(faqModel, {});
 
         if (getResponse.status) {
             return showResponse(true, responseMessage.admin.here_is_question, getResponse?.data, null, statusCodes.OK)
@@ -36,7 +36,7 @@ const CommonHandler = {
 
     storeParameterToAws: tryCatchWrapper(async (name: string, value: string): Promise<ApiResponse> => {
 
-        let response = await services.awsService.postParameterToAWS({
+        const response = await services.awsService.postParameterToAWS({
             name: name,
             value: value
         })

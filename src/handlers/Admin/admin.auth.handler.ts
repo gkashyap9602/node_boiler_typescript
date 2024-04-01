@@ -1,9 +1,8 @@
 import ejs from 'ejs'
 import path from 'path'
-import moment from "moment";
 import { ApiResponse } from "../../utils/interfaces.util";
 import { showResponse } from "../../utils/response.util";
-import { findOne, createOne, findByIdAndUpdate, findOneAndUpdate, updateMany } from "../../helpers/db.helpers";
+import { findOne, createOne, findByIdAndUpdate, findOneAndUpdate } from "../../helpers/db.helpers";
 import { generateJwtToken } from "../../utils/auth.util";
 import * as commonHelper from "../../helpers/common.helper";
 import adminModel from "../../models/Admin/admin.model";
@@ -33,9 +32,9 @@ const AdminAuthHandler = {
             return showResponse(false, responseMessage.common.password_incorrect, null, null, statusCodes.UNAUTHORIZED)
         }
 
-        let os_update = await findOneAndUpdate(userModel, { _id: exists?.data?._id }, { os_type })
+        const os_update = await findOneAndUpdate(adminModel, { _id: exists?.data?._id }, { os_type })
 
-        if (!os_update) {
+        if (!os_update.status) {
             return showResponse(false, responseMessage.users.login_error, null, null, statusCodes.UNAUTHORIZED)
         }
 
@@ -48,7 +47,7 @@ const AdminAuthHandler = {
 
     register: tryCatchWrapper(async (data: any): Promise<ApiResponse> => {
 
-        let { email, password } = data;
+        const { email, password } = data;
 
         // check if user exists
         const exists = await findOne(adminModel, { email });
@@ -57,11 +56,11 @@ const AdminAuthHandler = {
             return showResponse(false, responseMessage.common.email_already, null, null, statusCodes.CONFLICT)
         }
 
-        password = await commonHelper.bycrptPasswordHash(password);
+        data.password = await commonHelper.bycrptPasswordHash(password);
 
-        let adminRef = new adminModel(data)
+        const adminRef = new adminModel(data)
 
-        let save = await createOne(adminRef)
+        const save = await createOne(adminRef)
 
         if (!save.status) {
             return showResponse(false, responseMessage.common.error_while_create_acc, null, null, statusCodes.BAD_REQUEST)
@@ -81,14 +80,14 @@ const AdminAuthHandler = {
             return showResponse(false, responseMessage.admin.invalid_admin, null, null, statusCodes.UNAUTHORIZED)
         }
 
-        let otp = commonHelper.generateRandomOtp(4);
+        const otp = commonHelper.generateRandomOtp(4);
         const template = await ejs.renderFile(path.join(process.cwd(), './src/templates', 'forgotPassword.ejs'), { user_name: exists?.data?.first_name, cidLogo: 'unique@Logo', otp });
         const logoPath = path.join(process.cwd(), './public', 'logo.png');
 
-        let to = `${exists?.data?.email}`
-        let subject = `Forgot Password`
+        const to = `${exists?.data?.email}`
+        const subject = `Forgot Password`
 
-        let attachments = [
+        const attachments = [
             {
                 filename: 'logo.png',
                 path: logoPath,
@@ -96,11 +95,11 @@ const AdminAuthHandler = {
             }
         ]
 
-        let forgotPassMail = await services.emailService.nodemail(to, subject, template, attachments)
+        const forgotPassMail = await services.emailService.nodemail(to, subject, template, attachments)
 
         if (forgotPassMail.status) {
 
-            let userObj = {
+            const userObj = {
                 otp,
                 // updated_on: moment().unix()
             }
@@ -118,16 +117,16 @@ const AdminAuthHandler = {
 
         const { email, new_password } = data;
 
-        let queryObject = { email, status: { $ne: 2 } }
+        const queryObject = { email, status: { $ne: 2 } }
 
-        let result = await findOne(adminModel, queryObject);
+        const result = await findOne(adminModel, queryObject);
         if (!result.status) {
             return showResponse(false, `${responseMessage.users.invalid_user} or email`, null, null, statusCodes.UNAUTHORIZED);
         }
 
         const hashed = await commonHelper.bycrptPasswordHash(new_password)
 
-        let updateObj = {
+        const updateObj = {
             otp: '',
             password: hashed,
             // updated_on: moment().unix()
@@ -146,9 +145,9 @@ const AdminAuthHandler = {
     verifyOtp: tryCatchWrapper(async (data: any): Promise<ApiResponse> => {
         const { email, otp } = data;
 
-        let queryObject = { email, otp, status: { $ne: 2 } }
+        const queryObject = { email, otp, status: { $ne: 2 } }
 
-        let findUser = await findOne(adminModel, queryObject)
+        const findUser = await findOne(adminModel, queryObject)
 
         if (findUser.status) {
             await findOneAndUpdate(adminModel, queryObject, { is_verified: true })
@@ -163,21 +162,21 @@ const AdminAuthHandler = {
     resendOtp: tryCatchWrapper(async (data: any): Promise<ApiResponse> => {
 
         const { email } = data;
-        let queryObject = { email, status: { $ne: 2 } }
+        const queryObject = { email, status: { $ne: 2 } }
 
-        let result = await findOne(adminModel, queryObject);
+        const result = await findOne(adminModel, queryObject);
 
         if (result.status) {
 
-            let otp = commonHelper.generateRandomOtp(4);
+            const otp = commonHelper.generateRandomOtp(4);
 
             const template = await ejs.renderFile(path.join(process.cwd(), './src/templates', 'registration.ejs'), { user_name: result?.data?.first_name, cidLogo: 'unique@Logo', otp });
             const logoPath = path.join(process.cwd(), './public', 'logo.png');
 
-            let to = `${result?.data?.email}`
-            let subject = `Resend Otp`
+            const to = `${result?.data?.email}`
+            const subject = `Resend Otp`
 
-            let attachments = [
+            const attachments = [
                 {
                     filename: 'logo.png',
                     path: logoPath,
@@ -185,7 +184,7 @@ const AdminAuthHandler = {
                 }
             ]
 
-            let resendOtp = await services.emailService.nodemail(to, subject, template, attachments)
+            const resendOtp = await services.emailService.nodemail(to, subject, template, attachments)
 
             if (resendOtp.status) {
                 await findOneAndUpdate(adminModel, queryObject, { otp })
@@ -225,7 +224,7 @@ const AdminAuthHandler = {
 
     getAdminDetails: tryCatchWrapper(async (adminId: string): Promise<ApiResponse> => {
 
-        let getResponse = await findOne(adminModel, { _id: adminId }, { password: 0 });
+        const getResponse = await findOne(adminModel, { _id: adminId }, { password: 0 });
 
         if (!getResponse.status) {
             return showResponse(false, responseMessage.admin.invalid_admin, null, null, statusCodes.UNAUTHORIZED)
@@ -237,15 +236,15 @@ const AdminAuthHandler = {
 
     updateAdminProfile: tryCatchWrapper(async (data: any, admin_id: string, profile_pic: any): Promise<ApiResponse> => {
 
-        let { first_name, last_name, phone_number, country_code, greet_msg } = data
+        const { first_name, last_name, phone_number, country_code, greet_msg } = data
 
-        let findAdmin = await findOne(adminModel, { user_type: ROLE.ADMIN, _id: admin_id })
+        const findAdmin = await findOne(adminModel, { user_type: ROLE.ADMIN, _id: admin_id })
 
         if (!findAdmin.status) {
             return showResponse(false, responseMessage.admin.invalid_admin, null, null, statusCodes.UNAUTHORIZED);
         }
 
-        let updateObj: any = {
+        const updateObj: any = {
             // updated_on: moment().unix()
         }
         if (first_name) {
@@ -274,7 +273,7 @@ const AdminAuthHandler = {
             updateObj.profile_pic = s3Upload?.data[0]
         }
 
-        let result = await findByIdAndUpdate(adminModel, updateObj, admin_id);
+        const result = await findByIdAndUpdate(adminModel, updateObj, admin_id);
         if (result.status) {
             delete result.data.password
             return showResponse(true, responseMessage.admin.admin_details_updated, result.data, null, statusCodes.OK);

@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { ApiResponse } from "../../utils/interfaces.util";
 import { showResponse } from "../../utils/response.util";
-import { findOne, createOne, findByIdAndUpdate, findOneAndUpdate, updateMany, findByIdAndRemove } from "../../helpers/db.helpers";
+import { findOne, createOne, findByIdAndUpdate, findOneAndUpdate, findByIdAndRemove } from "../../helpers/db.helpers";
 import commonContentModel from "../../models/Admin/commonContent.model";
 import responseMessage from '../../constants/ResponseMessage'
 import faqModel from '../../models/Admin/faq.model';
@@ -20,14 +20,14 @@ const AdminCommonHandler = {
             return showResponse(false, responseMessage.common.already_existed, null, null, statusCodes.CONFLICT)
         }
 
-        let newObj = {
+        const newObj = {
             question,
             answer,
             status: 1,
             created_on: moment().unix()
         }
-        let quesRef = new faqModel(newObj)
-        let response = await createOne(quesRef);
+        const quesRef = new faqModel(newObj)
+        const response = await createOne(quesRef);
 
         if (response.status) {
             return showResponse(true, responseMessage.admin.question_added, null, null, statusCodes.CREATED);
@@ -39,7 +39,7 @@ const AdminCommonHandler = {
 
         const { answer, question, question_id } = data;
 
-        let updateObj: any = {
+        const updateObj: any = {
             // updated_on: moment().unix()
         }
 
@@ -50,7 +50,7 @@ const AdminCommonHandler = {
             updateObj.question = question
         }
 
-        let response = await findByIdAndUpdate(faqModel, updateObj, question_id);
+        const response = await findByIdAndUpdate(faqModel, updateObj, question_id);
         if (response.status) {
             return showResponse(true, responseMessage.common.update_sucess, null, null, statusCodes.OK);
         }
@@ -67,7 +67,7 @@ const AdminCommonHandler = {
             return showResponse(false, responseMessage.common.not_exist, null, null, statusCodes.NOT_FOUND)
         }
 
-        let response = await findByIdAndRemove(faqModel, question_id)
+        const response = await findByIdAndRemove(faqModel, question_id)
         if (response.status) {
             return showResponse(true, responseMessage.common.delete_sucess, null, null, statusCodes.OK);
         }
@@ -77,7 +77,7 @@ const AdminCommonHandler = {
     updateCommonContent: tryCatchWrapper(async (data: any): Promise<ApiResponse> => {
 
         // data.updated_on = moment().unix()
-        let response = await findOneAndUpdate(commonContentModel, {}, data);
+        const response = await findOneAndUpdate(commonContentModel, {}, data);
         if (response.status) {
             return showResponse(true, responseMessage.admin.common_content_updated, response?.data, null, statusCodes.OK);
         }

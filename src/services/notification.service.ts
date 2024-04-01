@@ -1,10 +1,10 @@
 import firebaseAdmin from "../configs/firebase.config";
 import { showResponse } from "../utils/response.util";
 
-const sendTopicNotification = async (topic: string, title: string, message: string, data: any) => {
-    return new Promise(async (resolve, reject) => {
+const sendTopicNotification = (topic: string, title: string, message: string, data: any) => {
+    return new Promise((resolve, reject) => {
         try {
-            let messageData = {
+            const messageData = {
                 topic: topic,
                 notification: {
                     title: title,
@@ -13,19 +13,19 @@ const sendTopicNotification = async (topic: string, title: string, message: stri
                 data: { data: JSON.stringify(data) }
             };
 
-            await firebaseAdmin.messaging().send(messageData)
+            firebaseAdmin.messaging().send(messageData)
                 .then((response) => {
                     console.log(response);
                     return resolve(showResponse(true, "Notification sent successfully", response, null, 200));
                 })
                 .catch((error) => {
                     console.log(error);
-                    return resolve(showResponse(false, "Failed to send notification", error, null, 500));
+                    return reject(showResponse(false, "Failed to send notification", error, null, 500));
                 });
 
         } catch (err: any) {
             console.log(err);
-            return resolve(showResponse(true, "Unable to send notification", err.message, null, 200));
+            return reject(showResponse(true, "Unable to send notification", err.message, null, 200));
         }
     });
 }

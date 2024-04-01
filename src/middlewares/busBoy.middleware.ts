@@ -21,9 +21,9 @@ interface FileObject {
 const busboyMultipart = (request: Request): Promise<{ status: boolean; message: string; data?: FileObject[] }> => {
     return new Promise((resolve, reject) => {
         try {
-            let busboy = Busboy({ headers: request.headers });
+            const busboy = Busboy({ headers: request.headers });
 
-            let fileArray: FileObject[] = [];
+            const fileArray: FileObject[] = [];
 
             busboy.on('file', async (fieldName: string, fileStream: NodeJS.ReadableStream, fileObject: FileObject) => {
                 const chunks: Buffer[] = [];
