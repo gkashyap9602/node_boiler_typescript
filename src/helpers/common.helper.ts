@@ -1,11 +1,6 @@
 import moment from 'moment'
-import { Parser } from 'json2csv'
 import { Model } from 'mongoose'
 import bcrypt from 'bcryptjs';
-import XLSX from 'xlsx'
-import sharp from 'sharp';
-import fs from 'fs'
-import services from '../services';
 import mongoose from 'mongoose'
 
 const bycrptPasswordHash = (stringValue: string): Promise<string> => {
@@ -62,10 +57,6 @@ const getFilterMonthDateYear = (date: string) => {
     return moment(date).add(1, 'day').format('YYYY-MM-DD')
 }
 
-const getCSVFromJSON = (fields: any, json: any) => {
-    const parser = new Parser({ fields });
-    return parser.parse(json);
-}
 
 const dynamicSort = (property: any) => {
     let sortOrder = 1;
@@ -203,127 +194,6 @@ const generateCsrfToken = () => {
 }
 
 
-
-const exportJsonToExcel = (filteredData: any) => {
-    return new Promise((resolve, reject) => {
-        try {
-            const filePath = `worksheet/${"Order"}-${new Date().getTime()}.xlsx`;
-            const workbook = XLSX.utils.book_new();
-
-            const orderStatus: any = {
-                1: "new",
-                2: "inProduction",
-                3: "shipped",
-                4: "error",
-                5: "recieved",
-                6: "cancelled"
-            }
-
-            const sheetArray = [
-                'Merch Maker ID', 'Order Id', 'Customer Name', 'Customer Email', 'Customer Phone',
-                'Order Amount', 'Order Date', 'Order Status', "Shipping Method", 'Shipping Address',
-                "Shipping State", 'Shipping Country', "Freight Amount", "Tracking", "Ship Date",
-                "Shipment Weight", "Dimensions", "SKU", "Product Name", 'Quantity',
-            ];
-
-            const sheet: any = XLSX.utils.aoa_to_sheet([sheetArray]);
-
-            const rowData = [];
-
-            for (let k = 0; k < filteredData?.length; k++) {
-                const row = [];
-                row.push(filteredData[k].displayId ?? '');
-                row.push(filteredData[k].mwwOrderId ?? '');
-                row.push(filteredData[k].userData.firstName ?? '');
-                row.push(filteredData[k].userData.email ?? '');
-                row.push(filteredData[k].shippingAddress.companyPhone ?? '');
-                row.push(filteredData[k].amount ?? '');
-                row.push(filteredData[k].orderDate ?? '');
-                row.push(orderStatus[filteredData[k].status] ?? '');
-                row.push(filteredData[k].shipMethodData.name ?? '');
-                row.push(filteredData[k].shippingAddress.address1 ?? '');
-                row.push(filteredData[k].shippingAddress.stateName ?? '');
-                row.push(filteredData[k].shippingAddress.country ?? '');
-                row.push(filteredData[k].freightAmount ?? '');
-                row.push(filteredData[k].tracking ?? '');
-                row.push(filteredData[k].shipDate ?? '');
-                row.push(filteredData[k].shipmentWeight ?? '');
-                row.push(filteredData[k].dimensions ?? '');
-                row.push(filteredData[k].sku ?? '');
-
-                if (filteredData[k]?.orderItems && filteredData[k]?.orderItems.length > 0) {
-                    for (let j = 0; j < filteredData[k]?.orderItems?.length; j++) {
-                        row.push(filteredData[k]?.orderItems[j]?.productTitle ?? '');
-                        row.push(filteredData[k]?.orderItems[j]?.quantity ?? '');
-                    }
-                }
-
-                rowData.push(row);
-            }
-
-            let counter = 1;
-            for (let k = 0; k < rowData.length; k++) {
-                XLSX.utils.sheet_add_aoa(sheet, [rowData[k]], { origin: counter + 1 });
-                counter++;
-            }
-
-            XLSX.utils.book_append_sheet(workbook, sheet, 'Orders Data');
-            const buffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'buffer' });
-            
-            // Handling asynchronous operation directly inside Promise constructor
-            services.awsService.uploadToS3ExcelSheet(buffer, filePath)
-                .then(excelLink => {
-                    resolve({ status: true, message: "Excel for members created Successfully!", data: excelLink, code: 200 });
-                })
-                .catch(err => {
-                    reject({ status: false, message: "Error Occurred while uploading to S3", data: err.message, code: 200 });
-                });
-
-        } catch (err: any) {
-            console.log(err);
-            reject({ status: false, message: "Error Occurred, please try again", data: err.message, code: 200 });
-        }
-    });
-}
-
-
-
-const convertImageToWebp = async (imageInBuffer: any) => {
-    // console.log(imageInBuffer, "imageinbuffer")
-    return new Promise((resolve, reject) => {
-        sharp(imageInBuffer)
-            .webp({ quality: 50 })
-            .toBuffer()
-            .then(async (newBuffer) => {
-                resolve(newBuffer);
-            })
-            .catch(() => {
-                reject(false);
-            });
-    });
-};
-
-
-function readFileAsyncChunks(filePath: string, bufferSize = 64 * 1024) { //64kb each chunk size
-    return new Promise((resolve, reject) => {
-        const stream = fs.createReadStream(filePath, { highWaterMark: bufferSize }); //each chunk buffer size will be 64 kb max
-        const chunks: any = [];
-
-        stream.on('data', (chunk) => {
-            chunks.push(chunk);
-        });
-
-        stream.on('end', () => {
-            resolve(Buffer.concat(chunks));
-        });
-
-        stream.on('error', (error) => {
-            reject(error);
-        });
-
-    });
-}
-
 const generateUsernames = (name: string, count: number, all_usernames: any = null) => {
     const usernames = [];
     const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -375,7 +245,6 @@ export {
     generateRandomOtp,
     camelize,
     getFilterMonthDateYear,
-    getCSVFromJSON,
     dynamicSort,
     arraySort,
     capitalize,
@@ -386,11 +255,7 @@ export {
     getCurrentDate,
     generateCsrfToken,
     generateUsernames,
-    convertImageToWebp,
-    exportJsonToExcel,
-    readFileAsyncChunks,
     findClosestKey,
-    convertToObjectId
-
+    convertToObjectId,
 
 }
