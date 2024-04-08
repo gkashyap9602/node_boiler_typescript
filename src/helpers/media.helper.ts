@@ -140,11 +140,11 @@ const getAudioMetadata = (media_buffer: any) => {
                 const duration: any = metadata.format.duration; //in seconds
                 const durationInMinutes = parseFloat(duration) / 60;
                 console.log(durationInMinutes, "durationInMinutes")
-                resolve(showResponse(false, `Duration: ${duration} seconds`, durationInMinutes.toFixed(2), null, 400));
+                resolve(showResponse(false, `Duration: ${duration} seconds`, durationInMinutes.toFixed(2), 400));
             })
             .catch(error => {
                 console.error('Error while getting metadata:', error);
-                resolve(showResponse(false, 'Error while getting metadata', error, null, 400));
+                resolve(showResponse(false, 'Error while getting metadata', error, 400));
             });
     });
 };
@@ -161,12 +161,12 @@ const createVideoThumbnail = async (video_file_name: string, file_url: string) =
     console.log(video_file_name, "videoFileName")
     console.log(file_url, "file_url")
 
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async (resolve) => {
         try {
 
             const output_file_name = `${video_file_name}-thumbnail.jpg`;
 
-            let aws_file_link = `${APP.BITBUCKET_URL}/${file_url}`
+            const aws_file_link = `${APP.BITBUCKET_URL}/${file_url}`
 
             const response = await axios.get(aws_file_link, {
                 responseType: 'arraybuffer',
@@ -181,7 +181,7 @@ const createVideoThumbnail = async (video_file_name: string, file_url: string) =
             videoStream.push(mediaBuffer);
             videoStream.push(null); // Signal the end of the stream
 
-            let thumbnail_saved_path = `${process.cwd()}/public/thumbnails`
+            const thumbnail_saved_path = `${process.cwd()}/public/thumbnails`
 
             ffmpeg()
                 .input(videoStream)

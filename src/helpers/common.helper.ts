@@ -236,6 +236,33 @@ const findClosestKey = async (targetValue: number, obj: MyObject) => {  //object
     // Return the closest key
     return closestKey;
 
+} //ends
+
+
+//example -- availability.data ==>> :[ {start_time:017411551515 , end_time:071544545}] it should be timestamp
+export function generateSlotsForDay(availability: any) { //availability array 
+    // Generate slots based on available time slots for the day
+    const slots = availability?.data.flatMap((slot: any) => {
+        const startDateTime = moment.unix(slot.start_time);
+        const endDateTime = moment.unix(slot.end_time);
+        const slotDuration = moment.duration(30, 'minutes');
+
+        const generatedSlots = [];
+
+        let currentSlotStart = startDateTime.clone();
+        while (currentSlotStart.isBefore(endDateTime)) {
+            const currentSlotEnd = currentSlotStart.clone().add(slotDuration);
+            generatedSlots.push({
+                start_time: currentSlotStart.unix(),
+                end_time: currentSlotEnd.unix(),
+            });
+            currentSlotStart.add(slotDuration);
+        }
+
+        return generatedSlots;
+    });
+
+    return slots;
 }
 
 export {

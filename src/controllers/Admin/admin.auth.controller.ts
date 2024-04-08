@@ -2,9 +2,10 @@ import { Request, Response } from 'express'
 import { Route, Controller, Tags, Post, Body, Get, Security, Put, FormField, UploadedFile } from 'tsoa'
 import { ApiResponse } from '../../utils/interfaces.util';
 import { validateChangePassword, validateForgotPassword, validateUpdateProfile, validateResetPassword, validateAdminLogin, validateResendOtp, validateVerifyOtp } from '../../validations/Admin/admin.auth.validator';
-import handlerAdminAuth from '../../handlers/Admin/admin.auth.handler'
+import handler from '../../handlers/Admin/admin.auth.handler'
 import { showResponse } from '../../utils/response.util';
-import statusCodes from 'http-status-codes'
+import statusCodes from '../../constants/statusCodes'
+import { tryCatchWrapper } from '../../utils/config.util';
 
 @Tags('Admin Auth')
 @Route('/admin/auth')
@@ -26,13 +27,14 @@ export default class AdminAuthController extends Controller {
     @Post("/login")
     public async login(@Body() request: { email: string, password: string, os_type: string }): Promise<ApiResponse> {
 
-        const validatedAdmin = validateAdminLogin(request);
+        const validate = validateAdminLogin(request);
 
-        if (validatedAdmin.error) {
-            return showResponse(false, validatedAdmin.error.message, null, null, statusCodes.EXPECTATION_FAILED)
+        if (validate.error) {
+            return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
 
-        return handlerAdminAuth.login(request)
+        const wrappedFunc = tryCatchWrapper(handler.login);
+        return wrappedFunc(request); // Invoking the wrapped function 
     }
     //ends
 
@@ -48,7 +50,7 @@ export default class AdminAuthController extends Controller {
     //             return showResponse(false, validatedSignup.error.message, null, null, 400)
     //         }
 
-    //         return handlerAdminAuth.register(request)
+    //         return handler.register(request)
 
     //     }
     //     catch (err: any) {
@@ -66,13 +68,14 @@ export default class AdminAuthController extends Controller {
     @Post("/forgot_password")
     public async forgotPassword(@Body() request: { email: string }): Promise<ApiResponse> {
 
-        const validatedForgotPassword = validateForgotPassword(request);
+        const validate = validateForgotPassword(request);
 
-        if (validatedForgotPassword.error) {
-            return showResponse(false, validatedForgotPassword.error.message, null, null, statusCodes.EXPECTATION_FAILED)
+        if (validate.error) {
+            return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
 
-        return handlerAdminAuth.forgotPassword(request)
+        const wrappedFunc = tryCatchWrapper(handler.forgotPassword);
+        return wrappedFunc(request); // Invoking the wrapped function 
     }
     //ends
 
@@ -83,13 +86,14 @@ export default class AdminAuthController extends Controller {
     @Post("/reset_password")
     public async resetPassword(@Body() request: { email: string, new_password: string }): Promise<ApiResponse> {
 
-        const validatedResetPassword = validateResetPassword(request);
+        const validate = validateResetPassword(request);
 
-        if (validatedResetPassword.error) {
-            return showResponse(false, validatedResetPassword.error.message, null, null, statusCodes.EXPECTATION_FAILED)
+        if (validate.error) {
+            return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
 
-        return handlerAdminAuth.resetPassword(request)
+        const wrappedFunc = tryCatchWrapper(handler.resetPassword);
+        return wrappedFunc(request); // Invoking the wrapped function 
     }
     //ends
 
@@ -100,13 +104,14 @@ export default class AdminAuthController extends Controller {
     @Post("/verify_otp")
     public async verifyOtp(@Body() request: { email: string, otp: number }): Promise<ApiResponse> {
 
-        const validatedVerifyOtp = validateVerifyOtp(request);
+        const validate = validateVerifyOtp(request);
 
-        if (validatedVerifyOtp.error) {
-            return showResponse(false, validatedVerifyOtp.error.message, null, null, statusCodes.EXPECTATION_FAILED)
+        if (validate.error) {
+            return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
 
-        return handlerAdminAuth.verifyOtp(request)
+        const wrappedFunc = tryCatchWrapper(handler.verifyOtp);
+        return wrappedFunc(request); // Invoking the wrapped function 
     }
     //ends
 
@@ -117,12 +122,13 @@ export default class AdminAuthController extends Controller {
     @Post("/resend_otp")
     public async resendOtp(@Body() request: { email: string }): Promise<ApiResponse> {
 
-        const validatedResendOtp = validateResendOtp(request);
+        const validate = validateResendOtp(request);
 
-        if (validatedResendOtp.error) {
-            return showResponse(false, validatedResendOtp.error.message, null, null, statusCodes.EXPECTATION_FAILED)
+        if (validate.error) {
+            return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
-        return handlerAdminAuth.resendOtp(request)
+        const wrappedFunc = tryCatchWrapper(handler.resendOtp);
+        return wrappedFunc(request); // Invoking the wrapped function 
     }
     //ends
 
@@ -135,13 +141,14 @@ export default class AdminAuthController extends Controller {
 
         const { old_password, new_password } = request;
 
-        const validatedChangePassword = validateChangePassword({ old_password, new_password });
+        const validate = validateChangePassword({ old_password, new_password });
 
-        if (validatedChangePassword.error) {
-            return showResponse(false, validatedChangePassword.error.message, null, null, statusCodes.EXPECTATION_FAILED)
+        if (validate.error) {
+            return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
 
-        return handlerAdminAuth.changePassword({ old_password, new_password }, this.userId)
+        const wrappedFunc = tryCatchWrapper(handler.changePassword);
+        return wrappedFunc({ old_password, new_password }, this.userId); // Invoking the wrapped function 
     }
     //ends
 
@@ -152,7 +159,8 @@ export default class AdminAuthController extends Controller {
     @Get("/details")
     public async getAdminDetails(): Promise<ApiResponse> {
 
-        return handlerAdminAuth.getAdminDetails(this.userId)
+        const wrappedFunc = tryCatchWrapper(handler.getAdminDetails);
+        return wrappedFunc(this.userId); // Invoking the wrapped function 
     }
     //ends
 
@@ -162,16 +170,17 @@ export default class AdminAuthController extends Controller {
     @Security('Bearer')
     @Put("/profile")
     public async updateAdminProfile(@FormField() first_name?: string, @FormField() last_name?: string, @FormField() phone_number?: string, @FormField() country_code?: string, @FormField() greet_msg?: boolean, @UploadedFile() profile_pic?: Express.Multer.File): Promise<ApiResponse> {
-        
-            const body = { first_name, last_name, phone_number, country_code, greet_msg }
 
-            const validatedUpdateProfile = validateUpdateProfile(body);
+        const body = { first_name, last_name, phone_number, country_code, greet_msg }
 
-            if (validatedUpdateProfile.error) {
-                return showResponse(false, validatedUpdateProfile.error.message, null, null, statusCodes.EXPECTATION_FAILED)
-            }
+        const validate = validateUpdateProfile(body);
 
-            return handlerAdminAuth.updateAdminProfile(body, this.userId, profile_pic)
+        if (validate.error) {
+            return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
+        }
+
+        const wrappedFunc = tryCatchWrapper(handler.updateAdminProfile);
+        return wrappedFunc(body, this.userId, profile_pic); // Invoking the wrapped function 
     }
     //ends
 

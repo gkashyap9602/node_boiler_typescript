@@ -16,7 +16,6 @@
 						"type": "string"
 					},
 					"data": {},
-					"other": {},
 					"code": {
 						"type": "number",
 						"format": "double"

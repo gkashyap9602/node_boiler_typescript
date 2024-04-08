@@ -2,9 +2,10 @@ import { Request, Response } from 'express'
 import { Route, Controller, Tags, Post, Body, Security, Put, FormField, Delete } from 'tsoa'
 import { ApiResponse } from '../../utils/interfaces.util';
 import { validateUpdateQuestion, validateAddQuestion, validateCommonContent, validateDeleteQuestion } from '../../validations/Admin/admin.common.validator';
-import handlerAdminCommon from '../../handlers/Admin/admin.common.handler'
+import handler from '../../handlers/Admin/admin.common.handler'
 import { showResponse } from '../../utils/response.util';
-import statusCodes from 'http-status-codes'
+import statusCodes from '../../constants/statusCodes'
+import { tryCatchWrapper } from '../../utils/config.util';
 
 
 @Tags('Admin Common')
@@ -29,13 +30,15 @@ export default class AdminCommonController extends Controller {
     @Post("/question")
     public async addQuestion(@Body() request: { question: string, answer: string }): Promise<ApiResponse> {
 
-        const validatedAddQuestion = validateAddQuestion(request);
+        const validate = validateAddQuestion(request);
 
-        if (validatedAddQuestion.error) {
-            return showResponse(false, validatedAddQuestion.error.message, null, null, statusCodes.EXPECTATION_FAILED)
+        if (validate.error) {
+            return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
 
-        return handlerAdminCommon.addQuestion(request)
+        const wrappedFunc = tryCatchWrapper(handler.addQuestion);
+        return wrappedFunc(request); // Invoking the wrapped function 
+
     }
     //ends
 
@@ -46,13 +49,15 @@ export default class AdminCommonController extends Controller {
     @Put("/question")
     public async updateQuestion(@Body() request: { question_id: string, question: string, answer: string }): Promise<ApiResponse> {
 
-        const validatedUpdateQuestion = validateUpdateQuestion(request);
+        const validate = validateUpdateQuestion(request);
 
-        if (validatedUpdateQuestion.error) {
-            return showResponse(false, validatedUpdateQuestion.error.message, null, null, statusCodes.EXPECTATION_FAILED)
+        if (validate.error) {
+            return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
 
-        return handlerAdminCommon.updateQuestion(request)
+        const wrappedFunc = tryCatchWrapper(handler.updateQuestion);
+        return wrappedFunc(request); // Invoking the wrapped function 
+
     }
     //ends
 
@@ -63,13 +68,15 @@ export default class AdminCommonController extends Controller {
     @Delete("/question")
     public async deleteQuestion(@FormField() question_id: string): Promise<ApiResponse> {
 
-        const validatedDeleteQuestion = validateDeleteQuestion({ question_id });
+        const validate = validateDeleteQuestion({ question_id });
 
-        if (validatedDeleteQuestion.error) {
-            return showResponse(false, validatedDeleteQuestion.error.message, null, null, statusCodes.EXPECTATION_FAILED)
+        if (validate.error) {
+            return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
 
-        return handlerAdminCommon.deleteQuestion({ question_id })
+        const wrappedFunc = tryCatchWrapper(handler.deleteQuestion);
+        return wrappedFunc({ question_id }); // Invoking the wrapped function 
+
     }
     //ends
 
@@ -80,13 +87,15 @@ export default class AdminCommonController extends Controller {
     @Put("/common_content")
     public async updateCommonContent(@Body() request: { about: string, privacy_policy: string, terms_conditions: string }): Promise<ApiResponse> {
 
-        const validatedCommonContent = validateCommonContent(request);
+        const validate = validateCommonContent(request);
 
-        if (validatedCommonContent.error) {
-            return showResponse(false, validatedCommonContent.error.message, null, null, statusCodes.EXPECTATION_FAILED)
+        if (validate.error) {
+            return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
 
-        return handlerAdminCommon.updateCommonContent(request)
+        const wrappedFunc = tryCatchWrapper(handler.updateCommonContent);
+        return wrappedFunc(request); // Invoking the wrapped function 
+
     }
     //ends
 

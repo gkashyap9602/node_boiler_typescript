@@ -42,7 +42,6 @@ const sendSMSWithAwsSNS = (to: number, Message: string) => {
                             false,
                             responseMessage?.common?.sms_sent_error,
                             err,
-                            null,
                             200
                         )
                     );
@@ -52,7 +51,6 @@ const sendSMSWithAwsSNS = (to: number, Message: string) => {
                             true,
                             responseMessage?.common?.sms_sent_success,
                             data,
-                            null,
                             200
                         )
                     );
@@ -61,7 +59,7 @@ const sendSMSWithAwsSNS = (to: number, Message: string) => {
         } catch (err) {
             console.log("in catch err", err);
             return reject(
-                showResponse(false, responseMessage?.common?.aws_error, err, null, 200)
+                showResponse(false, responseMessage?.common?.aws_error, err, 200)
             );
         }
     });

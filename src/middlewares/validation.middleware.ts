@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express'
 
 
 export const validationError = async (res: Response, error: any) => {
-    const code = 403;
+    const code = 417; //expectation failed
     const validationErrors = error.message.replace(new RegExp('\\"', "g"), "");
     // const validationErrors = error.details.map((error) => error.message.replace(new RegExp('\\"', "g"), ""));
     return res.status(code).json({

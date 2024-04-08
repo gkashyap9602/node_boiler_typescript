@@ -6,24 +6,23 @@ import * as commonHelper from "../../helpers/common.helper";
 import responseMessage from '../../constants/ResponseMessage'
 import userModel from '../../models/User/user.model';
 import { ROLE, USER_STATUS } from '../../constants/app.constant'
-import { tryCatchWrapper } from "../../utils/config.util";
-import statusCodes from 'http-status-codes'
+import statusCodes from '../../constants/statusCodes'
 
 const AdminUserHandler = {
 
-    getUserDetails: tryCatchWrapper(async (user_id: string): Promise<ApiResponse> => {
+    getUserDetails: async (user_id: string): Promise<ApiResponse> => {
 
         const getResponse = await findOne(userModel, { _id: user_id, status: { $ne: USER_STATUS.DELETED } }, { password: 0 });
 
         if (!getResponse.status) {
-            return showResponse(false, responseMessage.users.invalid_user, null, null, statusCodes.UNAUTHORIZED)
+            return showResponse(false, responseMessage.users.invalid_user, null, statusCodes.API_ERROR)
         }
 
-        return showResponse(true, responseMessage.users.user_detail, getResponse.data, null, statusCodes.OK)
+        return showResponse(true, responseMessage.users.user_detail, getResponse.data, statusCodes.SUCCESS)
 
-    }),
+    },
 
-    getUsersList: tryCatchWrapper(async (sort_column: string = 'created_on', sort_direction: string = 'desc', page: number = 1, limit: number = 10, search_key: string = '', status?: number): Promise<ApiResponse> => {
+    getUsersList: async (sort_column: string = 'created_on', sort_direction: string = 'desc', page: number = 1, limit: number = 10, search_key: string = '', status?: number): Promise<ApiResponse> => {
 
         page = Number(page)
         limit = Number(limit)
@@ -72,14 +71,14 @@ const AdminUserHandler = {
 
         const result = await userModel.aggregate(aggregation)
         if (result.length === 0) {
-            return showResponse(true, responseMessage?.common.data_retreive_sucess, { result, totalCount }, null, statusCodes.NO_CONTENT);
+            return showResponse(true, responseMessage?.common.data_retreive_sucess, { result, totalCount }, statusCodes.SUCCESS);
         }
 
-        return showResponse(true, responseMessage?.common.data_retreive_sucess, { result, totalCount }, null, statusCodes.OK);
+        return showResponse(true, responseMessage?.common.data_retreive_sucess, { result, totalCount }, statusCodes.SUCCESS);
 
-    }),
+    },
 
-    updateUserStatus: tryCatchWrapper(async (data: any): Promise<ApiResponse> => {
+    updateUserStatus: async (data: any): Promise<ApiResponse> => {
 
         const { user_id, status } = data;
 
@@ -89,7 +88,7 @@ const AdminUserHandler = {
         const result = await findOne(userModel, queryObject);
 
         if (!result.status) {
-            return showResponse(false, responseMessage.users.invalid_user, null, null, statusCodes.UNAUTHORIZED);
+            return showResponse(false, responseMessage.users.invalid_user, null, statusCodes.API_ERROR);
         }
         const editObj = {
             status: parsedStatus,
@@ -99,14 +98,14 @@ const AdminUserHandler = {
         const response = await findOneAndUpdate(userModel, queryObject, editObj);
         if (response.status) {
             const msg = parsedStatus == 2 ? "Deleted" : parsedStatus == 1 ? "Activated" : "Deactivated"
-            return showResponse(true, `User Account Has Been ${msg}`, {}, null, statusCodes.OK);
+            return showResponse(true, `User Account Has Been ${msg}`, {}, statusCodes.SUCCESS);
         }
 
-        return showResponse(false, "Error While Updating User Status", null, null, statusCodes.BAD_REQUEST);
+        return showResponse(false, "Error While Updating User Status", null, statusCodes.API_ERROR);
 
-    }),
+    },
 
-    getDashboardData: tryCatchWrapper(async (past_day: string = 'MAX'): Promise<ApiResponse> => {
+    getDashboardData: async (past_day: string = 'MAX'): Promise<ApiResponse> => {
 
         // Calculate the timestamps for 30 days ago, 180 days ago, and 365 days ago
         const thirtyDaysAgo = moment().subtract(30, 'days').unix()  //last 30 days timestamp
@@ -165,9 +164,9 @@ const AdminUserHandler = {
             deactivated_users: deactivated_users.data
         }
 
-        return showResponse(true, 'Dashboard data is here', { user_summary, dashboard }, null, statusCodes.OK);
+        return showResponse(true, 'Dashboard data is here', { user_summary, dashboard }, statusCodes.SUCCESS);
 
-    }),
+    },
 
 }
 

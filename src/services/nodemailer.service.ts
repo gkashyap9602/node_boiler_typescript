@@ -30,15 +30,15 @@ const nodemail = async (to: string, subject: string, body: any, attachments: any
             }
             transporter.sendMail(mailOptions, (error: any) => {
                 if (error) {
-                    return reject(showResponse(false, 'Email Sent Error', error, null, 200));
+                    return reject(showResponse(false, 'Email Sent Error', error, 200));
                 }
 
                 // console.log(data, "datatatatataemail")
-                return resolve(showResponse(true, 'Email Sent Successfully', null, null, 200));
+                return resolve(showResponse(true, 'Email Sent Successfully', null, 200));
             })
         } catch (err) {
             console.log("in catch err", err)
-            return reject(showResponse(false, "Error while sending Email", err, null, 200));
+            return reject(showResponse(false, "Error while sending Email", err, 200));
         }
     });
 }

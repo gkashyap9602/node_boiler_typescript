@@ -2,9 +2,10 @@ import { Request, Response } from 'express'
 import { Route, Controller, Tags, Post, Body, Get, Security, UploadedFile, FormField, Put } from 'tsoa'
 import { ApiResponse } from '../../utils/interfaces.util';
 import { validateChangePassword, validateForgotPassword, validateUpdateProfile, validateRegister, validateResetPassword, validateUser, validateResendOtp, validateVerifyOtp } from '../../validations/User/user.auth.validator';
-import handlers from '../../handlers/User/user.auth.handler'
+import handler from '../../handlers/User/user.auth.handler'
 import { showResponse } from '../../utils/response.util';
-import statusCodes from 'http-status-codes'
+import statusCodes from '../../constants/statusCodes'
+import { tryCatchWrapper } from '../../utils/config.util';
 
 
 @Tags('User Auth')
@@ -27,13 +28,14 @@ export default class UserAuthController extends Controller {
     @Post("/login")
     public async login(@Body() request: { email: string, password: string, os_type: string }): Promise<ApiResponse> {
 
-        const validatedUser = validateUser(request);
+        const validate = validateUser(request);
 
-        if (validatedUser.error) {
-            return showResponse(false, validatedUser.error.message, null, null, statusCodes.EXPECTATION_FAILED)
+        if (validate.error) {
+            return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
 
-        return handlers.login(request)
+        const wrappedFunc = tryCatchWrapper(handler.login);
+        return wrappedFunc(request); // Invoking the wrapped function 
 
     }
     //ends
@@ -46,13 +48,14 @@ export default class UserAuthController extends Controller {
 
         const body = { first_name, last_name, email, password, phone_number, country_code, os_type }
 
-        const validatedSignup = validateRegister(body);
+        const validate = validateRegister(body);
 
-        if (validatedSignup.error) {
-            return showResponse(false, validatedSignup.error.message, null, null, statusCodes.EXPECTATION_FAILED)
+        if (validate.error) {
+            return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
 
-        return handlers.register(body, profile_pic)
+        const wrappedFunc = tryCatchWrapper(handler.register);
+        return wrappedFunc(body, profile_pic); // Invoking the wrapped function 
 
     }
     //ends
@@ -65,7 +68,7 @@ export default class UserAuthController extends Controller {
     public async uploadFile(@UploadedFile() file: Express.Multer.File): Promise<ApiResponse> {
 
 
-        return handlers.uploadFile({ file })
+        return handler.uploadFile({ file })
     }
     //ends
 
@@ -75,13 +78,14 @@ export default class UserAuthController extends Controller {
     @Post("/forgot_password")
     public async forgotPassword(@Body() request: { email: string }): Promise<ApiResponse> {
 
-        const validatedForgotPassword = validateForgotPassword(request);
+        const validate = validateForgotPassword(request);
 
-        if (validatedForgotPassword.error) {
-            return showResponse(false, validatedForgotPassword.error.message, null, null, statusCodes.EXPECTATION_FAILED)
+        if (validate.error) {
+            return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
 
-        return handlers.forgotPassword(request)
+        const wrappedFunc = tryCatchWrapper(handler.forgotPassword);
+        return wrappedFunc(request); // Invoking the wrapped function 
 
     }
     //ends
@@ -93,13 +97,14 @@ export default class UserAuthController extends Controller {
     @Post("/reset_password")
     public async resetPassword(@Body() request: { email: string, new_password: string }): Promise<ApiResponse> {
 
-        const validatedResetPassword = validateResetPassword(request);
+        const validate = validateResetPassword(request);
 
-        if (validatedResetPassword.error) {
-            return showResponse(false, validatedResetPassword.error.message, null, null, statusCodes.EXPECTATION_FAILED)
+        if (validate.error) {
+            return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
 
-        return handlers.resetPassword(request)
+        const wrappedFunc = tryCatchWrapper(handler.resetPassword);
+        return wrappedFunc(request); // Invoking the wrapped function 
 
     }
     //ends
@@ -111,13 +116,14 @@ export default class UserAuthController extends Controller {
     @Post("/verify_otp")
     public async verifyOtp(@Body() request: { email: string, otp: number }): Promise<ApiResponse> {
 
-        const validatedVerifyOtp = validateVerifyOtp(request);
+        const validate = validateVerifyOtp(request);
 
-        if (validatedVerifyOtp.error) {
-            return showResponse(false, validatedVerifyOtp.error.message, null, null, statusCodes.EXPECTATION_FAILED)
+        if (validate.error) {
+            return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
 
-        return handlers.verifyOtp(request)
+        const wrappedFunc = tryCatchWrapper(handler.verifyOtp);
+        return wrappedFunc(request); // Invoking the wrapped function 
 
     }
     //ends
@@ -129,13 +135,14 @@ export default class UserAuthController extends Controller {
     @Post("/resend_otp")
     public async resendOtp(@Body() request: { email: string }): Promise<ApiResponse> {
 
-        const validatedResendOtp = validateResendOtp(request);
+        const validate = validateResendOtp(request);
 
-        if (validatedResendOtp.error) {
-            return showResponse(false, validatedResendOtp.error.message, null, null, statusCodes.EXPECTATION_FAILED)
+        if (validate.error) {
+            return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
 
-        return handlers.resendOtp(request)
+        const wrappedFunc = tryCatchWrapper(handler.resendOtp);
+        return wrappedFunc(request); // Invoking the wrapped function 
     }
     //ends
 
@@ -148,13 +155,14 @@ export default class UserAuthController extends Controller {
 
         const { old_password, new_password } = request;
 
-        const validatedChangePassword = validateChangePassword({ old_password, new_password });
+        const validate = validateChangePassword({ old_password, new_password });
 
-        if (validatedChangePassword.error) {
-            return showResponse(false, validatedChangePassword.error.message, null, null, statusCodes.EXPECTATION_FAILED)
+        if (validate.error) {
+            return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
 
-        return handlers.changePassword({ old_password, new_password }, this.userId)
+        const wrappedFunc = tryCatchWrapper(handler.changePassword);
+        return wrappedFunc({ old_password, new_password }, this.userId); // Invoking the wrapped function 
     }
     //ends
 
@@ -165,7 +173,8 @@ export default class UserAuthController extends Controller {
     @Get("/details")
     public async getUserDetails(): Promise<ApiResponse> {
         // console.log(req.body.user, "")
-        return handlers.getUserDetails(this.userId)
+        const wrappedFunc = tryCatchWrapper(handler.getUserDetails);
+        return wrappedFunc(this.userId); // Invoking the wrapped function 
 
     }
     //ends
@@ -179,15 +188,14 @@ export default class UserAuthController extends Controller {
 
         const body = { first_name, last_name, phone_number, country_code }
 
-        const validatedUpdateProfile = validateUpdateProfile(body);
+        const validate = validateUpdateProfile(body);
 
-        if (validatedUpdateProfile.error) {
-            return showResponse(false, validatedUpdateProfile.error.message, null, null, statusCodes.EXPECTATION_FAILED)
+        if (validate.error) {
+            return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
 
-        return handlers.updateUserProfile(body, this.userId, profile_pic)
-
-
+        const wrappedFunc = tryCatchWrapper(handler.updateUserProfile);
+        return wrappedFunc(body, this.userId, profile_pic); // Invoking the wrapped function 
     }
     //ends
 

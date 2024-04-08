@@ -1,10 +1,11 @@
 import { Request, Response } from 'express'
 import { Route, Controller, Tags, Post, Get, Security, FormField } from 'tsoa'
 import { ApiResponse } from '../../utils/interfaces.util';
-import handlers from '../../handlers/Common/common.handler'
+import handler from '../../handlers/Common/common.handler'
 import { showResponse } from '../../utils/response.util';
 import { validateStoreParmeterToAws } from '../../validations/Common/common.validator';
-import statusCodes from 'http-status-codes'
+import statusCodes from '../../constants/statusCodes'
+import { tryCatchWrapper } from '../../utils/config.util';
 
 
 @Tags('Common')
@@ -28,7 +29,8 @@ export default class CommonController extends Controller {
     @Get("/common_content")
     public async getCommonContent(): Promise<ApiResponse> {
 
-        return handlers.getCommonContent()
+        const wrappedFunc = tryCatchWrapper(handler.getCommonContent);
+        return wrappedFunc(); // Invoking the wrapped function 
 
     }
     //ends
@@ -40,8 +42,8 @@ export default class CommonController extends Controller {
     @Get("/questions")
     public async getQuestions(): Promise<ApiResponse> {
 
-        return handlers.getQuestions()
-
+        const wrappedFunc = tryCatchWrapper(handler.getQuestions);
+        return wrappedFunc(); // Invoking the wrapped function 
     }
     //ends
 
@@ -52,15 +54,14 @@ export default class CommonController extends Controller {
     @Post("/store_paramter_to_aws")
     public async storeParameterToAws(@FormField() name: string, @FormField() value: string): Promise<ApiResponse> {
 
-        console.log(name, "nameeeeeee")
-        console.log(value, "valueeeeeee")
-        const validatedStoreParmeterToAws = validateStoreParmeterToAws({ name, value });
+        const validate = validateStoreParmeterToAws({ name, value });
 
-        if (validatedStoreParmeterToAws.error) {
-            return showResponse(false, validatedStoreParmeterToAws.error.message, null, null, statusCodes.EXPECTATION_FAILED)
+        if (validate.error) {
+            return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
 
-        return handlers.storeParameterToAws(name, value)
+        const wrappedFunc = tryCatchWrapper(handler.storeParameterToAws);
+        return wrappedFunc(name, value); // Invoking the wrapped function 
 
     }
     //ends

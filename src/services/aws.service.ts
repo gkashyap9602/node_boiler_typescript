@@ -8,9 +8,7 @@ import AWS from 'aws-sdk'
 
 import path from 'path'
 import responseMessage from "../constants/ResponseMessage";
-import * as commonHelper from "../helpers/common.helper";
 import * as mediaHelper from "../helpers/media.helper";
-import ffmpeg from 'fluent-ffmpeg'
 import fs from 'fs'
 import { showResponse } from "../utils/response.util";
 import { AWS_CREDENTIAL } from "../constants/app.constant";
@@ -107,7 +105,6 @@ const sendSMSService = async (to: number, Message: string) => {
                             false,
                             responseMessage?.common?.sms_sent_error,
                             err,
-                            null,
                             200
                         )
                     );
@@ -117,7 +114,6 @@ const sendSMSService = async (to: number, Message: string) => {
                             true,
                             responseMessage?.common?.sms_sent_success,
                             data,
-                            null,
                             200
                         )
                     );
@@ -126,7 +122,7 @@ const sendSMSService = async (to: number, Message: string) => {
         } catch (err) {
             console.log("in catch err", err);
             return resolve(
-                showResponse(false, responseMessage?.common?.aws_error, err, null, 200)
+                showResponse(false, responseMessage?.common?.aws_error, err, 200)
             );
         }
     });
@@ -164,21 +160,21 @@ const uploadFileToS3 = async (files: [any]): Promise<ApiResponse> => {
             Promise.all(promises).then(() => {
                 if (webpFilesArray.length > 0) {
                     uploadToS3(webpFilesArray).then(filesResponse => {
-                        resolve(showResponse(true, responseMessage?.common?.file_upload_success, filesResponse, null, 200));
+                        resolve(showResponse(true, responseMessage?.common?.file_upload_success, filesResponse, 200));
                     }).catch(error => {
                         console.log(`Error uploading files to S3`, error);
-                        resolve(showResponse(false, responseMessage?.common?.file_upload_error, error, null, 200));
+                        resolve(showResponse(false, responseMessage?.common?.file_upload_error, error, 200));
                     });
                 } else {
-                    resolve(showResponse(false, responseMessage?.common?.file_upload_error, null, null, 200));
+                    resolve(showResponse(false, responseMessage?.common?.file_upload_error, null, 200));
                 }
             }).catch(error => {
                 console.log(`Error converting images to webp`, error);
-                resolve(showResponse(false, responseMessage?.common?.file_upload_error, error, null, 200));
+                resolve(showResponse(false, responseMessage?.common?.file_upload_error, error, 200));
             });
         } catch (err) {
             console.log(`in catch error 472`, err);
-            resolve(showResponse(false, responseMessage?.common?.file_upload_error, err, null, 200));
+            resolve(showResponse(false, responseMessage?.common?.file_upload_error, err, 200));
         }
     });
 
@@ -365,7 +361,6 @@ const unlinkFromS3Bucket = async (fileUrls: any) => { //fileUrls should be array
                                     showResponse(
                                         false,
                                         'Error deleting object on s3 bucket',
-                                        null,
                                         err,
                                         400
                                     ));
@@ -375,7 +370,6 @@ const unlinkFromS3Bucket = async (fileUrls: any) => { //fileUrls should be array
                                     showResponse(
                                         true,
                                         'Object deleted successfully from s3 bucket',
-                                        null,
                                         data,
                                         200
                                     ));
@@ -388,7 +382,6 @@ const unlinkFromS3Bucket = async (fileUrls: any) => { //fileUrls should be array
                             showResponse(
                                 false,
                                 'item not found on s3 bucket While unlinking from s3 bucket',
-                                null,
                                 err,
                                 400
                             ));
@@ -435,12 +428,12 @@ const uploadVideoAndTranscode = async (files: any, media_type = 'videos') => {
         // let fileName = Date.now().toString() + Math.floor(Math.random() * 1000);
 
         const s3UploadPromises = files?.map(async (file: any) => {
-            return new Promise(async (resolve, reject) => {
+            return new Promise(async (resolve) => {
                 const ext: any = path.extname(file?.originalname ?? file?.fieldname ?? file?.mimetype);
                 const fileName = `${file.fieldname}-${Date.now().toString()}${ext}`;
 
                 if (file?.mimetype.indexOf("image") >= 0) {
-                    let imageNewBuffer = await mediaHelper.convertImageToWebp(file?.buffer);
+                    const imageNewBuffer = await mediaHelper.convertImageToWebp(file?.buffer);
                     if (imageNewBuffer) {
                         const params = {
                             Bucket: input_bucket_name,
@@ -461,8 +454,8 @@ const uploadVideoAndTranscode = async (files: any, media_type = 'videos') => {
                 } else if (file?.mimetype.indexOf("video") >= 0) { //VIDEO TRANSCODE
 
                     console.log("videoTranscodeSIde")
-                    let fileExt = path.extname(file?.originalname)
-                    let folder_Key = `${file.fieldname}/${media_type}/${fileName}`
+                    // const fileExt = path.extname(file?.originalname)
+                    const folder_Key = `${file.fieldname}/${media_type}/${fileName}`
 
                     const upload_params = {
                         Bucket: input_bucket_name,
@@ -548,7 +541,7 @@ const uploadVideoAndTranscode = async (files: any, media_type = 'videos') => {
 
                         console.log("put objectt", playlistParams.Key)
 
-                        let transcode_output = {
+                        const transcode_output = {
                             video_url: playlistParams.Key,
                             thumb_url: OutputKeyPrefix + 'thumbnails/thumbnail-{count}'
                         }
@@ -575,7 +568,7 @@ const uploadVideoAndTranscode = async (files: any, media_type = 'videos') => {
         console.log(s3UploadResults, "s3UploadResults")
 
 
-        let trancode_result = {
+        const trancode_result = {
             video_url: "",
             thumb_url: ""
 

@@ -16,16 +16,16 @@ const sendTopicNotification = (topic: string, title: string, message: string, da
             firebaseAdmin.messaging().send(messageData)
                 .then((response) => {
                     console.log(response);
-                    return resolve(showResponse(true, "Notification sent successfully", response, null, 200));
+                    return resolve(showResponse(true, "Notification sent successfully", response, 200));
                 })
                 .catch((error) => {
                     console.log(error);
-                    return reject(showResponse(false, "Failed to send notification", error, null, 500));
+                    return reject(showResponse(false, "Failed to send notification", error, 500));
                 });
 
         } catch (err: any) {
             console.log(err);
-            return reject(showResponse(true, "Unable to send notification", err.message, null, 200));
+            return reject(showResponse(true, "Unable to send notification", err.message, 200));
         }
     });
 }

@@ -9,43 +9,41 @@ import adminModel from "../../models/Admin/admin.model";
 import services from '../../services';
 import responseMessage from '../../constants/ResponseMessage'
 import { APP } from '../../constants/app.constant';
-import userModel from '../../models/User/user.model';
 import { ROLE } from '../../constants/app.constant'
-import { tryCatchWrapper } from '../../utils/config.util';
-import statusCodes from 'http-status-codes'
+import statusCodes from '../../constants/statusCodes'
 
 
 const AdminAuthHandler = {
 
-    login: tryCatchWrapper(async (data: any): Promise<ApiResponse> => {
+    login: async (data: any): Promise<ApiResponse> => {
 
         const { email, password, os_type } = data;
 
         const exists = await findOne(adminModel, { email });
 
         if (!exists.status) {
-            return showResponse(false, responseMessage.admin.does_not_exist, null, null, statusCodes.UNAUTHORIZED)
+            return showResponse(false, responseMessage.admin.does_not_exist, null, statusCodes.API_ERROR)
         }
 
         const isValid = await commonHelper.verifyBycryptHash(password, exists.data.password);
         if (!isValid) {
-            return showResponse(false, responseMessage.common.password_incorrect, null, null, statusCodes.UNAUTHORIZED)
+            return showResponse(false, responseMessage.common.password_incorrect, null, statusCodes.API_ERROR)
         }
 
         const os_update = await findOneAndUpdate(adminModel, { _id: exists?.data?._id }, { os_type })
 
         if (!os_update.status) {
-            return showResponse(false, responseMessage.users.login_error, null, null, statusCodes.UNAUTHORIZED)
+            return showResponse(false, responseMessage.users.login_error, null, statusCodes.API_ERROR)
         }
 
         const token = await generateJwtToken(exists.data._id, { user_type: 'admin', type: "access" }, APP.ACCESS_EXPIRY)
         delete exists.data.password
 
-        return showResponse(true, responseMessage.admin.login_success, { ...exists.data, token }, null, statusCodes.OK)
+        return showResponse(true, responseMessage.admin.login_success, { ...exists.data, token }, statusCodes.SUCCESS)
 
-    }),
+    },
 
-    register: tryCatchWrapper(async (data: any): Promise<ApiResponse> => {
+    register: async (data: any): Promise<ApiResponse> => {
 
         const { email, password } = data;
 
@@ -53,7 +51,7 @@ const AdminAuthHandler = {
         const exists = await findOne(adminModel, { email });
 
         if (exists.status) {
-            return showResponse(false, responseMessage.common.email_already, null, null, statusCodes.CONFLICT)
+            return showResponse(false, responseMessage.common.email_already, null, statusCodes.API_ERROR)
         }
 
         data.password = await commonHelper.bycrptPasswordHash(password);
@@ -63,21 +61,21 @@ const AdminAuthHandler = {
         const save = await createOne(adminRef)
 
         if (!save.status) {
-            return showResponse(false, responseMessage.common.error_while_create_acc, null, null, statusCodes.BAD_REQUEST)
+            return showResponse(false, responseMessage.common.error_while_create_acc, null, statusCodes.API_ERROR)
         }
 
-        return showResponse(true, responseMessage.admin.admin_created, null, null, statusCodes.CREATED)
+        return showResponse(true, responseMessage.admin.admin_created, null, statusCodes.SUCCESS)
 
-    }),
+    },
 
-    forgotPassword: tryCatchWrapper(async (data: any): Promise<ApiResponse> => {
+    forgotPassword: async (data: any): Promise<ApiResponse> => {
 
         const { email } = data;
         // check if admin exists
         const exists = await findOne(adminModel, { email });
 
         if (!exists.status) {
-            return showResponse(false, responseMessage.admin.invalid_admin, null, null, statusCodes.UNAUTHORIZED)
+            return showResponse(false, responseMessage.admin.invalid_admin, null, statusCodes.API_ERROR)
         }
 
         const otp = commonHelper.generateRandomOtp(4);
@@ -106,14 +104,14 @@ const AdminAuthHandler = {
 
             await findByIdAndUpdate(adminModel, userObj, (exists?.data?._id));
 
-            return showResponse(true, responseMessage.users.otp_send, null, null, statusCodes.OK);
+            return showResponse(true, responseMessage.users.otp_send, null, statusCodes.SUCCESS);
         }
 
-        return showResponse(false, responseMessage.users.forgot_password_email_error, null, null, statusCodes.BAD_REQUEST)
+        return showResponse(false, responseMessage.users.forgot_password_email_error, null, statusCodes.API_ERROR)
 
-    }),
+    },
 
-    resetPassword: tryCatchWrapper(async (data: any): Promise<ApiResponse> => {
+    resetPassword: async (data: any): Promise<ApiResponse> => {
 
         const { email, new_password } = data;
 
@@ -121,7 +119,7 @@ const AdminAuthHandler = {
 
         const result = await findOne(adminModel, queryObject);
         if (!result.status) {
-            return showResponse(false, `${responseMessage.users.invalid_user} or email`, null, null, statusCodes.UNAUTHORIZED);
+            return showResponse(false, `${responseMessage.users.invalid_user} or email`, null, statusCodes.API_ERROR);
         }
 
         const hashed = await commonHelper.bycrptPasswordHash(new_password)
@@ -135,14 +133,14 @@ const AdminAuthHandler = {
         const updated = await findByIdAndUpdate(adminModel, updateObj, result?.data?._id)
 
         if (!updated.status) {
-            return showResponse(false, responseMessage.users.password_reset_error, null, null, statusCodes.NOT_MODIFIED)
+            return showResponse(false, responseMessage.users.password_reset_error, null, statusCodes.API_ERROR)
         }
 
-        return showResponse(true, responseMessage.users.password_reset_success, null, null, statusCodes.OK)
+        return showResponse(true, responseMessage.users.password_reset_success, null, statusCodes.SUCCESS)
 
-    }),
+    },
 
-    verifyOtp: tryCatchWrapper(async (data: any): Promise<ApiResponse> => {
+    verifyOtp: async (data: any): Promise<ApiResponse> => {
         const { email, otp } = data;
 
         const queryObject = { email, otp, status: { $ne: 2 } }
@@ -152,14 +150,14 @@ const AdminAuthHandler = {
         if (findUser.status) {
             await findOneAndUpdate(adminModel, queryObject, { is_verified: true })
 
-            return showResponse(true, responseMessage.users.otp_verify_success, null, null, statusCodes.OK);
+            return showResponse(true, responseMessage.users.otp_verify_success, null, statusCodes.SUCCESS);
         }
 
-        return showResponse(false, `${responseMessage.users.invalid_otp} or email`, null, null, statusCodes.UNAUTHORIZED);
+        return showResponse(false, `${responseMessage.users.invalid_otp} or email`, null, statusCodes.API_ERROR);
 
-    }),
+    },
 
-    resendOtp: tryCatchWrapper(async (data: any): Promise<ApiResponse> => {
+    resendOtp: async (data: any): Promise<ApiResponse> => {
 
         const { email } = data;
         const queryObject = { email, status: { $ne: 2 } }
@@ -189,27 +187,27 @@ const AdminAuthHandler = {
             if (resendOtp.status) {
                 await findOneAndUpdate(adminModel, queryObject, { otp })
 
-                return showResponse(true, responseMessage.users.otp_resend, null, null, statusCodes.OK);
+                return showResponse(true, responseMessage.users.otp_resend, null, statusCodes.SUCCESS);
             }
         }
 
-        return showResponse(false, responseMessage.users.invalid_email, null, null, statusCodes.UNAUTHORIZED);
+        return showResponse(false, responseMessage.users.invalid_email, null, statusCodes.API_ERROR);
 
-    }),
+    },
 
-    changePassword: tryCatchWrapper(async (data: any, adminId: string): Promise<ApiResponse> => {
+    changePassword: async (data: any, adminId: string): Promise<ApiResponse> => {
 
         const { old_password, new_password } = data;
 
         const exists = await findOne(adminModel, { _id: adminId })
 
         if (!exists.status) {
-            return showResponse(false, responseMessage.admin.invalid_admin, null, null, statusCodes.UNAUTHORIZED)
+            return showResponse(false, responseMessage.admin.invalid_admin, null, statusCodes.API_ERROR)
         }
 
         const isValid = await commonHelper.verifyBycryptHash(old_password, exists.data?.password);
         if (!isValid) {
-            return showResponse(false, responseMessage.users.invalid_password, null, null, statusCodes.UNAUTHORIZED)
+            return showResponse(false, responseMessage.users.invalid_password, null, statusCodes.API_ERROR)
         }
 
         const hashed = await commonHelper.bycrptPasswordHash(new_password)
@@ -217,31 +215,31 @@ const AdminAuthHandler = {
         const updated = await findByIdAndUpdate(adminModel, { password: hashed }, adminId)
 
         if (!updated.status) {
-            return showResponse(false, responseMessage.users.password_change_failed, null, null, statusCodes.NOT_MODIFIED)
+            return showResponse(false, responseMessage.users.password_change_failed, null, statusCodes.API_ERROR)
         }
-        return showResponse(true, responseMessage.users.password_change_successfull, null, null, statusCodes.OK)
-    }),
+        return showResponse(true, responseMessage.users.password_change_successfull, null, statusCodes.SUCCESS)
+    },
 
-    getAdminDetails: tryCatchWrapper(async (adminId: string): Promise<ApiResponse> => {
+    getAdminDetails: async (adminId: string): Promise<ApiResponse> => {
 
         const getResponse = await findOne(adminModel, { _id: adminId }, { password: 0 });
 
         if (!getResponse.status) {
-            return showResponse(false, responseMessage.admin.invalid_admin, null, null, statusCodes.UNAUTHORIZED)
+            return showResponse(false, responseMessage.admin.invalid_admin, null, statusCodes.API_ERROR)
         }
 
-        return showResponse(true, responseMessage.admin.admin_details, getResponse.data, null, statusCodes.OK)
+        return showResponse(true, responseMessage.admin.admin_details, getResponse.data, statusCodes.SUCCESS)
 
-    }),
+    },
 
-    updateAdminProfile: tryCatchWrapper(async (data: any, admin_id: string, profile_pic: any): Promise<ApiResponse> => {
+    updateAdminProfile: async (data: any, admin_id: string, profile_pic: any): Promise<ApiResponse> => {
 
         const { first_name, last_name, phone_number, country_code, greet_msg } = data
 
         const findAdmin = await findOne(adminModel, { user_type: ROLE.ADMIN, _id: admin_id })
 
         if (!findAdmin.status) {
-            return showResponse(false, responseMessage.admin.invalid_admin, null, null, statusCodes.UNAUTHORIZED);
+            return showResponse(false, responseMessage.admin.invalid_admin, null, statusCodes.API_ERROR);
         }
 
         const updateObj: any = {
@@ -267,7 +265,7 @@ const AdminAuthHandler = {
             //upload image to aws s3 bucket
             const s3Upload = await services.awsService.uploadFileToS3([profile_pic])
             if (!s3Upload.status) {
-                return showResponse(false, responseMessage?.common.file_upload_error, null, null, statusCodes.UNPROCESSABLE_ENTITY);
+                return showResponse(false, responseMessage?.common.file_upload_error, null, statusCodes.FILE_UPLOAD_ERROR);
             }
 
             updateObj.profile_pic = s3Upload?.data[0]
@@ -276,11 +274,11 @@ const AdminAuthHandler = {
         const result = await findByIdAndUpdate(adminModel, updateObj, admin_id);
         if (result.status) {
             delete result.data.password
-            return showResponse(true, responseMessage.admin.admin_details_updated, result.data, null, statusCodes.OK);
+            return showResponse(true, responseMessage.admin.admin_details_updated, result.data, statusCodes.SUCCESS);
         }
-        return showResponse(false, responseMessage.admin.admin_details_update_error, null, null, statusCodes.NOT_MODIFIED);
+        return showResponse(false, responseMessage.admin.admin_details_update_error, null, statusCodes.API_ERROR);
 
-    }),
+    },
 
 
 }

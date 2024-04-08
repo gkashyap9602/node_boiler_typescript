@@ -5,36 +5,35 @@ import responseMessage from '../../constants/ResponseMessage'
 import commonContentModel from "../../models/Admin/commonContent.model";
 import faqModel from "../../models/Admin/faq.model";
 import services from "../../services";
-import { tryCatchWrapper } from "../../utils/config.util";
-import statusCodes from 'http-status-codes'
+import statusCodes from '../../constants/statusCodes'
 
 const CommonHandler = {
 
-    getCommonContent: tryCatchWrapper(async (): Promise<ApiResponse> => {
+    getCommonContent: async (): Promise<ApiResponse> => {
 
         const getResponse = await findOne(commonContentModel, {});
 
         if (!getResponse.status) {
-            return showResponse(false, responseMessage.common.data_not_found, null, null, statusCodes.NOT_FOUND)
+            return showResponse(false, responseMessage.common.data_not_found, null, statusCodes.API_ERROR)
         }
 
-        return showResponse(true, responseMessage.common.data_retreive_sucess, getResponse.data, null, statusCodes.OK)
+        return showResponse(true, responseMessage.common.data_retreive_sucess, getResponse.data, statusCodes.SUCCESS)
 
-    }),
+    },
 
-    getQuestions: tryCatchWrapper(async (): Promise<ApiResponse> => {
+    getQuestions: async (): Promise<ApiResponse> => {
 
         const getResponse = await findAll(faqModel, {});
 
         if (getResponse.status) {
-            return showResponse(true, responseMessage.admin.here_is_question, getResponse?.data, null, statusCodes.OK)
+            return showResponse(true, responseMessage.admin.here_is_question, getResponse?.data, statusCodes.SUCCESS)
         }
 
-        return showResponse(false, responseMessage.common.data_not_found, null, null, statusCodes.NO_CONTENT)
+        return showResponse(false, responseMessage.common.data_not_found, null, statusCodes.API_ERROR)
 
-    }),
+    },
 
-    storeParameterToAws: tryCatchWrapper(async (name: string, value: string): Promise<ApiResponse> => {
+    storeParameterToAws: async (name: string, value: string): Promise<ApiResponse> => {
 
         const response = await services.awsService.postParameterToAWS({
             name: name,
@@ -42,10 +41,10 @@ const CommonHandler = {
         })
 
         if (response) {
-            return showResponse(true, responseMessage?.common.parameter_store_post_success, null, null, statusCodes.OK);
+            return showResponse(true, responseMessage?.common.parameter_store_post_success, null, statusCodes.SUCCESS);
         }
-        return showResponse(false, responseMessage?.common.parameter_store_post_error, null, null, statusCodes.BAD_REQUEST);
-    }),
+        return showResponse(false, responseMessage?.common.parameter_store_post_error, null, statusCodes.API_ERROR);
+    },
 
 
 }

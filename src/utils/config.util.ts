@@ -2,9 +2,10 @@ import rateLimit from 'express-rate-limit'
 import Queue from 'bull'
 import { APP, REDIS_CREDENTIAL } from '../constants/app.constant'
 import { showResponse } from './response.util';
-import statusCodes from 'http-status-codes'
+import statusCodes from '../constants/statusCodes'
 import { NextFunction, Response, Request } from 'express';
 import multer from 'multer'
+import { ApiResponse } from './interfaces.util';
 
 
 //get params according to your environment
@@ -77,15 +78,15 @@ export const rateLimiter = rateLimit({
 
 // Define your tryCatchWrapper function
 export const tryCatchWrapper = (func: any) => {
-    return async (...args: any[]) => {
+    return async (...args: any[]): Promise<ApiResponse> => {
         try {
             // console.log("Entering try block with arguments:", ...args);
-            const result = await func(...args);
+            const result: ApiResponse = await func(...args);
             console.log("Exiting try block with result:", result);
             return result;
         } catch (err: any) {
             console.error("Caught an error:", err);
-            return showResponse(false, err?.message ?? err, null, statusCodes.BAD_REQUEST);
+            return showResponse(false, err?.message ?? err, null, statusCodes.SERVER_TRYCATCH_ERROR);
         }
     };
 };

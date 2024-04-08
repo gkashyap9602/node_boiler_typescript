@@ -51,7 +51,8 @@ app.use("/swagger", serve,
   setup(undefined, {
     swaggerOptions: {
       url: "/swagger/swagger.json",
-      displayRequestDuration: true
+      displayRequestDuration: true,
+      persistAuthorization: true,
     },
 
   })

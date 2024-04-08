@@ -10,22 +10,22 @@ const router = express.Router()
 
 router.post('/store_paramter_to_aws', addToMulter.none(), async (req: Request | any, res: Response) => {
     const { name, value } = req.body
-    const commonController = new CommonController(req, res)
-    const result: ApiResponse = await commonController.storeParameterToAws(name, value);
+    const controller = new CommonController(req, res)
+    const result: ApiResponse = await controller.storeParameterToAws(name, value);
     return showOutput(res, result, result.code)
 
 })
 
 router.get('/common_content', verifyTokenBoth, async (req: Request | any, res: Response) => {
-    const commonController = new CommonController(req, res)
-    const result: ApiResponse = await commonController.getCommonContent();
+    const controller = new CommonController(req, res)
+    const result: ApiResponse = await controller.getCommonContent();
     return showOutput(res, result, result.code)
 
 })
 
 router.get('/questions', verifyTokenBoth, async (req: Request | any, res: Response) => {
-    const commonController = new CommonController(req, res)
-    const result: ApiResponse = await commonController.getQuestions();
+    const controller = new CommonController(req, res)
+    const result: ApiResponse = await controller.getQuestions();
     return showOutput(res, result, result.code)
 
 })
