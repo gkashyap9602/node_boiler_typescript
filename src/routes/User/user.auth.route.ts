@@ -4,7 +4,7 @@ import { showOutput } from '../../utils/response.util'
 import { ApiResponse } from '../../utils/interfaces.util'
 import middlewares from '../../middlewares'
 const { verifyTokenUser } = middlewares.auth
-const { addToMulter } = middlewares.fileUpload.multer
+const { multer } = middlewares.fileUpload
 
 const router = express.Router()
 
@@ -15,14 +15,15 @@ router.post('/login', async (req: Request | any, res: Response) => {
     return showOutput(res, result, result.code)
 })
 
-router.post('/register', addToMulter.single('profile_pic'), async (req: Request | any, res: Response) => {
+router.post('/register', multer.addToMulter.single('profile_pic'), async (req: Request | any, res: Response) => {
     const { first_name, last_name, email, password, phone_number, country_code, os_type } = req.body;
     const controller = new UserAuthController(req, res)
     const result: ApiResponse = await controller.register(first_name, last_name, email, password, os_type, phone_number, country_code, req.file);
     return showOutput(res, result, result.code)
 })
 
-router.post('/upload_file', addToMulter.single('file'), async (req: Request | any, res: Response) => {
+
+router.post('/upload_file', multer.addToMulter.single('file'), async (req: Request | any, res: Response) => {
     const controller = new UserAuthController(req, res)
     const result: ApiResponse = await controller.uploadFile(req.file as Express.Multer.File);
     return showOutput(res, result, result.code)
@@ -78,7 +79,7 @@ router.get('/details', verifyTokenUser, async (req: Request | any, res: Response
 
 })
 
-router.put('/profile', addToMulter.single('profile_pic'), verifyTokenUser, async (req: Request | any, res: Response) => {
+router.put('/profile', multer.addToMulter.single('profile_pic'), verifyTokenUser, async (req: Request | any, res: Response) => {
     const { first_name, last_name, phone_number, country_code } = req.body
     const controller = new UserAuthController(req, res)
     const result: ApiResponse = await controller.updateUserProfile(first_name, last_name, phone_number, country_code, req.file);

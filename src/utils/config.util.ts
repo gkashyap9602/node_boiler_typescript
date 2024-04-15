@@ -1,5 +1,4 @@
 import rateLimit from 'express-rate-limit'
-import Queue from 'bull'
 import { APP, REDIS_CREDENTIAL } from '../constants/app.constant'
 import { showResponse } from './response.util';
 import statusCodes from '../constants/statusCodes'
@@ -52,20 +51,6 @@ export const getEnvironmentParams = (env: any, project_name: string, project_ini
 
     return env_obj[env] //return matched environment and send its object
 };
-
-
-//generate bull queue 
-export const generateQueue = (queueName: string) => {
-    const queue = new Queue(queueName, {
-        redis: {
-            port: REDIS_CREDENTIAL.PORT,
-            host: REDIS_CREDENTIAL.URI,
-        }
-    })
-
-    return queue
-}
-
 
 
 // Define the rate limit options

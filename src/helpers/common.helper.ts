@@ -2,6 +2,9 @@ import moment from 'moment'
 import { Model } from 'mongoose'
 import bcrypt from 'bcryptjs';
 import mongoose from 'mongoose'
+import { REDIS_CREDENTIAL } from '../constants/app.constant'
+import Queue from 'bull'
+
 
 const bycrptPasswordHash = (stringValue: string): Promise<string> => {
     console.log(stringValue, "stringValue")
@@ -240,7 +243,7 @@ const findClosestKey = async (targetValue: number, obj: MyObject) => {  //object
 
 
 //example -- availability.data ==>> :[ {start_time:017411551515 , end_time:071544545}] it should be timestamp
-export function generateSlotsForDay(availability: any) { //availability array 
+function generateSlotsForDay(availability: any) { //availability array 
     // Generate slots based on available time slots for the day
     const slots = availability?.data.flatMap((slot: any) => {
         const startDateTime = moment.unix(slot.start_time);
@@ -265,10 +268,22 @@ export function generateSlotsForDay(availability: any) { //availability array
     return slots;
 }
 
+
+//generate bull queue 
+export const generateQueue = (queueName: string) => {
+    const queue = new Queue(queueName, {
+        redis: {
+            port: REDIS_CREDENTIAL.PORT,
+            host: REDIS_CREDENTIAL.URI,
+        }
+    })
+
+    return queue
+}
+
 export {
     bycrptPasswordHash,
     verifyBycryptHash,
-    // convertIdToObjectId,
     generateRandomOtp,
     camelize,
     getFilterMonthDateYear,
@@ -284,5 +299,5 @@ export {
     generateUsernames,
     findClosestKey,
     convertToObjectId,
-
+    generateSlotsForDay
 }

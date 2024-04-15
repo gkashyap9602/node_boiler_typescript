@@ -2,11 +2,9 @@ import express, { Request, Response } from 'express'
 import AdminAuthController from '../../controllers/Admin/admin.auth.controller'
 import { showOutput } from '../../utils/response.util'
 import { ApiResponse } from '../../utils/interfaces.util'
-// import { authenticate } from '../middlewares/auth.middleware'
-// import { verifyTokenAdmin } from '../middlewares/auth.middleware'
 import middlewares from '../../middlewares'
 const { verifyTokenAdmin } = middlewares.auth
-const { addToMulter } = middlewares.fileUpload.multer
+const { multer, busboy } = middlewares.fileUpload
 
 const router = express.Router()
 
@@ -73,10 +71,20 @@ router.get('/details', verifyTokenAdmin, async (req: Request | any, res: Respons
 
 })
 
-router.put('/profile', addToMulter.single('profile_pic'), verifyTokenAdmin, async (req: Request | any, res: Response) => {
+router.put('/profile', multer.addToMulter.single('profile_pic'), verifyTokenAdmin, async (req: Request | any, res: Response) => {
     const { first_name, last_name, phone_number, country_code, greet_msg } = req.body
     const controller = new AdminAuthController(req, res)
     const result: ApiResponse = await controller.updateAdminProfile(first_name, last_name, phone_number, country_code, greet_msg, req.file);
+    return showOutput(res, result, result.code)
+
+})
+
+//upload multiple files with busboy and redis queue
+router.post('/upload_files', busboy.addToBusboy, async (req: Request | any, res: Response) => {
+    const { media_type } = req.body
+    const controller = new AdminAuthController(req, res)
+    console.log(req.files,"req.filesss")
+    const result: ApiResponse = await controller.uploadFiles(media_type, req.files);
     return showOutput(res, result, result.code)
 
 })

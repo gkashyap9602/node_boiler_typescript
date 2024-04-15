@@ -1,6 +1,6 @@
 import NodeCache from "node-cache";
 import AWS from 'aws-sdk'
-
+import * as fsHelper from '../helpers/fs.helper'
 // AWS.config.update({
 //     region: "us-east-1",
 //     credentials: new AWS.SharedIniFileCredentials({ profile: "digismart" }),
@@ -233,6 +233,65 @@ const uploadMultipleFilesToS3 = async (files: any) => {
         return { status: false, data: err };
     }
 };
+
+const uploadQueueMediaToS3 = async (files: any) => { //files should be in an array 
+
+    // console.log(AWS_CREDENTIAL, "AWS_CREDENTIALAWS_SECRET")
+    const s3 = new AWS.S3({
+        accessKeyId: await AWS_CREDENTIAL.ACCESSID,
+        secretAccessKey: await AWS_CREDENTIAL.AWS_SECRET,
+        region: await AWS_CREDENTIAL.REGION,
+    });
+
+    const bucketName = await AWS_CREDENTIAL.BUCKET_NAME;
+
+    return new Promise(async (resolve, reject) => {
+        try {
+            const uploadedKeys: any = [];
+
+            await Promise.all(files.map(async (fileData: any) => {
+                const { filename, mimeType, fieldName, filePath } = fileData;
+
+                // const extension = path.extname(filename)
+                const filepath = path.join(filePath)
+
+                console.log(filePath, "filepthhh")
+
+                const params: any = {
+                    Bucket: bucketName,
+                    ContentType: mimeType?.indexOf("image") >= 0 ? "image/webp" : mimeType,
+                    Key: `${fieldName}/${filename}`,
+                    Body: '',
+                };
+
+                if (mimeType?.indexOf("image") >= 0) {
+                    params.Body = await mediaHelper.convertImageToWebp(fs.readFileSync(filepath))
+                } else {
+                    params.Body = fs.readFileSync(filepath)
+                }
+
+                const uploadResult: any = await s3.upload(params).promise();
+
+                uploadedKeys.push(uploadResult.Key || uploadResult.key);
+
+                // fs.unlinkSync(filepath)
+                fs.unlink(filepath, (err) => {
+                    if (err) {
+                        console.error('Error deleting file:', err);
+                        return;
+                    }
+                    console.log('File deleted successfully');
+                });
+            }));
+
+            resolve(uploadedKeys); //success
+        } catch (err) {
+            console.error('Error uploading files to S3 ', err);
+            reject(err); //error
+        }
+    });
+}
+
 
 const uploadToS3ExcelSheet = async (excelBuffer: any, fileName: any) => {
 
@@ -635,6 +694,7 @@ export {
     uploadMultipleFilesToS3,
     uploadToS3ExcelSheet,
     uploadToS3,
-    uploadThumbnail
+    uploadThumbnail,
+    uploadQueueMediaToS3
 
 }

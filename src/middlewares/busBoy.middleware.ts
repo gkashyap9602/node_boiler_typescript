@@ -1,57 +1,98 @@
-import { Request } from 'express';
-// const Busboy 
+import { Request, Response, NextFunction } from 'express';
 import Busboy from 'busboy';
+import fs from 'fs'
 
-interface FileObject {
-    fieldname: string;
-    buffer: Buffer;
-    // Add other properties as needed
-}
 
-// interface BusboyFileEvent {
-//     fieldName: string;
-//     fileStream: NodeJS.ReadableStream;
-//     fileObject: FileObject;
-// }
-
-// interface BusboyErrorEvent {
-//     error: Error;
-// }
-
-const busboyMultipart = (request: Request): Promise<{ status: boolean; message: string; data?: FileObject[] }> => {
-    return new Promise((resolve, reject) => {
+const busboyMultipleMedia = (req: Request) => {
+    return new Promise(async (resolve, reject) => {
         try {
-            const busboy = Busboy({ headers: request.headers });
+            let busboy = Busboy({ headers: req.headers });
+            const files: any = []
+            const fields: any = {};
 
-            const fileArray: FileObject[] = [];
+            // Create a directory for uploads if it doesn't exist
+            const uploadDir = `${process.cwd()}/public/uploads/media`;
 
-            busboy.on('file', async (fieldName: string, fileStream: NodeJS.ReadableStream, fileObject: FileObject) => {
-                const chunks: Buffer[] = [];
+            if (!fs.existsSync(uploadDir)) {
+                fs.mkdirSync(uploadDir, { recursive: true });
+            }
 
-                fileStream.on('data', (chunk: Buffer) => {
-                    chunks.push(chunk);
+            const filePromises: any = [];
+
+            //start busboy
+            busboy.on('file', function async(fieldName, fileStream, fileObject: any) {
+                const fileName = `${(fieldName)}-${Date.now()}-${(fileObject?.filename)}`
+                const filePath: any = uploadDir + '/' + fileName
+                const writeStream = fs.createWriteStream(filePath);
+                const fileBuffer: any = []; // Buffer to store file data
+
+                // Write file data to buffer
+                fileStream.on('data', (chunk) => {
+                    fileBuffer.push(chunk);
                 });
 
-                fileStream.on('end', () => {
-                    const fileBuffer = Buffer.concat(chunks);
-                    fileObject.buffer = fileBuffer;
-                    fileObject.fieldname = fieldName;
 
-                    fileArray.push(fileObject);
-                });
+                filePromises.push(
+                    new Promise((resolveFile, rejectFile) => {
+                        writeStream.on('finish', async () => {
+                            try {
+                                fileObject = {
+                                    ...fileObject,
+                                    filename: fileName,
+                                    filePath,
+                                    fieldName,
+                                    fileBuffer: Buffer.concat(fileBuffer) // Concatenate file buffer chunks
+
+                                };
+                                files.push(fileObject);
+                                resolveFile(true);
+                            } catch (error) {
+                                rejectFile(error);
+                            }
+                        });
+
+                        fileStream.pipe(writeStream);
+                    })
+                );
+            }); //file promise ends
+
+
+            busboy.on('field', function (fieldname, val) {
+                fields[fieldname] = val;
             });
 
-            busboy.on('finish', () => {
-                resolve({ status: true, message: 'busboy Object Created !!', data: fileArray });
+            busboy.on('finish', async () => {
+                try {
+                    await Promise.all(filePromises);
+                    resolve({ files: files, fields: fields });
+                } catch (error) {
+                    reject(error);
+                }
             });
 
-            busboy.on('error', (err: Error) => reject(err));
-
-            request.pipe(busboy);
+            //handler busboy error
+            busboy.on('error', err => reject(err));
+            req.pipe(busboy);
         } catch (error: any) {
             resolve({ status: false, message: error.message });
         }
     });
-};
+} //ends busboy
 
-export default { busboyMultipart }
+
+
+const addToBusboy = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        console.log("under busboy middleware")
+        let response: any = await busboyMultipleMedia(req);
+        console.log(response?.files.lenght, "lenghtresponse files")
+        req.files = response?.files
+        req.body = { ...response?.fields, uploading: true }
+        next();
+    } catch (error) {
+        console.error('Error parsing form data:', error);
+        res.status(500).json({ status: false, message: 'Busboy:Error parsing form data' });
+    }
+}
+
+export default { addToBusboy }

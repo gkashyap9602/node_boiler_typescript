@@ -49,6 +49,7 @@ const updateProfileSchema = joi.object({
     country_code: joi.string().optional().allow(''),
 })
 
+
 export const validateVerifyOtp = (user: any) => {
     return verifyOtpSchema.validate(user)
 }

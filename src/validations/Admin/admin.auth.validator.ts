@@ -47,6 +47,16 @@ const updateProfileSchema = joi.object({
 })
 
 
+const verifyFileUpload = joi.object({
+    media_type: joi.number().valid(1, 2).error(new Error('media_type 1 for image 2 for video')).required(),
+})
+
+export const validateFileUpload = (user: any) => {
+    return verifyFileUpload.validate(user)
+}
+
+
+
 export const validateVerifyOtp = (user: any) => {
     return verifyOtpSchema.validate(user)
 }

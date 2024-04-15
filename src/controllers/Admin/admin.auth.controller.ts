@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
-import { Route, Controller, Tags, Post, Body, Get, Security, Put, FormField, UploadedFile } from 'tsoa'
+import { Route, Controller, Tags, Post, Body, Get, Security, Put, FormField, UploadedFile, UploadedFiles } from 'tsoa'
 import { ApiResponse } from '../../utils/interfaces.util';
-import { validateChangePassword, validateForgotPassword, validateUpdateProfile, validateResetPassword, validateAdminLogin, validateResendOtp, validateVerifyOtp } from '../../validations/Admin/admin.auth.validator';
+import { validateChangePassword, validateForgotPassword, validateFileUpload, validateUpdateProfile, validateResetPassword, validateAdminLogin, validateResendOtp, validateVerifyOtp } from '../../validations/Admin/admin.auth.validator';
 import handler from '../../handlers/Admin/admin.auth.handler'
 import { showResponse } from '../../utils/response.util';
 import statusCodes from '../../constants/statusCodes'
@@ -181,6 +181,23 @@ export default class AdminAuthController extends Controller {
 
         const wrappedFunc = tryCatchWrapper(handler.updateAdminProfile);
         return wrappedFunc(body, this.userId, profile_pic); // Invoking the wrapped function 
+    }
+    //ends
+
+    /**
+   * Upload a file
+   * 1 for image 2 for video
+   */
+    // @Security('Bearer')
+    @Post("/upload_files")
+    public async uploadFiles(@FormField() media_type: number, @UploadedFiles() files: Express.Multer.File[]): Promise<ApiResponse> {
+
+        const validate = validateFileUpload({ media_type });
+
+        if (validate.error) {
+            return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
+        }
+        return handler.uploadFiles(files, media_type)
     }
     //ends
 

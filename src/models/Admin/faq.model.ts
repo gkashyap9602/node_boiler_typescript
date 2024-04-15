@@ -14,14 +14,6 @@ const FAQ = new Schema(
             type: Number,
             default: 1
         },
-        // created_on: {
-        //     type: Number,
-        //     default: 0
-        // },
-        // updated_on: {
-        //     type: Number,
-        //     default: 0
-        // }
     },
     { timestamps: true, versionKey: false }
 )
