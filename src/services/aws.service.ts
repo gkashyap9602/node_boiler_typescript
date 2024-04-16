@@ -255,8 +255,6 @@ const uploadQueueMediaToS3 = async (files: any) => { //files should be in an arr
                 // const extension = path.extname(filename)
                 const filepath = path.join(filePath)
 
-                console.log(filePath, "filepthhh")
-
                 const params: any = {
                     Bucket: bucketName,
                     ContentType: mimeType?.indexOf("image") >= 0 ? "image/webp" : mimeType,
@@ -274,13 +272,12 @@ const uploadQueueMediaToS3 = async (files: any) => { //files should be in an arr
 
                 uploadedKeys.push(uploadResult.Key || uploadResult.key);
 
-                // fs.unlinkSync(filepath)
                 fs.unlink(filepath, (err) => {
                     if (err) {
-                        console.error('Error deleting file:', err);
+                        // console.error('Error deleting file:', err);
                         return;
                     }
-                    console.log('File deleted successfully');
+                    // console.log('File deleted successfully');
                 });
             }));
 
