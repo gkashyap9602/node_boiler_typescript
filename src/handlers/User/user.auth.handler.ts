@@ -3,7 +3,7 @@ import path from 'path'
 import moment from "moment";
 import { ApiResponse } from "../../utils/interfaces.util";
 import { showResponse } from "../../utils/response.util";
-import { findOne, createOne, findByIdAndUpdate, findOneAndUpdate } from "../../helpers/db.helpers";
+import { findOne, createOne, findByIdAndUpdate, findOneAndUpdate, findAndUpdatePushOrSet } from "../../helpers/db.helpers";
 import { generateJwtToken } from "../../utils/auth.util";
 import * as commonHelper from "../../helpers/common.helper";
 import userModel from "../../models/User/user.model";
@@ -17,12 +17,19 @@ const UserAuthHandler = {
     login: async (data: any): Promise<ApiResponse> => {
 
         const { email, password, os_type } = data;
-        console.log(email, password, "emailpassss")
+
+
         const exists = await findOne(userModel, { email });
 
-        console.log(exists, "exists")
+        //if social login is used in project then user this query 
+        // const exists = await findOne(userModel, { email, account_source: 'email', status: { $ne: USER_STATUS.DELETED } });
+
         if (!exists.status) {
             return showResponse(false, responseMessage.users.invalid_email, null, statusCodes.API_ERROR)
+        }
+
+        if (exists?.data?.status == USER_STATUS.DEACTIVATED) {
+            return showResponse(false, "Your account has been deactivated contact support!!", null, statusCodes.API_ERROR);
         }
 
         const isValid = await commonHelper.verifyBycryptHash(password, exists.data.password);
@@ -40,6 +47,134 @@ const UserAuthHandler = {
         delete exists.data.password
 
         return showResponse(true, responseMessage.users.login_success, { ...exists.data, token }, statusCodes.SUCCESS)
+
+    },
+
+    // social_login: async (data: any) => {
+
+    //     let { login_source, os_type, social_auth, email, name, user_type, profile_pic } = data;
+
+    //     let matchObj = {
+    //         status: { $ne: USER_STATUS.DELETED }, //user not deleted
+    //         $or: [
+    //             {
+    //                 social_account: {
+    //                     $elemMatch: { email: email }
+    //                 }
+
+    //             },
+    //             {
+    //                 social_account: {
+    //                     $elemMatch: { token: social_auth }
+    //                 }
+
+    //             },
+
+    //         ]
+    //     }
+
+    //     //check user exist or not 
+    //     let findUser = await findOne(userModel, matchObj);
+    //     // console.log(findUser, 'newfindUser')
+
+    //     //if user finds then send response with jwt token
+    //     if (findUser.status) {
+    //         //check status of user
+    //         if (findUser.data?.status == 3) {
+    //             return showResponse(false, "Your account has been deactivated contact support!!", null, statusCodes.API_ERROR);
+    //         }
+
+    //         //update social account array 
+    //         let updateSocialInfo = await UserAuthHandler.update_social_info(findUser, userModel, data)
+
+    //         if (updateSocialInfo.status) {
+
+    //             const access_token = await generateJwtToken(findUser.data._id, { user_type: 'user', type: "access", role: findUser?.data?.user_type }, APP.ACCESS_EXPIRY)
+
+    //             let userData = { ...findUser?.data, token: access_token }
+
+    //             return showResponse(true, `${responseMessage.users.login_success}`, userData, statusCodes.SUCCESS);
+    //         }
+
+    //         return showResponse(false, `${responseMessage.users.login_error}`, null, statusCodes.API_ERROR);
+
+    //     } else { //else register new user 
+
+    //         let newObj = {
+    //             social_account: [
+    //                 {
+    //                     source: login_source,
+    //                     email: email,
+    //                     token: social_auth,
+    //                     name: name
+    //                 }
+    //             ],
+    //             email,
+    //             name,
+    //             account_source: login_source,
+    //             is_verified: false,
+    //         };
+
+    //         let userRef = new userModel(newObj)
+    //         //create user with social info
+    //         let result = await createOne(userRef);
+
+    //         if (result.status) {
+
+    //             const access_token = await generateJwtToken(result.data._id, { user_type: 'user', type: "access", role: result?.data?.user_type }, APP.ACCESS_EXPIRY)
+
+    //             delete result?.data?.password
+    //             let userData = { ...result?.data, token: access_token }
+
+    //             return showResponse(true, responseMessage.users.login_success, userData, statusCodes.SUCCESS);
+
+    //         }
+
+    //     }
+
+    //     return showResponse(false, responseMessage.users.login_error, null, statusCodes.API_ERROR);
+    // },
+
+    update_social_info: async (findUser: any, model: any, data: any) => {
+        try {
+
+            let { login_source, os_type, social_auth, email, name } = data
+
+            let editObj: any = {
+                updated_on: moment().unix(),
+            }
+
+            let social_account = {
+                email,
+                source: login_source,
+                token: social_auth,
+                name: name
+            }
+
+            // Check if social account exists in device_info array
+            let accountIndex = findUser?.data?.social_account.findIndex((info: any) => info?.source === data?.login_source);
+
+            //if exist then update else add new
+            if (accountIndex !== -1) {
+                editObj[`social_account.${accountIndex}`] = social_account;
+            } else {
+                editObj.$push = { social_account: social_account }
+            }
+
+            let response = await findAndUpdatePushOrSet(model, { _id: findUser.data._id }, editObj);
+
+            //return update result
+            if (response.status) {
+                return { status: true, data: response.data }
+
+            } else {
+                return { status: false, data: null }
+            }
+
+        } catch (error) {
+            console.log(error, "error update_device_id")
+            return { status: false }
+        }
 
     },
 
@@ -97,8 +232,113 @@ const UserAuthHandler = {
         delete result?.data.password
         return showResponse(true, responseMessage.users.register_success, result?.data, statusCodes.SUCCESS)
 
-    },
-    //jhjk
+    },//ends
+
+    //user this register func if social login is used in project
+    // async register(data: any, profile_pic: any): Promise<ApiResponse> {
+    //     try {
+    //         let { email, password } = data;
+
+    //         //check if match or not by email
+    //         let query = {
+    //             status: { $ne: USER_STATUS.DELETED },
+    //             $or: [
+    //                 { email },//if account email find then throw error already existed 
+    //                 {
+    //                     social_account: {
+    //                         $elemMatch: { email: email }  //if account finds with social email then create new if finds
+    //                     }
+
+    //                 },
+    //             ]
+    //         }
+
+
+    //         // check if user exists
+    //         const existsUser = await findOne(userModel, query);
+
+    //         let hashed = await commonHelper.bycrptPasswordHash(password);
+
+    //         // let otp = 1234;
+    //         let otp = commonHelper.generateRandomOtp(4)
+    //         if (existsUser.status) {
+
+    //             //if user exist with same account source then throw error
+    //             if (existsUser.data.account_source == 'email') {
+    //                 return showResponse(false, responseMessage.users.email_already, null, null, 400);
+    //             }
+
+    //             //if account source is different and user exist then update user details and its account source
+    //             let editObj = { ...data }
+    //             editObj.account_source = 'email'
+    //             editObj.password = hashed
+    //             editObj.otp = otp
+
+    //             let response = await findOneAndUpdate(userModel, { _id: existsUser.data._id }, editObj);
+    //             let user_name = response.data?.first_name
+
+    //             const template = await ejs.renderFile(path.join(process.cwd(), './src/templates', 'registration.ejs'), { user_name, cidLogo: 'unique@Logo', otp });
+    //             const logoPath = path.join(process.cwd(), './public', 'logo.png');
+    //             //send email of attachment to admin
+    //             let to = `${response?.data?.email}`
+    //             let subject = `New user registered`
+    //             let attachments = [
+    //                 {
+    //                     filename: 'logo.png',
+    //                     path: logoPath,
+    //                     cid: 'unique@Logo',
+    //                 }
+    //             ]
+
+    //             await services.emailService.nodemail(to, subject, template, attachments)
+
+    //             if (response.status) {
+    //                 return showResponse(true, responseMessage.users.register_success, response.data, {}, 200);
+    //             }
+    //             return showResponse(false, responseMessage.users.register_error, null, null, 400);
+
+    //         } else {
+
+    //             data.password = hashed;
+    //             data.created_on = moment().unix();
+    //             // data.otp = commonHelper.generateRandomOtp(4)
+    //             data.otp = otp;
+    //             if (profile_pic) {
+    //                 //upload image to aws s3 bucket
+    //                 const s3Upload = await services.awsService.uploadFileToS3([profile_pic])
+    //                 if (!s3Upload.status) {
+    //                     return showResponse(false, responseMessage?.common.file_upload_error, null, null, 203);
+    //                 }
+    //                 data.profile_pic = s3Upload?.data[0]
+    //             }
+    //             let userRef = new userModel(data)
+    //             let result = await createOne(userRef)
+    //             if (!result.status) {
+    //                 return showResponse(false, responseMessage.common.error_while_create_acc, null, null, 400)
+    //             }
+    //             const template = await ejs.renderFile(path.join(process.cwd(), './src/templates', 'registration.ejs'), { user_name: result?.data?.first_name, cidLogo: 'unique@Logo', otp });
+    //             const logoPath = path.join(process.cwd(), './public', 'logo.png');
+    //             //send email of attachment to admin
+    //             let to = `${result?.data?.email}`
+    //             let subject = `New user registered`
+    //             let attachments = [
+    //                 {
+    //                     filename: 'logo.png',
+    //                     path: logoPath,
+    //                     cid: 'unique@Logo',
+    //                 }
+    //             ]
+    //             await services.emailService.nodemail(to, subject, template, attachments)
+    //             delete result?.data.password
+    //             return showResponse(true, responseMessage.users.register_success, result?.data, null, 200)
+
+    //         } //ends else part
+
+    //     } catch (err: any) {
+    //         return showResponse(false, err?.message ?? err, null, null, 400)
+    //     }
+    // },
+    //ends
     forgotPassword: async (data: any): Promise<ApiResponse> => {
 
         const { email } = data;

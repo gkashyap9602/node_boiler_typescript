@@ -50,6 +50,15 @@ const updateProfileSchema = joi.object({
 })
 
 
+const socialLoginSchema = joi.object({
+    login_source: joi.string().valid('google', 'apple', 'insta', 'facebook').required(),
+    email: joi.string().email().required().messages({ 'string.email': 'Invalid email format or domain is not allowed' }),
+    social_auth: joi.string().required(),
+    name: joi.string().optional().allow(''),
+    os_type: joi.string().optional().allow(''),
+    user_type: joi.number().valid(2, 3).error(new Error("2 for trainer 3 for user")).required(),
+})
+
 export const validateVerifyOtp = (user: any) => {
     return verifyOtpSchema.validate(user)
 }
@@ -79,4 +88,9 @@ export const validateChangePassword = (user: any) => {
 
 export const validateUpdateProfile = (user: any) => {
     return updateProfileSchema.validate(user)
+}
+
+
+export const validateSocialLogin = (user: any) => {
+    return socialLoginSchema.validate(user)
 }

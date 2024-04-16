@@ -15,6 +15,15 @@ router.post('/login', async (req: Request | any, res: Response) => {
     return showOutput(res, result, result.code)
 })
 
+
+// router.post('/social_login', multer.addToMulter.none(), async (req: Request | any, res: Response) => {
+//     const { login_source, social_auth, email, name, user_type, os_type } = req.body;
+//     const userAuthController = new UserAuthController(req, res)
+//     const result: ApiResponse = await userAuthController.socialLogin(login_source, social_auth, email, user_type, name, os_type);
+//     return showOutput(res, result, result.code)
+// })
+
+
 router.post('/register', multer.addToMulter.single('profile_pic'), async (req: Request | any, res: Response) => {
     const { first_name, last_name, email, password, phone_number, country_code, os_type } = req.body;
     const controller = new UserAuthController(req, res)

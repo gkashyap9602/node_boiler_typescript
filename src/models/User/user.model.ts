@@ -13,10 +13,6 @@ const UserSchema = new Schema(
         phone_number: { type: String, default: null },
         country_code: { type: String, default: null },
         is_verified: { type: Boolean, default: false },
-        os_type: {
-            type: String,
-            default: ''
-        },
         // social_account: [{
         //     source: {
         //         type: String,
@@ -41,20 +37,12 @@ const UserSchema = new Schema(
         //     default: 'email',
         //     Comment: "email for normal created google with google apple with apple "
         // },
-        // device_info: [{
-        //     os: {
-        //         type: String,
-        //         default: 'android'
-        //     },
-        //     device_id: {
-        //         type: String
-        //     },
+        os_type: {
+            type: String,
+            default: ''
+        },
 
-        // }],
         status: { type: Number, default: USER_STATUS.ACTIVE },
-        // created_on: { type: Number, default: 0 },
-        // updated_on: { type: Number, default: 0 }
-
     },
     {
         toJSON: { virtuals: true },
