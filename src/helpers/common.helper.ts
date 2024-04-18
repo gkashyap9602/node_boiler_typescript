@@ -33,6 +33,14 @@ const convertToObjectId = (id: string) => {
     return new mongoose.Types.ObjectId(id);
 }
 
+
+// Function to format duration from seconds to HH:MM:SS
+const formatDuration = (durationInSeconds: number) => { //in number not string
+    const minutes = Math.floor(durationInSeconds / 60);
+    const seconds = Math.round(durationInSeconds % 60);
+    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+};
+
 const generateRandomOtp = (len: number) => {
     const digits = '0123456789';
     let OTP = '';
@@ -299,5 +307,6 @@ export {
     generateUsernames,
     findClosestKey,
     convertToObjectId,
+    formatDuration,
     generateSlotsForDay
 }

@@ -10,6 +10,7 @@ import axios from 'axios';
 import { Readable } from 'stream';
 import ffmpeg from 'fluent-ffmpeg'
 import responseMessage from "../constants/ResponseMessage";
+import * as commonHelper from '../helpers/common.helper'
 
 
 const convertImageToWebp = async (imageInBuffer: any) => {
@@ -131,20 +132,27 @@ const exportJsonToExcel = (filteredData: any) => {
 }
 
 
-const getAudioMetadata = (media_buffer: any) => {
-    return new Promise((resolve) => {
-        // Parse metadata from the MP3 file buffer
-        mm.parseBuffer(media_buffer, 'audio/mpeg')
+const getAudioMetadata = (mediaBuffer: any, mediaFileObj: any) => {
+    const mimeType = mediaFileObj?.mimeType || 'audio/mpeg'; // Default to MPEG audio if mimeType is not provided
+
+    return new Promise((resolve, reject) => {
+        mm.parseBuffer(mediaBuffer, mimeType)
             .then(metadata => {
-                // Extract duration from metadata
-                const duration: any = metadata.format.duration; //in seconds
-                const durationInMinutes = parseFloat(duration) / 60;
-                console.log(durationInMinutes, "durationInMinutes")
-                resolve(showResponse(false, `Duration: ${duration} seconds`, durationInMinutes.toFixed(2), 400));
+                // console.log(metadata, "metadataaaAudio");
+                const durationInSeconds = metadata.format.duration || 0;
+                const formattedDuration = commonHelper.formatDuration(durationInSeconds);
+
+                let song_title = metadata?.common?.title
+
+                let musicMetadata = { duration: formattedDuration, title: song_title }
+
+                resolve(showResponse(true, `Duration: ${durationInSeconds} seconds`, musicMetadata, 200));
+
             })
             .catch(error => {
                 console.error('Error while getting metadata:', error);
                 resolve(showResponse(false, 'Error while getting metadata', error, 400));
+
             });
     });
 };
