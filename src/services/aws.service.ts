@@ -66,7 +66,7 @@ const getSecretFromAWS = async (secret_key_param: string) => {
     return new Promise((resolve) => {
         try {
             const client = new AWS.SecretsManager({
-                region: 'use-east-1',
+                region: 'us-east-1',
             });
 
             client.getSecretValue({ SecretId: secret_key_param }, (err: any, data: any) => {

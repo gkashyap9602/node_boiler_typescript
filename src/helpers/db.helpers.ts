@@ -283,6 +283,9 @@ export const getCount = (Model: Model<any>, query: any): Promise<ApiResponse> =>
     });
 };
 
+//examp edit obj -- >> device_info:{device_id:"string",os:string}
+
+//let response = await findAndUpdatePushOrSet(model, { _id: findUser.data._id }, editObj); //edit obj is object that you want to push in array 
 export const findAndUpdatePushOrSet = (Model: Model<any>, matchObj: any, updateMethodWithObject: any): Promise<ApiResponse> => {
     return Model.findOneAndUpdate(matchObj, updateMethodWithObject, { new: true })
         .lean() // return plain object

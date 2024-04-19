@@ -12,7 +12,7 @@ export const connection = async () => {
   await mongoose.connect(MONGO_URI as string, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    dbName: DB_NAME,
+    // dbName: DB_NAME,
   } as mongoose.ConnectOptions)
 
   const db = mongoose.connection;
