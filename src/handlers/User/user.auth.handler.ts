@@ -18,8 +18,8 @@ const UserAuthHandler = {
 
         const { email, password, os_type } = data;
 
-
         const exists = await findOne(userModel, { email });
+        console.log(exists, "existsss")
 
         //if social login is used in project then user this query 
         // const exists = await findOne(userModel, { email, account_source: 'email', status: { $ne: USER_STATUS.DELETED } });
@@ -29,7 +29,7 @@ const UserAuthHandler = {
         }
 
         if (exists?.data?.status == USER_STATUS.DEACTIVATED) {
-            return showResponse(false, "Your account has been deactivated contact support!!", null, statusCodes.API_ERROR);
+            return showResponse(false, responseMessage.middleware.deactivated_account, null, statusCodes.API_ERROR);
         }
 
         const isValid = await commonHelper.verifyBycryptHash(password, exists.data.password);
