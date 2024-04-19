@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import { Route, Controller, Tags, Post, Body, Get, Security, UploadedFile, FormField, Put } from 'tsoa'
 import { ApiResponse } from '../../utils/interfaces.util';
-import { validateChangePassword, validateForgotPassword, validateSocialLogin, validateUpdateProfile, validateRegister, validateResetPassword, validateUser, validateResendOtp, validateVerifyOtp } from '../../validations/User/user.auth.validator';
+import { validateChangePassword, validateForgotPassword, validateRefreshToken, validateSocialLogin, validateUpdateProfile, validateRegister, validateResetPassword, validateUser, validateResendOtp, validateVerifyOtp } from '../../validations/User/user.auth.validator';
 import handler from '../../handlers/User/user.auth.handler'
 import { showResponse } from '../../utils/response.util';
 import statusCodes from '../../constants/statusCodes'
@@ -40,24 +40,24 @@ export default class UserAuthController extends Controller {
     }
     //ends
 
-//     /**
-//   * User Social login 
-//   */
-//     @Post("/social_login")
-//     public async socialLogin(@FormField() login_source: string, @FormField() social_auth: string, @FormField() email: string, @FormField() user_type: number, @FormField() name?: string, @FormField() os_type?: string): Promise<ApiResponse> {
+    //     /**
+    //   * User Social login 
+    //   */
+    //     @Post("/social_login")
+    //     public async socialLogin(@FormField() login_source: string, @FormField() social_auth: string, @FormField() email: string, @FormField() user_type: number, @FormField() name?: string, @FormField() os_type?: string): Promise<ApiResponse> {
 
-//         let body = { login_source, social_auth, email, name, user_type, os_type }
+    //         let body = { login_source, social_auth, email, name, user_type, os_type }
 
-//         const validate = validateSocialLogin(body);
+    //         const validate = validateSocialLogin(body);
 
-//         if (validate.error) {
-//             return showResponse(false, validate.error.message, null, statusCodes.API_ERROR)
-//         }
+    //         if (validate.error) {
+    //             return showResponse(false, validate.error.message, null, statusCodes.API_ERROR)
+    //         }
 
-//         const wrappedFunc = tryCatchWrapper(handler.social_login);
-//         return wrappedFunc(body); // Invoking the wrapped function 
-//     }
-//     //ends
+    //         const wrappedFunc = tryCatchWrapper(handler.social_login);
+    //         return wrappedFunc(body); // Invoking the wrapped function 
+    //     }
+    //     //ends
 
     /**
     * Save a User
@@ -215,6 +215,27 @@ export default class UserAuthController extends Controller {
 
         const wrappedFunc = tryCatchWrapper(handler.updateUserProfile);
         return wrappedFunc(body, this.userId, profile_pic); // Invoking the wrapped function 
+    }
+    //ends
+
+    /**
+*  Refresh tokne api
+*/
+    // @Security('Bearer')
+    @Post("/refresh_token")
+    public async refreshToken(@FormField() refresh_token: string, @FormField() access_token?: string): Promise<ApiResponse> {
+
+        let body = { access_token, refresh_token }
+
+        const validate = validateRefreshToken(body);
+
+        if (validate.error) {
+            return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
+        }
+
+        const wrappedFunc = tryCatchWrapper(handler.refreshToken);
+        return wrappedFunc(body); // Invoking the wrapped function 
+
     }
     //ends
 

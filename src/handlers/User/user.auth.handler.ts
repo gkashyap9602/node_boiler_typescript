@@ -4,7 +4,7 @@ import moment from "moment";
 import { ApiResponse } from "../../utils/interfaces.util";
 import { showResponse } from "../../utils/response.util";
 import { findOne, createOne, findByIdAndUpdate, findOneAndUpdate, findAndUpdatePushOrSet } from "../../helpers/db.helpers";
-import { generateJwtToken } from "../../utils/auth.util";
+import { decodeToken, generateJwtToken } from "../../utils/auth.util";
 import * as commonHelper from "../../helpers/common.helper";
 import userModel from "../../models/User/user.model";
 import { APP, ROLE, USER_STATUS } from '../../constants/app.constant';
@@ -567,6 +567,38 @@ const UserAuthHandler = {
         return showResponse(false, responseMessage.users.user_account_update_error, null, statusCodes.API_ERROR);
 
     },
+
+    async refreshToken(data: any): Promise<ApiResponse> {
+        const { access_token, refresh_token } = data
+
+        let response: any = await decodeToken(refresh_token)
+        // console.log(response, "responseresponse")
+
+        if (!response.status) {
+            return showResponse(false, responseMessage?.middleware?.token_expired, null, statusCodes.AUTH_TOKEN_ERROR);
+        }
+
+        let user_id = response?.data?.id
+
+        const findUser = await findOne(userModel, { _id: user_id });
+        // console.log(findUser, "findUserfindUser")
+
+        if (!findUser.status) {
+            return showResponse(false, responseMessage.users.invalid_user, null, statusCodes.API_ERROR)
+        }
+
+        if (findUser?.data?.status == USER_STATUS.DEACTIVATED) {
+            return showResponse(false, responseMessage.middleware.deactivated_account, null, statusCodes.ACCOUNT_DISABLED);
+        }
+        if (findUser?.data?.status == USER_STATUS.DELETED) {
+            return showResponse(false, responseMessage.middleware.deleted_account, null, statusCodes.ACCOUNT_DELETED);
+        }
+
+        const accessToken = await generateJwtToken(findUser.data._id, { user_type: 'user', type: "access", role: findUser?.data?.user_type }, APP.ACCESS_EXPIRY)
+
+        return showResponse(true, 'token generated successfully', { token: accessToken }, statusCodes.SUCCESS)
+
+    }
 
 
 }

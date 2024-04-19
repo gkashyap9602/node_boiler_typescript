@@ -99,4 +99,22 @@ export const verifyToken = async (req: Request) => {
     }
 }
 
+export const decodeToken = async (token: string) => {
+    try {
+        const API_SECRET = await APP.JWT_SECRET;
+
+        return jwt.verify(token, API_SECRET, async (err: any, decoded: any) => {
+            if (err) {
+                return showResponse(false, responseMessage?.middleware?.token_expired, null, statusCodes.AUTH_TOKEN_ERROR);
+            }
+
+            return showResponse(true, responseMessage?.users?.token_verification_sucess, decoded, statusCodes.SUCCESS);
+
+        })
+    } catch (error) {
+        console.log("in catch middleware check token error : ", error)
+        return showResponse(false, responseMessage?.middleware?.invalid_access_token, null, statusCodes.SERVER_TRYCATCH_ERROR);
+    }
+
+}
 

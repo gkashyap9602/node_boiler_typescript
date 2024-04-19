@@ -94,3 +94,14 @@ export const validateUpdateProfile = (user: any) => {
 export const validateSocialLogin = (user: any) => {
     return socialLoginSchema.validate(user)
 }
+
+
+const refreshToken = joi.object({
+    access_token: joi.string().trim().allow(''),
+    refresh_token: joi.string().trim().required(),
+})
+
+
+export const validateRefreshToken = (common: any) => {
+    return refreshToken.validate(common)
+}
