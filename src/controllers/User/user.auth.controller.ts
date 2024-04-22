@@ -239,6 +239,25 @@ export default class UserAuthController extends Controller {
     }
     //ends
 
+    /**
+* Logout User 
+*/
+    @Post("/logout")
+    public async logoutUser(): Promise<ApiResponse> {
+        try {
+
+            const wrappedFunc = tryCatchWrapper(handler.logoutUser);
+            return wrappedFunc(); // Invoking the wrapped function 
+
+        }
+        catch (err: any) {
+            // logger.error(`${this.req.ip} ${err.message}`)
+            return err
+
+        }
+    }
+    //ends
+
 
 }
 

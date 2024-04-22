@@ -83,8 +83,15 @@ router.put('/profile', multer.addToMulter.single('profile_pic'), verifyTokenAdmi
 router.post('/upload_files', busboy.addToBusboy, async (req: Request | any, res: Response) => {
     const { media_type } = req.body
     const controller = new AdminAuthController(req, res)
-    console.log(req.files,"req.filesss")
+    console.log(req.files, "req.filesss")
     const result: ApiResponse = await controller.uploadFiles(media_type, req.files);
+    return showOutput(res, result, result.code)
+
+})
+
+router.post('/logout', async (req: Request | any, res: Response) => {
+    const userAuthController = new AdminAuthController(req, res)
+    const result: ApiResponse = await userAuthController.logoutUser();
     return showOutput(res, result, result.code)
 
 })

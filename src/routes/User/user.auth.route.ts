@@ -105,5 +105,11 @@ router.post('/refresh_token', multer.addToMulter.none(), async (req: Request | a
 
 })
 
+router.post('/logout', async (req: Request | any, res: Response) => {
+    const userAuthController = new UserAuthController(req, res)
+    const result: ApiResponse = await userAuthController.logoutUser();
+    return showOutput(res, result, result.code)
+
+})
 
 export default router

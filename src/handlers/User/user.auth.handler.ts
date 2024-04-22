@@ -598,7 +598,13 @@ const UserAuthHandler = {
 
         return showResponse(true, 'token generated successfully', { token: accessToken }, statusCodes.SUCCESS)
 
-    }
+    },
+    async logoutUser(): Promise<ApiResponse> {
+
+        return showResponse(true, responseMessage.users.logout_success, null, statusCodes.SUCCESS)
+
+    },
+
 
 
 }

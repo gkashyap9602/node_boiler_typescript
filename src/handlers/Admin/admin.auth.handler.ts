@@ -303,6 +303,11 @@ const AdminAuthHandler = {
         return showResponse(true, 'Uploading Process Starts Successfully', {}, statusCodes.SUCCESS)
 
     },
+    async logoutUser(): Promise<ApiResponse> {
+
+        return showResponse(true, responseMessage.users.logout_success, null, statusCodes.SUCCESS)
+
+    },
 
 }
 
