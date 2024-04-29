@@ -289,6 +289,27 @@ export const generateQueue = (queueName: string) => {
     return queue
 }
 
+
+//example to use platform_ids: joi.array().custom(validateMongoIdsInArrayForJoi),
+// Custom Joi validator function to check if array elements are valid Mongoose ObjectIds
+const validateMongoIdsInArrayForJoi = (value: any, helpers: any) => {
+    // Check if the value is an array
+    if (!Array.isArray(value)) {
+        return helpers.error('any.invalid');
+    }
+
+    // Check each element of the array
+    for (const element of value) {
+        // Check if each element is a valid Mongoose ObjectId
+        if (!mongoose.Types.ObjectId.isValid(element)) {
+            return helpers.error('any.invalid');
+        }
+    }
+
+    // If all elements are valid, return the value
+    return value;
+};
+
 export {
     bycrptPasswordHash,
     verifyBycryptHash,
@@ -308,5 +329,6 @@ export {
     findClosestKey,
     convertToObjectId,
     formatDuration,
-    generateSlotsForDay
+    generateSlotsForDay,
+    validateMongoIdsInArrayForJoi
 }
