@@ -13,7 +13,12 @@ export interface AwsCredential {
     BUCKET_NAME: any;
     AWS_SECRET: any;
 }
+export interface StripeCredential {
+    STRIPE_PB_KEY: any;
+    STRIPE_SEC_KEY: any;
+    STRIPE_VERSION: any;
 
+}
 
 export interface AppConstant {
     ACCESS_EXPIRY: string;

@@ -1,7 +1,7 @@
 import services from "../services";
 import dotenv from "dotenv";
 import path from "path";
-import { AwsCredential, RoleType, AppConstant, DbConstant, EmailConstant, SMSConstant } from "../utils/interfaces.util";
+import { AwsCredential, RoleType, AppConstant, DbConstant, EmailConstant, SMSConstant, StripeCredential } from "../utils/interfaces.util";
 import { getEnvironmentParams } from "../utils/config.util";
 const envConfig = dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
@@ -18,7 +18,7 @@ console.log(ENV_PARMAS, "Parms For Aws Parameter store")
 const { ADMIN_EMAIL } = ENV_PARMAS
 
 let AWS_CREDENTIAL: AwsCredential
-
+let STRIPE_CREDENTIAL: StripeCredential
 
 const APP: AppConstant = {
   ACCESS_EXPIRY: "1d",
@@ -94,8 +94,15 @@ const initializeAwsCredential = async () => {
     BUCKET_NAME: services.awsService.getParameterFromAWS({ name: 'DIGISMART-BUCKET' }),
   };
 
+  STRIPE_CREDENTIAL = {
+    STRIPE_PB_KEY: services.awsService.getParameterFromAWS({ name: "STRIPE_PB_KEY" }),
+    STRIPE_SEC_KEY: services.awsService.getParameterFromAWS({ name: 'STRIPE_SEC_KEY' }),
+    STRIPE_VERSION: '2024-04-10'
+  };
+
+
 }
 
 
 
-export { DB, APP, ROLE, REDIS_CREDENTIAL, LOGS, USER_STATUS, AWS_CREDENTIAL, EMAIL_CREDENTIAL, SMS_CREDENTIAL, initializeAwsCredential };
+export { STRIPE_CREDENTIAL, DB, APP, ROLE, REDIS_CREDENTIAL, LOGS, USER_STATUS, AWS_CREDENTIAL, EMAIL_CREDENTIAL, SMS_CREDENTIAL, initializeAwsCredential };
