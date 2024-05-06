@@ -98,9 +98,9 @@ router.put('/profile', multer.addToMulter.single('profile_pic'), verifyTokenUser
 
 
 router.post('/refresh_token', multer.addToMulter.none(), async (req: Request | any, res: Response) => {
-    const { access_token, refresh_token } = req.body
+    const { refresh_token } = req.body
     const commonController = new UserAuthController(req, res)
-    const result: ApiResponse = await commonController.refreshToken(refresh_token, access_token);
+    const result: ApiResponse = await commonController.refreshToken(refresh_token);
     return showOutput(res, result, result.code)
 
 })

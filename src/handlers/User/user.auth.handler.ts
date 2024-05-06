@@ -569,13 +569,13 @@ const UserAuthHandler = {
     },
 
     async refreshToken(data: any): Promise<ApiResponse> {
-        const { access_token, refresh_token } = data
+        const { refresh_token } = data
 
         let response: any = await decodeToken(refresh_token)
         // console.log(response, "responseresponse")
 
         if (!response.status) {
-            return showResponse(false, responseMessage?.middleware?.token_expired, null, statusCodes.AUTH_TOKEN_ERROR);
+            return showResponse(false, responseMessage?.middleware?.token_expired, null, statusCodes.REFRESH_TOKEN_ERROR);
         }
 
         let user_id = response?.data?.id

@@ -97,7 +97,6 @@ export const validateSocialLogin = (user: any) => {
 
 
 const refreshToken = joi.object({
-    access_token: joi.string().trim().allow(''),
     refresh_token: joi.string().trim().required(),
 })
 

@@ -220,12 +220,12 @@ export default class UserAuthController extends Controller {
 
     /**
 *  Refresh tokne api
+* provide refresh token in this api and get new access token 
 */
-    // @Security('Bearer')
     @Post("/refresh_token")
-    public async refreshToken(@FormField() refresh_token: string, @FormField() access_token?: string): Promise<ApiResponse> {
+    public async refreshToken(@FormField() refresh_token: string): Promise<ApiResponse> {
 
-        let body = { access_token, refresh_token }
+        let body = { refresh_token }
 
         const validate = validateRefreshToken(body);
 
