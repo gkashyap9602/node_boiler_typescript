@@ -544,7 +544,7 @@
 						}
 					}
 				},
-				"description": "Refresh tokne api",
+				"description": "Refresh tokne api\nprovide refresh token in this api and get new access token",
 				"tags": [
 					"User Auth"
 				],
@@ -559,9 +559,6 @@
 								"properties": {
 									"refresh_token": {
 										"type": "string"
-									},
-									"access_token": {
-										"type": "string"
 									}
 								},
 								"required": [
@@ -571,6 +568,29 @@
 						}
 					}
 				}
+			}
+		},
+		"/user/auth/logout": {
+			"post": {
+				"operationId": "LogoutUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Logout User",
+				"tags": [
+					"User Auth"
+				],
+				"security": [],
+				"parameters": []
 			}
 		},
 		"/common/common_content": {
@@ -1484,6 +1504,29 @@
 						}
 					}
 				}
+			}
+		},
+		"/admin/auth/logout": {
+			"post": {
+				"operationId": "LogoutUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Logout User",
+				"tags": [
+					"Admin Auth"
+				],
+				"security": [],
+				"parameters": []
 			}
 		}
 	},

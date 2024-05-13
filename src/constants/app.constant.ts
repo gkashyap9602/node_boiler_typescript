@@ -30,6 +30,7 @@ const APP: AppConstant = {
   JWT_SECRET: process.env.SECRET || "secret",
   ADMIN_CRED_EMAIL: ADMIN_EMAIL,
   FILE_SIZE: 100, //SPECIFY IN MB
+  PROJECT_NAME: 'Boilerplate',
 
 };
 
@@ -94,11 +95,11 @@ const initializeAwsCredential = async () => {
     BUCKET_NAME: services.awsService.getParameterFromAWS({ name: 'DIGISMART-BUCKET' }),
   };
 
-  STRIPE_CREDENTIAL = {
-    STRIPE_PB_KEY: services.awsService.getParameterFromAWS({ name: "STRIPE_PB_KEY" }),
-    STRIPE_SEC_KEY: services.awsService.getParameterFromAWS({ name: 'STRIPE_SEC_KEY' }),
-    STRIPE_VERSION: '2024-04-10'
-  };
+  // STRIPE_CREDENTIAL = {
+  //   STRIPE_PB_KEY: services.awsService.getParameterFromAWS({ name: "STRIPE_PB_KEY" }),
+  //   STRIPE_SEC_KEY: services.awsService.getParameterFromAWS({ name: 'STRIPE_SEC_KEY' }),
+  //   STRIPE_VERSION: '2024-04-10'
+  // };
 
 
 }

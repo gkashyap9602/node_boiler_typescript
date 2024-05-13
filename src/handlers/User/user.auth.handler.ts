@@ -214,7 +214,8 @@ const UserAuthHandler = {
 
         }
 
-        const template = await ejs.renderFile(path.join(process.cwd(), './src/templates', 'registration.ejs'), { user_name: result?.data?.first_name, cidLogo: 'unique@Logo', otp });
+        const email_payload = { project_name: APP.PROJECT_NAME, user_name: result?.data?.first_name, cidLogo: 'unique@Logo', otp }
+        const template = await ejs.renderFile(path.join(process.cwd(), './src/templates', 'registration.ejs'), email_payload);
         const logoPath = path.join(process.cwd(), './public', 'logo.png');
         //send email of attachment to admin
         const to = `${result?.data?.email}`
@@ -350,7 +351,8 @@ const UserAuthHandler = {
         }
 
         const otp = commonHelper.generateRandomOtp(4);
-        const template = await ejs.renderFile(path.join(process.cwd(), './src/templates', 'forgotPassword.ejs'), { user_name: exists?.data?.first_name, cidLogo: 'unique@Logo', otp });
+        const email_payload = { project_name: APP.PROJECT_NAME, user_name: exists?.data?.first_name, cidLogo: 'unique@Logo', otp }
+        const template = await ejs.renderFile(path.join(process.cwd(), './src/templates', 'forgotPassword.ejs'), email_payload);
         const logoPath = path.join(process.cwd(), './public', 'logo.png');
 
         const to = `${exists?.data?.email}`
@@ -455,8 +457,8 @@ const UserAuthHandler = {
         if (result.status) {
 
             const otp = commonHelper.generateRandomOtp(4);
-
-            const template = await ejs.renderFile(path.join(process.cwd(), './src/templates', 'registration.ejs'), { user_name: result?.data?.first_name, cidLogo: 'unique@Logo', otp });
+            const email_payload = { project_name: APP.PROJECT_NAME, user_name: result?.data?.first_name, cidLogo: 'unique@Logo', otp }
+            const template = await ejs.renderFile(path.join(process.cwd(), './src/templates', 'registration.ejs'), email_payload);
             const logoPath = path.join(process.cwd(), './public', 'logo.png');
 
             const to = `${result?.data?.email}`
