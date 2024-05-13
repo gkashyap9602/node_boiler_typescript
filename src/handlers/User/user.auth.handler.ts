@@ -43,10 +43,12 @@ const UserAuthHandler = {
             return showResponse(false, responseMessage.users.login_error, null, statusCodes.API_ERROR)
         }
 
-        const token = await generateJwtToken(exists.data._id, { user_type: 'user', type: "access" }, APP.ACCESS_EXPIRY)
+        const token = await generateJwtToken(exists.data._id, { user_type: 'user', type: "access", role: exists?.data?.user_type }, APP.ACCESS_EXPIRY)
         delete exists.data.password
+        const refresh_token = await generateJwtToken(exists.data._id, { user_type: 'user', type: "access", role: exists?.data?.user_type }, APP.REFRESH_EXPIRY)
 
-        return showResponse(true, responseMessage.users.login_success, { ...exists.data, token }, statusCodes.SUCCESS)
+
+        return showResponse(true, responseMessage.users.login_success, { ...exists.data, token, refresh_token }, statusCodes.SUCCESS)
 
     },
 
@@ -597,8 +599,9 @@ const UserAuthHandler = {
         }
 
         const accessToken = await generateJwtToken(findUser.data._id, { user_type: 'user', type: "access", role: findUser?.data?.user_type }, APP.ACCESS_EXPIRY)
+        const refreshToken = await generateJwtToken(findUser.data._id, { user_type: 'user', type: "access", role: findUser?.data?.user_type }, APP.REFRESH_EXPIRY)
 
-        return showResponse(true, 'token generated successfully', { token: accessToken }, statusCodes.SUCCESS)
+        return showResponse(true, 'token generated successfully', { token: accessToken, refresh_token: refreshToken }, statusCodes.SUCCESS)
 
     },
     async logoutUser(): Promise<ApiResponse> {

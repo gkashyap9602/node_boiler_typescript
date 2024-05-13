@@ -82,7 +82,6 @@ export default class UserAuthController extends Controller {
     /**
     * Upload a file
     */
-    @Security('Bearer')
     @Post("/upload_file")
     public async uploadFile(@UploadedFile() file: Express.Multer.File): Promise<ApiResponse> {
 
@@ -131,9 +130,9 @@ export default class UserAuthController extends Controller {
     /**
     * Verify Otp Route  api endpoint
     */
-    @Security('Bearer')
+    // @Security('Bearer')
     @Post("/verify_otp")
-    public async verifyOtp(@Body() request: { email: string, otp: number }): Promise<ApiResponse> {
+    public async verifyOtp(@Body() request: { email: string, otp: string }): Promise<ApiResponse> {
 
         const validate = validateVerifyOtp(request);
 

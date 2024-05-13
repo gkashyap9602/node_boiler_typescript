@@ -5,7 +5,7 @@ import Users from '../models/User/user.model'
 import adminModel from '../models/Admin/admin.model'
 import { showResponse } from './response.util';
 import responseMessage from '../constants/ResponseMessage';
-import { APP } from '../constants/app.constant';
+import { APP, USER_STATUS } from '../constants/app.constant';
 import statusCodes from '../constants/statusCodes';
 
 //
@@ -64,10 +64,10 @@ export const verifyToken = async (req: Request) => {
                 return showResponse(false, responseMessage?.users?.invalid_user, {}, statusCodes.AUTH_TOKEN_ERROR);
             }
             const userData = response.data;
-            if (userData.status === 2) {
+            if (userData.status === USER_STATUS.DELETED) {
                 return showResponse(false, responseMessage?.middleware?.deleted_account, {}, statusCodes.ACCOUNT_DELETED);
             }
-            if (userData.status === 3) {
+            if (userData.status === USER_STATUS.DEACTIVATED) {
                 return showResponse(false, responseMessage?.middleware?.deactivated_account, {}, statusCodes.ACCOUNT_DISABLED);
             }
 
@@ -80,10 +80,10 @@ export const verifyToken = async (req: Request) => {
                 return showResponse(false, responseMessage?.admin?.invalid_admin_msg, {}, statusCodes.AUTH_TOKEN_ERROR);
             }
             const adminData = response.data;
-            if (adminData.status === 2) {
+            if (adminData.status === USER_STATUS.DELETED) {
                 return showResponse(false, responseMessage?.middleware?.deleted_account, {}, statusCodes.ACCOUNT_DELETED);
             }
-            if (adminData.status === 3) {
+            if (adminData.status === USER_STATUS.DEACTIVATED) {
                 return showResponse(false, responseMessage?.middleware?.deactivated_account, {}, statusCodes.ACCOUNT_DISABLED);
             }
 
