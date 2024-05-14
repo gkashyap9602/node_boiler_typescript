@@ -111,7 +111,6 @@ export default class UserAuthController extends Controller {
     /**
 * Reset password api endpoint
 */
-    @Security('Bearer')
     @Post("/reset_password")
     public async resetPassword(@Body() request: { email: string, new_password: string }): Promise<ApiResponse> {
 
@@ -130,7 +129,6 @@ export default class UserAuthController extends Controller {
     /**
     * Verify Otp Route  api endpoint
     */
-    // @Security('Bearer')
     @Post("/verify_otp")
     public async verifyOtp(@Body() request: { email: string, otp: string }): Promise<ApiResponse> {
 
@@ -149,7 +147,6 @@ export default class UserAuthController extends Controller {
     /**
   * Resend Otp Route  api endpoint
   */
-    @Security('Bearer')
     @Post("/resend_otp")
     public async resendOtp(@Body() request: { email: string }): Promise<ApiResponse> {
 
