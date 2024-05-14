@@ -104,3 +104,12 @@ const refreshToken = joi.object({
 export const validateRefreshToken = (common: any) => {
     return refreshToken.validate(common)
 }
+
+const deleteOrDeactivate = joi.object({
+    user_id: joi.string().required(),
+    // status: joi.number().valid(2, 3).error(new Error('only use 2 for delete 3 for deactivate')).required(),
+})
+
+export const validateDeleteOrDeactivation = (user: any) => {
+    return deleteOrDeactivate.validate(user)
+}

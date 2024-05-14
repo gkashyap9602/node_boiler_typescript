@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
-import { Route, Controller, Tags, Post, Body, Get, Security, UploadedFile, FormField, Put } from 'tsoa'
+import { Route, Controller, Tags, Post, Body, Get, Security, UploadedFile, FormField, Put, Delete } from 'tsoa'
 import { ApiResponse } from '../../utils/interfaces.util';
-import { validateChangePassword, validateForgotPassword, validateRefreshToken, validateSocialLogin, validateUpdateProfile, validateRegister, validateResetPassword, validateUser, validateResendOtp, validateVerifyOtp } from '../../validations/User/user.auth.validator';
+import { validateChangePassword, validateForgotPassword, validateRefreshToken, validateSocialLogin, validateDeleteOrDeactivation, validateUpdateProfile, validateRegister, validateResetPassword, validateUser, validateResendOtp, validateVerifyOtp } from '../../validations/User/user.auth.validator';
 import handler from '../../handlers/User/user.auth.handler'
 import { showResponse } from '../../utils/response.util';
 import statusCodes from '../../constants/statusCodes'
@@ -243,6 +243,27 @@ export default class UserAuthController extends Controller {
 
         const wrappedFunc = tryCatchWrapper(handler.logoutUser);
         return wrappedFunc(); // Invoking the wrapped function 
+
+
+    }
+    //ends
+
+    /**
+* delete user account
+* USER TYPE 2 FOR SPONSER 3 FOR USER
+*/
+    @Security('Bearer')
+    @Delete("/delete_account")
+    public async deleteAccount(@Body() request: { user_id: string }): Promise<ApiResponse> {
+
+        const validate = validateDeleteOrDeactivation(request);
+
+        if (validate.error) {
+            return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
+        }
+
+        const wrappedFunc = tryCatchWrapper(handler.deleteAccount);
+        return wrappedFunc(request); // Invoking the wrapped function 
 
 
     }

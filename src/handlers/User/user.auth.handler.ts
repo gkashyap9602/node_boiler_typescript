@@ -609,6 +609,20 @@ const UserAuthHandler = {
         return showResponse(true, responseMessage.users.logout_success, null, statusCodes.SUCCESS)
 
     },
+    async deleteAccount(data: any): Promise<ApiResponse> {
+        const { user_id } = data
+        let status = USER_STATUS.DELETED
+        const result = await findByIdAndUpdate(userModel, { status }, user_id);
+
+        if (result.status) {
+            delete result.data.password
+
+            const msg = status == 2 ? 'deleted' : 'deactivated'
+            return showResponse(true, `User account has been ${msg} `, null, statusCodes.SUCCESS);
+        }
+        return showResponse(false, 'Error While Perform Operation', null, statusCodes.API_ERROR);
+
+    }
 
 
 
