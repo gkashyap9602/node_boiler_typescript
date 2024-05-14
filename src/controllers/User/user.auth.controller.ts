@@ -182,7 +182,7 @@ export default class UserAuthController extends Controller {
     //ends
 
     /**
-   * Get Admin info
+   * Get User info
    */
     @Security('Bearer')
     @Get("/details")
@@ -240,17 +240,11 @@ export default class UserAuthController extends Controller {
 */
     @Post("/logout")
     public async logoutUser(): Promise<ApiResponse> {
-        try {
 
-            const wrappedFunc = tryCatchWrapper(handler.logoutUser);
-            return wrappedFunc(); // Invoking the wrapped function 
+        const wrappedFunc = tryCatchWrapper(handler.logoutUser);
+        return wrappedFunc(); // Invoking the wrapped function 
 
-        }
-        catch (err: any) {
-            // logger.error(`${this.req.ip} ${err.message}`)
-            return err
 
-        }
     }
     //ends
 

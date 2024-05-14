@@ -283,7 +283,7 @@ const AdminAuthHandler = {
     },
 
     uploadFiles: async (files: any, media_type: number): Promise<ApiResponse> => {
-        console.log(files, "filesfiles")
+        // console.log(files, "filesfiles")
         if (files?.length === 0) {
             return showResponse(false, responseMessage?.common.no_file, {}, statusCodes.FILE_UPLOAD_ERROR);
         }
@@ -292,13 +292,13 @@ const AdminAuthHandler = {
             media_type
         }
 
-        console.log(files?.length, "handlerlenghttt")
+        // console.log(files?.length, "handlerlenghttt")
         files?.map((files: any, index: number) => {
             let fileBuffer = files.fileBuffer
             let fileObj = files
             delete fileObj.fileBuffer //delete fileBuffer from fileObj instead send it seperatly above
             processQueue.initizalizeMediaQueue(fileObj, index, fileBuffer, QueryData)
-            console.log(index, "indexxx Queue Init")
+            // console.log(index, "indexxx Queue Init")
         })
 
         return showResponse(true, 'Uploading Process Starts Successfully', {}, statusCodes.SUCCESS)

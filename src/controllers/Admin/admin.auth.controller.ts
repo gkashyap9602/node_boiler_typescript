@@ -82,7 +82,6 @@ export default class AdminAuthController extends Controller {
     /**
 * Reset password api endpoint
 */
-    @Security('Bearer')
     @Post("/reset_password")
     public async resetPassword(@Body() request: { email: string, new_password: string }): Promise<ApiResponse> {
 
@@ -100,7 +99,6 @@ export default class AdminAuthController extends Controller {
     /**
     * Verify Otp Route  api endpoint
     */
-    @Security('Bearer')
     @Post("/verify_otp")
     public async verifyOtp(@Body() request: { email: string, otp: number }): Promise<ApiResponse> {
 
@@ -118,7 +116,6 @@ export default class AdminAuthController extends Controller {
     /**
   * Resend Otp Route  api endpoint
   */
-    @Security('Bearer')
     @Post("/resend_otp")
     public async resendOtp(@Body() request: { email: string }): Promise<ApiResponse> {
 
@@ -188,7 +185,6 @@ export default class AdminAuthController extends Controller {
    * Upload a file
    * 1 for image 2 for video
    */
-    // @Security('Bearer')
     @Post("/upload_files")
     public async uploadFiles(@FormField() media_type: number, @UploadedFiles() files: Express.Multer.File[]): Promise<ApiResponse> {
 
@@ -200,23 +196,17 @@ export default class AdminAuthController extends Controller {
         return handler.uploadFiles(files, media_type)
     }
     //ends
-    
+
     /**
 * Logout User 
 */
     @Post("/logout")
     public async logoutUser(): Promise<ApiResponse> {
-        try {
 
-            const wrappedFunc = tryCatchWrapper(handler.logoutUser);
-            return wrappedFunc(); // Invoking the wrapped function 
+        const wrappedFunc = tryCatchWrapper(handler.logoutUser);
+        return wrappedFunc(); // Invoking the wrapped function 
 
-        }
-        catch (err: any) {
-            // logger.error(`${this.req.ip} ${err.message}`)
-            return err
 
-        }
     }
     //ends
 
