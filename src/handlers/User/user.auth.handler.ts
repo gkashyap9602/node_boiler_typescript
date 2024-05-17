@@ -17,15 +17,13 @@ const UserAuthHandler = {
     login: async (data: any): Promise<ApiResponse> => {
 
         const { email, password, os_type } = data;
-
-        const exists = await findOne(userModel, { email });
-        console.log(exists, "existsss")
+        const exists = await findOne(userModel, { email, status: { $ne: USER_STATUS.DELETED } });
 
         //if social login is used in project then user this query 
         // const exists = await findOne(userModel, { email, account_source: 'email', status: { $ne: USER_STATUS.DELETED } });
 
         if (!exists.status) {
-            return showResponse(false, responseMessage.users.invalid_email, null, statusCodes.API_ERROR)
+            return showResponse(false, responseMessage.users.not_registered, null, statusCodes.API_ERROR)
         }
 
         if (exists?.data?.status == USER_STATUS.DEACTIVATED) {
@@ -346,10 +344,10 @@ const UserAuthHandler = {
 
         const { email } = data;
         // check if admin exists
-        const exists = await findOne(userModel, { email });
+        const exists = await findOne(userModel, { email, status: { $ne: USER_STATUS.DELETED } });
 
         if (!exists.status) {
-            return showResponse(false, responseMessage.admin.invalid_admin, null, statusCodes.API_ERROR)
+            return showResponse(false, responseMessage.users.not_registered, null, statusCodes.API_ERROR)
         }
 
         const otp = commonHelper.generateRandomOtp(4);
@@ -434,7 +432,7 @@ const UserAuthHandler = {
 
         const { email, otp } = data;
 
-        const queryObject = { email, otp, status: { $ne: 2 } }
+        const queryObject = { email, otp, status: { $ne: USER_STATUS.DELETED } }
 
         const findUser = await findOne(userModel, queryObject)
 
@@ -445,7 +443,7 @@ const UserAuthHandler = {
 
         }
 
-        return showResponse(false, `${responseMessage.users.invalid_otp} or email`, null, statusCodes.API_ERROR);
+        return showResponse(false, responseMessage.users.invalid_otp, null, statusCodes.API_ERROR);
 
     },
     //ques
@@ -495,13 +493,13 @@ const UserAuthHandler = {
         const exists = await findOne(userModel, { _id: userId })
 
         if (!exists.status) {
-            return showResponse(false, responseMessage.admin.invalid_admin, null, statusCodes.API_ERROR)
+            return showResponse(false, responseMessage.users.not_registered, null, statusCodes.API_ERROR)
 
         }
 
         const isValid = await commonHelper.verifyBycryptHash(old_password, exists.data?.password);
         if (!isValid) {
-            return showResponse(false, responseMessage.users.invalid_password, null, statusCodes.API_ERROR)
+            return showResponse(false, responseMessage.users.invalid_old_password, null, statusCodes.API_ERROR)
         }
 
         const hashed = await commonHelper.bycrptPasswordHash(new_password)
@@ -531,10 +529,9 @@ const UserAuthHandler = {
 
         const { first_name, last_name, phone_number, country_code } = data
 
-        const findAdmin = await findOne(userModel, { user_type: ROLE.USER, _id: user_id, status: { $ne: USER_STATUS.DELETED } })
-
-        if (!findAdmin.status) {
-            return showResponse(false, responseMessage.admin.invalid_admin, null, statusCodes.API_ERROR);
+        const findUser = await findOne(userModel, { user_type: ROLE.USER, _id: user_id, status: { $ne: USER_STATUS.DELETED } })
+        if (!findUser.status) {
+            return showResponse(false, responseMessage.users.invalid_user, null, statusCodes.API_ERROR);
         }
 
         const updateObj: any = {

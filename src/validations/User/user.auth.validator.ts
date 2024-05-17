@@ -3,7 +3,7 @@ import joi from '@hapi/joi';
 const loginSchema = joi.object({
     email: joi.string().trim().email().min(4).max(35).required(),
     password: joi.string().min(4).max(20).required(),
-    os_type: joi.string().required(),
+    os_type: joi.string().optional(),
 })
 
 const registerSchema = joi.object({
@@ -11,9 +11,9 @@ const registerSchema = joi.object({
     last_name: joi.string().required(),
     email: joi.string().trim().email().min(4).max(35).required(),
     password: joi.string().min(4).max(20).required(),
-    phone_number: joi.string().min(4).max(20).optional().allow(''),
-    country_code: joi.string().min(1).max(4).optional().allow(''),
-    os_type: joi.string().required(),
+    phone_number: joi.string().optional().allow(''),
+    country_code: joi.string().optional().allow(''),
+    os_type: joi.string().optional(),
 })
 
 

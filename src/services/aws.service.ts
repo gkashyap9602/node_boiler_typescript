@@ -180,59 +180,7 @@ const uploadFileToS3 = async (files: [any]): Promise<ApiResponse> => {
 
 };
 
-const uploadMultipleFilesToS3 = async (files: any) => {
-    const s3 = new AWS.S3({
-        accessKeyId: await AWS_CREDENTIAL.ACCESSID,
-        secretAccessKey: await AWS_CREDENTIAL.AWS_SECRET,
-        region: await AWS_CREDENTIAL.REGION
-    });
 
-    const bucketName = await AWS_CREDENTIAL.BUCKET_NAME;
-
-    try {
-        const uploadedKeys: any = [];
-
-        await Promise.all(files.map((fileData: any) => {
-            return new Promise((resolve) => {
-                const { filename, mimeType, fieldname, buffer } = fileData;
-
-                const params: any = {
-                    Bucket: bucketName
-                };
-
-                const mediaType = mimeType.split('/')[0];
-                const extension = path.extname(filename);
-
-                let bodyPromise;
-
-                if (mediaType == 'image') {
-                    params['ContentType'] = 'image/webp';
-                    params['Key'] = `${fieldname}/${Math.floor(Math.random() * 10000000)}.webp`;
-                    bodyPromise = mediaHelper.convertImageToWebp(Buffer.from(buffer));
-                } else {
-                    params['ContentType'] = mimeType;
-                    params['Key'] = `${fieldname}/${Math.floor(Math.random() * 10000000)}${extension}`;
-                    bodyPromise = Promise.resolve(Buffer.from(buffer));
-                }
-
-                bodyPromise.then(body => {
-                    params['Body'] = body;
-                    s3.upload(params).promise()
-                        .then(uploadResult => {
-                            uploadedKeys.push(uploadResult.Key);
-                            resolve(uploadResult.Key);
-                        })
-                        .catch(err => resolve(err));
-                }).catch(err => resolve(err));
-            });
-        }));
-
-        return { status: true, data: uploadedKeys };
-    } catch (err) {
-        console.error('Error uploading files to S3:', err);
-        return { status: false, data: err };
-    }
-};
 
 const uploadQueueMediaToS3 = async (files: any) => { //files should be in an array 
 
@@ -688,7 +636,6 @@ export {
     sendSMSService,
     uploadVideoAndTranscode,
     uploadFileToS3,
-    uploadMultipleFilesToS3,
     uploadToS3ExcelSheet,
     uploadToS3,
     uploadThumbnail,
