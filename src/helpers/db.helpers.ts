@@ -301,6 +301,27 @@ export const findAndUpdatePushOrSet = (Model: Model<any>, matchObj: any, updateM
         });
 };
 
+// { $inc: { fieldNameToIncrement: 1 } }, 
+export const findValueAndIncrement = (Model: Model<any>, matchObj: any, incObjectWithValue: any): Promise<ApiResponse> => {
+    return new Promise((resolve) => {
+        Model.findOneAndUpdate(matchObj, { $inc: incObjectWithValue }, { returnOriginal: true }) //Return the updated document
+            .then(updatedData => {
+                if (updatedData) {
+                    const doc = updatedData?.toObject();
+                    const response = showResponse(true, 'Success', doc);
+                    resolve(response);
+                } else {
+                    const response = showResponse(false, 'Failed', null);
+                    resolve(response);
+                }
+            })
+            .catch(err => {
+                const response = showResponse(false, 'Failed error', err);
+                resolve(response);
+            });
+    });
+};
+
 
 // interface from {
 //     user_id: string,
