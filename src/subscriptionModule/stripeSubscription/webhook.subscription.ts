@@ -9,7 +9,7 @@
 //     let eventObject: any = {};
 //     let subscription: any = {}
 //     let invoice: any = {}
-
+//
 //     switch (event.type) {
 //         case 'payment_intent.succeeded':
 //             eventObject = event?.data?.object;

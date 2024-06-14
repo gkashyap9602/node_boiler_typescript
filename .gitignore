@@ -6,6 +6,9 @@
 # Node artifact files
 node_modules/
 dist/
+# Ignore secrets
+public/androidCerts/androidInAppPurchase.json
+
 
 # Compiled Java class files
 *.class
