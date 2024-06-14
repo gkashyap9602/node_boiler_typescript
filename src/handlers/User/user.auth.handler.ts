@@ -6,7 +6,7 @@ import { showResponse } from "../../utils/response.util";
 import { findOne, createOne, findByIdAndUpdate, findOneAndUpdate, findAndUpdatePushOrSet } from "../../helpers/db.helpers";
 import { decodeToken, generateJwtToken } from "../../utils/auth.util";
 import * as commonHelper from "../../helpers/common.helper";
-import userModel from "../../models/User/user.model";
+import userModel from "../../models/User/user.auth.model";
 import { APP, ROLE, USER_STATUS } from '../../constants/app.constant';
 import services from '../../services';
 import responseMessage from '../../constants/ResponseMessage'

@@ -4,7 +4,7 @@ import { showResponse } from "../../utils/response.util";
 import { findOne, findOneAndUpdate, getCount } from "../../helpers/db.helpers";
 import * as commonHelper from "../../helpers/common.helper";
 import responseMessage from '../../constants/ResponseMessage'
-import userModel from '../../models/User/user.model';
+import userModel from '../../models/User/user.auth.model';
 import { ROLE, USER_STATUS } from '../../constants/app.constant'
 import statusCodes from '../../constants/statusCodes'
 

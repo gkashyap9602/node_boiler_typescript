@@ -2,20 +2,20 @@ import Stripe from 'stripe';
 import { STRIPE_CREDENTIAL } from "../constants/app.constant";
 import { showResponse } from "../utils/response.util";
 
-const STRIPE_VERSION = '2024-04-10'
 
 const initialiseStripe = async () => {
     try {
         const STRIPE_SEC_KEY = await STRIPE_CREDENTIAL.STRIPE_SEC_KEY
-
+        console.log(STRIPE_CREDENTIAL.STRIPE_VERSION, "version stripe")
         const stripeInit = new Stripe(STRIPE_SEC_KEY, {
             // @ts-ignore
-            apiVersion: STRIPE_VERSION,
+            apiVersion: STRIPE_CREDENTIAL.STRIPE_VERSION,
             typescript: true
         });
 
         return stripeInit
     } catch (error) {
+
         console.log(error, "eroorrr Stripe")
     }
 
@@ -79,10 +79,11 @@ const getCustomerDetails = async (data: any) => {
         }
         return showResponse(false, 'stripe customer get Request failed!!', null, 400);
 
-    } catch (error) {
+    } catch (error: any) {
         // Handle errors
         console.error('stripe customer get Request failed!:', error);
-        return showResponse(false, 'Request failed!!', null, 400);
+        const errorMessage = error.raw ? error.raw.message : error.message;
+        return showResponse(false, errorMessage, null, 400);
 
     }
 }
@@ -97,10 +98,11 @@ const getPaymentIntent = async (paymentIntentId: string) => {
         }
         return showResponse(false, 'Request failed!!', null, 400);
 
-    } catch (error) {
+    } catch (error: any) {
         // Handle errors
         console.error('Error retrieving PaymentIntent:', error);
-        return showResponse(false, 'Request failed!!', null, 400);
+        const errorMessage = error.raw ? error.raw.message : error.message;
+        return showResponse(false, errorMessage, null, 400);
 
     }
 }
@@ -130,6 +132,7 @@ const stripePaymentRefund = async (transferId: string, refundAmountInCents: any,
 }
 
 
+//subscription that user subscribes list
 const getSubscriptionList = async () => {
     try {
         const stripe: any = await initialiseStripe()
@@ -139,32 +142,34 @@ const getSubscriptionList = async () => {
         });
 
         if (subscriptionList) {
-            return showResponse(true, 'Subscription List is Status Is', subscriptionList, 200);
+            return showResponse(true, 'Subscription List  is', subscriptionList, 200);
 
         }
         return showResponse(false, 'Request failed!!', null, 400);
 
-    } catch (error) {
+    } catch (error: any) {
         // Handle errors
         console.error('Error retrieving Subscription List:', error);
-        return showResponse(false, 'Request failed!!', null, 400);
+        const errorMessage = error.raw ? error.raw.message : error.message;
+        return showResponse(false, errorMessage, null, 400);
 
     }
 }
-const getProductList = async () => {
+
+const getProductList = async (limit = 10) => {
     try {
         const stripe: any = await initialiseStripe()
 
         const subscriptionList = await stripe.products.list({
-            limit: 10
+            limit: limit
         });
 
         if (subscriptionList) {
 
             let listPayload = await Promise.all(subscriptionList?.data?.map(async (val: any) => {
-                console.log(val, "valvalval");
+                // console.log(val, "valvalval");
                 let price_value = await getPriceValue(val?.default_price);
-                console.log(price_value, "price_value");
+                // console.log(price_value, "price_value");
 
                 let obj = { ...val, price_value: price_value?.data }; // Assuming price_value is an array, use price_value[0].data if you want the first element
                 return obj;
@@ -181,15 +186,42 @@ const getProductList = async () => {
         }
         return showResponse(false, 'Request failed!!', null, 400);
 
-    } catch (error) {
+    } catch (error: any) {
         // Handle errors
         console.error('Error retrieving Subscription List:', error);
-        return showResponse(false, 'Request failed!!', null, 400);
+        const errorMessage = error.raw ? error.raw.message : error.message;
+        return showResponse(false, errorMessage, null, 400);
 
     }
 }
 
-const purchaseSubscription = async (stripe_customer_id: string, price_id: string, metadata: any, payment_source_id?: string) => {
+
+const getSubscriptionProductDetails = async (product_id: string) => {
+    try {
+        const stripe: any = await initialiseStripe()
+
+        const subscriptionProduct = await stripe.products.retrieve(product_id)
+        if (subscriptionProduct) {
+
+            let priceValueData = await getPriceValue(subscriptionProduct?.default_price);
+            const productData = { ...subscriptionProduct, price_value: priceValueData?.data }
+
+            return showResponse(true, 'Product Details Found ', productData, 200);
+
+        }
+        return showResponse(false, 'Request failed!!', null, 400);
+
+    } catch (error: any) {
+        // Handle errors
+        console.error('Error retrieving Product Details:', error);
+        const errorMessage = error.raw ? error.raw.message : error.message;
+        return showResponse(false, errorMessage, 'Product DetailsRequest failed!!', 400);
+
+    }
+}
+
+
+const purchaseSubscriptionStripe = async (stripe_customer_id: string, price_id: string, metadata: any, payment_source_id?: string) => {
     try {
         const stripe: any = await initialiseStripe()
 
@@ -197,7 +229,7 @@ const purchaseSubscription = async (stripe_customer_id: string, price_id: string
             customer: stripe_customer_id,
             items: [{ price: price_id }],
             metadata: metadata,
-            // expand: ['latest_invoice.payment_intent'],
+            expand: ['latest_invoice.payment_intent'],
         }
 
         //if payment source id is not present then  payment should be from default payment source 
@@ -208,6 +240,8 @@ const purchaseSubscription = async (stripe_customer_id: string, price_id: string
             if (!customer.status) {
                 return showResponse(false, customer?.message, customer?.data, 400);
             }
+            console.log(customer, "customer");
+
 
             //add default payment method card to pay if default card is set 
             subscription_options.payment_settings = { payment_method_types: ['card'] }
@@ -221,6 +255,8 @@ const purchaseSubscription = async (stripe_customer_id: string, price_id: string
         }
 
         const subscription = await stripe.subscriptions.create(subscription_options);
+        console.log(subscription, "subscription");
+
         if (subscription) {
             return showResponse(true, 'Subscription Created Successfully', subscription, 200);
         }
@@ -248,10 +284,11 @@ const getPriceValue = async (price_id: string) => {
         }
         return showResponse(false, 'Request failed!!', null, 400);
 
-    } catch (error) {
+    } catch (error: any) {
         // Handle errors
         console.error('Error retrieving Price:', error);
-        return showResponse(false, 'Request failed!!', null, 400);
+        const errorMessage = error.raw ? error.raw.message : error.message;
+        return showResponse(false, errorMessage, null, 400);
 
     }
 }
@@ -275,29 +312,6 @@ const saveCardStripe = async (customer_id: string, token_id: string) => {
     }
 }
 
-// const createCardToken = async (card_data: any) => {
-//     try {
-//         let { name, number, exp_month, exp_year, cvc } = card_data
-//         const stripe: any = await initialiseStripe()
-
-//         const token = await stripe.tokens.create({
-//             card: {
-//                 ...card_data
-//             },
-//         });
-
-//         if (!token) {
-//             return showResponse(false, 'Card Token Creation Error', null, null, 400);
-//         }
-//         return showResponse(true, 'Card Token Created', token?.id, null, 200);
-
-//     } catch (error) {
-//         // Handle errors
-//         console.error('Error Card Token Creation  :', error);
-//         return showResponse(false, 'Error Catch Card Token Creation ', error, null, 400);
-
-//     }
-// }
 
 const getSavedResourceList = async (customer_id: string) => {
     try {
@@ -310,10 +324,32 @@ const getSavedResourceList = async (customer_id: string) => {
         }
         return showResponse(false, 'get Resource List Request failed!!', null, 400);
 
-    } catch (error) {
+    } catch (error: any) {
         // Handle errors
         console.error('Resource List Request failed :', error);
-        return showResponse(false, 'get Resource List Request failed!!', null, 400);
+        const errorMessage = error.raw ? error.raw.message : error.message;
+        return showResponse(false, errorMessage, null, 400);
+
+    }
+}
+
+const cancelUserSubscription = async (subscription_id: string) => {
+    try {
+        const stripe: any = await initialiseStripe()
+
+        const subscriptionCancel = await stripe.subscriptions.cancel(subscription_id);
+        console.log(subscriptionCancel?.status, "subscriptionCancel->canceled")
+
+        if (subscriptionCancel) {
+            return showResponse(true, 'Subscription Cancel Successfully', subscriptionCancel, 200);
+        }
+        return showResponse(false, 'Error While Subscription Cancel ', null, 400);
+
+    } catch (error: any) {
+        // Handle errors
+        console.error('Subscription Cancel Request failed :', error);
+        const errorMessage = error.raw ? error.raw.message : error.message;
+        return showResponse(false, errorMessage, null, 400);
 
     }
 }
@@ -356,6 +392,206 @@ const getCardTokenDetails = async (token_id: string) => {
     }
 }
 
+const getCustomerCardDetails = async (customer_id: string, token_id: string) => {
+    try {
+        const stripe: any = await initialiseStripe()
+
+        // const getCard = await stripe.customers.retrieveSource(customer_id, token_id);
+        const getCard = await stripe.customers.retrieveSource(customer_id, token_id);
+        if (getCard) {
+            return showResponse(true, 'Card Details fetch Successfully', getCard, 200);
+        }
+        return showResponse(false, 'Card Details Request failed!!', null, 400);
+
+    } catch (error: any) {
+        // Handle errors
+        console.error('Card Details Request failed :', error);
+        const errorMessage = error.raw ? error.raw.message : error.message;
+        return showResponse(false, errorMessage, 'Card Details Request failed!!', 400);
+
+    }
+}
+
+
+const checkDuplicateCardStripe = async (customer_id: string, token_id: string) => {
+    try {
+        const cardData = await getCardTokenDetails(token_id)
+        // console.log(cardData, "token");
+
+        const cardFingerPrint = cardData?.data?.card?.fingerprint
+        // console.log(cardFingerPrint, "cardDataa");
+        const cardList = await getSavedResourceList(customer_id)
+        // console.log(cardList, "cardList");
+
+        if (cardList?.data?.length > 0) {
+            const cardsDataList = cardList?.data
+            const isDuplicate = cardsDataList.some((card: any) => card.fingerprint === cardFingerPrint)
+            // console.log(isDuplicate, "isDuplicate");
+
+            if (isDuplicate) {
+                return showResponse(true, 'Card is already added', null, 200);
+            }
+        }
+        return showResponse(false, 'Failed To Check Card Details', null, 400);
+
+    } catch (error: any) {
+        console.error('Failed Check Card Details :', error);
+        const errorMessage = error.raw ? error.raw.message : error.message;
+        return showResponse(false, errorMessage, null, 400);
+
+    }
+} //ends
+
+const createProductPackage = async (payload: any) => { //interval is like month year package
+    try {
+        //set default interval to year if interval not provided
+        let { package_name, description, metadata = {}, price, interval = 'year' } = payload
+        price = Math.round(price * 100)
+
+        console.log(interval, "intervalSide")
+
+        const stripe: any = await initialiseStripe();
+
+        // Create the product
+        let productPayload = {
+            name: package_name,
+            description,
+            metadata: metadata,
+            default_price_data: {
+                unit_amount: price,
+                currency: 'usd',
+                recurring: {
+                    interval: interval,
+                }
+            }
+        };
+
+        const product = await stripe.products.create(productPayload);
+        // console.log(product, "productt")
+
+        if (product) {
+            return showResponse(true, 'Product and Price Created Successfully', product, 200);
+        }
+
+        return showResponse(false, 'Product creation failed!', null, 400);
+
+    } catch (error: any) {
+        // Handle errors
+        console.error('Error creating product and price:', error);
+        const errorMessage = error.raw ? error.raw.message : error.message;
+        return showResponse(false, errorMessage, null, 400);
+    }
+};
+
+const updateProductPackage = async (payload: any) => { //interval is like month year package
+    try {
+        //product is by default set to true if payload not provide to false means inactivate/archive the product 
+        //interval year by default if interval is not provided
+        let { product_id, package_name, description, metadata, price, interval = 'year', active = true } = payload
+
+        const stripe: any = await initialiseStripe();
+
+        let productUpdatePayload: any = { active }
+        let default_price: any
+
+        //if price yet to be chnage than create price and update product
+        if (price) {
+            price = Math.round(price * 100)
+
+            let pricePayload: any = {
+                product: product_id,
+                unit_amount: price,
+                currency: 'usd',
+            };
+
+            if (interval) {
+                pricePayload.recurring = {
+                    interval: interval,
+                }
+            }
+
+            const newPriceObj = await stripe.prices.create(pricePayload);
+            console.log(newPriceObj, "newPriceObj");
+
+            if (newPriceObj) {
+                default_price = newPriceObj?.id
+            }
+        } //ends
+
+        if (package_name) {
+            productUpdatePayload.name = package_name
+        }
+
+        if (description) {
+            productUpdatePayload.description = description
+        }
+
+        if (default_price) {
+            productUpdatePayload.default_price = default_price
+        }
+
+        if (metadata) {
+            productUpdatePayload.metadata = metadata
+        }
+
+        console.log(productUpdatePayload, "productUpdatePayload")
+        const productUpdate = await stripe.products.update(product_id, productUpdatePayload);
+        // console.log(product, "productt")
+        if (productUpdate) {
+            return showResponse(true, 'Product Updated Successfully', productUpdate, 200);
+        }
+
+        return showResponse(false, 'Product Updation failed!', null, 400);
+
+    } catch (error: any) {
+        // Handle errors
+        console.error('Error updating product and price:', error);
+        const errorMessage = error.raw ? error.raw.message : error.message;
+        return showResponse(false, errorMessage, null, 400);
+    }
+};
+
+const deleteProductPackage = async (product_id: string) => { //interval is like month year package
+    try {
+        const stripe: any = await initialiseStripe();
+
+        const productDelete = await stripe.products.del(product_id);
+        // console.log(product, "productt")
+        if (productDelete && productDelete?.deleted) {
+            return showResponse(true, 'Product Deleted Successfully', productDelete, 200);
+        }
+
+        return showResponse(false, 'Product Deleted failed!', null, 400);
+
+    } catch (error: any) {
+        // Handle errors
+        console.error('Error Deleted product and price:', error);
+        const errorMessage = error.raw ? error.raw.message : error.message;
+        return showResponse(false, errorMessage, null, 400);
+    }
+};
+
+//archive the product price so that it can not be used in future purchase or if wan to restore it set to active else false
+const activeOrInactiveProductPrice = async (price_id: string, price_status: boolean) => { //interval is like month year package
+    try {
+        const stripe: any = await initialiseStripe();
+
+        const priceUpdate = await stripe.prices.update(price_id, { lookup_key: 'MY_LOOKUP_KEY', active: price_status, });
+        console.log(priceUpdate, "priceUpdate")
+
+        if (priceUpdate) {
+            return showResponse(true, 'Product Price Update Successfully', priceUpdate, 200);
+        }
+
+        return showResponse(false, 'Product Price Update failed!', null, 400);
+
+    } catch (error: any) {
+        // Handle errors
+        console.error('Error Update product and price:', error);
+        const errorMessage = error.raw ? error.raw.message : error.message;
+        return showResponse(false, errorMessage, null, 400);
+    }
+};
 
 
 export {
@@ -366,12 +602,19 @@ export {
     createCustomerId,
     getSubscriptionList,
     getProductList,
-    purchaseSubscription,
+    purchaseSubscriptionStripe,
     getPriceValue,
     getCustomerDetails,
     saveCardStripe,
     deleteCardStripe,
     getSavedResourceList,
-    getCardTokenDetails
-    // createCardToken
+    getCardTokenDetails,
+    checkDuplicateCardStripe,
+    getCustomerCardDetails,
+    createProductPackage,
+    updateProductPackage,
+    getSubscriptionProductDetails,
+    deleteProductPackage,
+    cancelUserSubscription,
+    activeOrInactiveProductPrice
 }
