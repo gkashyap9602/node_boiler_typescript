@@ -25,6 +25,10 @@ export const getEnvironmentParams = (env: any, project_name: string, project_ini
             ACCESSID: `${initial_for_aws}_ACCESSID`,
             STMP_EMAIL: `${initial_for_aws}_STMP_EMAIL`,
             SMTP_APP_PASSWORD: `${initial_for_aws}_SMTP_APP_PASSWORD`,
+            STRIPE_PB_KEY: `${initial_for_aws}_STRIPE_PB_KEY_PROD`,
+            STRIPE_SEC_KEY: `${initial_for_aws}_STRIPE_SEC_KEY_PROD`,
+            
+
         },
         'STAG': {
             DB_NAME: `${initial_for_aws}_DB_NAME_STAG`,
@@ -35,6 +39,8 @@ export const getEnvironmentParams = (env: any, project_name: string, project_ini
             ACCESSID: `${initial_for_aws}_ACCESSID`,
             STMP_EMAIL: `${initial_for_aws}_STMP_EMAIL`,
             SMTP_APP_PASSWORD: `${initial_for_aws}_SMTP_APP_PASSWORD`,
+            STRIPE_PB_KEY: `${initial_for_aws}_STRIPE_PB_KEY_STAGE`,
+            STRIPE_SEC_KEY: `${initial_for_aws}_STRIPE_SEC_KEY_STAGE`,
         },
         'DEV': {
             DB_NAME: `${initial_for_aws}_DB_NAME_DEV`,
@@ -45,6 +51,8 @@ export const getEnvironmentParams = (env: any, project_name: string, project_ini
             ACCESSID: `${initial_for_aws}_ACCESSID`,
             STMP_EMAIL: `${initial_for_aws}_STMP_EMAIL`,
             SMTP_APP_PASSWORD: `${initial_for_aws}_SMTP_APP_PASSWORD`,
+            STRIPE_PB_KEY: `${initial_for_aws}_STRIPE_PB_KEY_DEV`,
+            STRIPE_SEC_KEY: `${initial_for_aws}_STRIPE_SEC_KEY_DEV`,
         },
 
     }

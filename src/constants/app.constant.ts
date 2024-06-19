@@ -15,7 +15,8 @@ if (envConfig.error) {
 const ENV_PARMAS = getEnvironmentParams(process.env.ENV_MODE, 'BOILERPLATE', 'BP')
 console.log(ENV_PARMAS, "Parms For Aws Parameter store")
 
-const { ADMIN_EMAIL } = ENV_PARMAS
+const { ADMIN_EMAIL, ACCESSID, REGION, DB_URI, BUCKET, SMTP_APP_PASSWORD, STRIPE_SEC_KEY, STRIPE_PB_KEY, STMP_EMAIL } = ENV_PARMAS
+
 
 let AWS_CREDENTIAL: AwsCredential
 let STRIPE_CREDENTIAL: StripeCredential
@@ -31,6 +32,8 @@ const APP: AppConstant = {
   ADMIN_CRED_EMAIL: ADMIN_EMAIL,
   FILE_SIZE: 100, //SPECIFY IN MB
   PROJECT_NAME: 'Boilerplate',
+  PROJECT_LOGO: ''
+
 
 };
 
@@ -74,33 +77,31 @@ const REDIS_CREDENTIAL = {
   PORT: 6379,
 };
 
-
-//call this function when paramters are stored to aws 
+//***** MAKE SURE FOR  DEV, PROD, AND STAGE ENVIOREMENENT USER ENV_PARMAS THAT ABOVE SHOWS AND SAVE IT IN AWS WITH SAME NAME  ******/
 const initializeAwsCredential = async () => {
-
-  // DB.MONGODB_URI = services.awsService.getParameterFromAWS({ name: DB_URI })
-  // DB.DB_NAME = services.awsService.getParameterFromAWS({ name: DB_NAME })
+  //call this function when paramters are stored to aws 
+ 
+  DB.MONGODB_URI = services.awsService.getParameterFromAWS({ name: DB_URI })
 
   APP.JWT_SECRET = services.awsService.getParameterFromAWS({ name: "API_SECRET" })
-  EMAIL_CREDENTIAL.SENDGRID_API = services.awsService.getParameterFromAWS({ name: 'STMP_EMAIL' })
-  EMAIL_CREDENTIAL.SENDGRID_API_KEY = services.awsService.getParameterFromAWS({ name: 'SMTP_APP_PASSWORD' })
+  EMAIL_CREDENTIAL.SENDGRID_API = services.awsService.getParameterFromAWS({ name: STMP_EMAIL })
+  EMAIL_CREDENTIAL.SENDGRID_API_KEY = services.awsService.getParameterFromAWS({ name: SMTP_APP_PASSWORD })
 
   // SMS_CREDENTIAL.TWILIO_AUTH_TOKEN = services.awsService.getParameterFromAWS({ name: 'TWILIO_AUTH_TOKEN' })
   // SMS_CREDENTIAL.TWILIO_AUTH_TOKEN = services.awsService.getParameterFromAWS({ name: 'TWILIO_AUTH_TOKEN' })
 
   AWS_CREDENTIAL = {
-    ACCESSID: services.awsService.getParameterFromAWS({ name: "ACCESSID" }),
-    REGION: services.awsService.getParameterFromAWS({ name: "REGION" }),
+    ACCESSID: services.awsService.getParameterFromAWS({ name: ACCESSID }),
+    REGION: services.awsService.getParameterFromAWS({ name: REGION }),
     AWS_SECRET: services.awsService.getSecretFromAWS("digismart"),
-    BUCKET_NAME: services.awsService.getParameterFromAWS({ name: 'DIGISMART-BUCKET' }),
+    BUCKET_NAME: services.awsService.getParameterFromAWS({ name: BUCKET }),
   };
 
   // STRIPE_CREDENTIAL = {
-  //   STRIPE_PB_KEY: services.awsService.getParameterFromAWS({ name: "STRIPE_PB_KEY" }),
-  //   STRIPE_SEC_KEY: services.awsService.getParameterFromAWS({ name: 'STRIPE_SEC_KEY' }),
+  //   STRIPE_PB_KEY: services.awsService.getParameterFromAWS({ name: STRIPE_PB_KEY }),
+  //   STRIPE_SEC_KEY: services.awsService.getParameterFromAWS({ name: STRIPE_SEC_KEY }),
   //   STRIPE_VERSION: '2024-04-10'
   // };
-
 
 }
 

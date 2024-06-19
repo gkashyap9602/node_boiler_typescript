@@ -31,6 +31,7 @@ export interface AppConstant {
     JWT_SECRET: any,
     FILE_SIZE: number,
     PROJECT_NAME: string
+    PROJECT_LOGO: string
 }
 
 export interface DbConstant {
