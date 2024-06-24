@@ -6,6 +6,8 @@ import { REDIS_CREDENTIAL } from '../constants/app.constant'
 import Queue from 'bull'
 
 
+
+
 const bycrptPasswordHash = (stringValue: string): Promise<string> => {
     console.log(stringValue, "stringValue")
     return new Promise((resolve, reject) => {
@@ -330,5 +332,5 @@ export {
     convertToObjectId,
     formatDuration,
     generateSlotsForDay,
-    validateMongoIdsInArrayForJoi
+    validateMongoIdsInArrayForJoi,
 }
