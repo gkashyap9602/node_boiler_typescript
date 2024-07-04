@@ -1,5 +1,5 @@
 import { findOne, createOne } from '../helpers/db.helpers';
-import adminModel from '../models/Admin/admin.model';
+import adminModel from '../models/Admin/admin.auth.model';
 import commonContentModel from '../models/Admin/commonContent.model';
 import * as commonHelper from '../helpers/common.helper';
 import moment from 'moment';

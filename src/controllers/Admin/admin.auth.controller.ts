@@ -6,6 +6,7 @@ import handler from '../../handlers/Admin/admin.auth.handler'
 import { showResponse } from '../../utils/response.util';
 import statusCodes from '../../constants/statusCodes'
 import { tryCatchWrapper } from '../../utils/config.util';
+import { validateRefreshToken } from '../../validations/User/user.auth.validator';
 
 @Tags('Admin Auth')
 @Route('/admin/auth')
@@ -196,6 +197,25 @@ export default class AdminAuthController extends Controller {
         return handler.uploadFiles(files, media_type)
     }
     //ends
+
+
+    /**
+    *  Refresh token api
+    * provide refresh token in this api and get new access token 
+    */
+    @Post("/refresh_token")
+    public async refreshToken(@FormField() refresh_token: string): Promise<ApiResponse> {
+        let body = { refresh_token }
+
+        const validate = validateRefreshToken(body);
+        if (validate.error) {
+            return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
+        }
+
+        const wrappedFunc = tryCatchWrapper(handler.refreshToken);
+        return wrappedFunc(body); // Invoking the wrapped function 
+
+    }
 
     /**
 * Logout User 

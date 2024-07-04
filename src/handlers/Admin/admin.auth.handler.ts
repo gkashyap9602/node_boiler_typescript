@@ -3,15 +3,16 @@ import path from 'path'
 import { ApiResponse } from "../../utils/interfaces.util";
 import { showResponse } from "../../utils/response.util";
 import { findOne, createOne, findByIdAndUpdate, findOneAndUpdate } from "../../helpers/db.helpers";
-import { generateJwtToken } from "../../utils/auth.util";
+import { decodeToken, generateJwtToken } from "../../utils/auth.util";
 import * as commonHelper from "../../helpers/common.helper";
-import adminModel from "../../models/Admin/admin.model";
+import adminModel from "../../models/Admin/admin.auth.model";
 import services from '../../services';
 import responseMessage from '../../constants/ResponseMessage'
 import { APP } from '../../constants/app.constant';
 import { ROLE } from '../../constants/app.constant'
 import statusCodes from '../../constants/statusCodes'
 import * as processQueue from '../../processQueue/redis.queue'
+import adminAuthModel from '../../models/Admin/admin.auth.model';
 
 
 const AdminAuthHandler = {
@@ -38,9 +39,11 @@ const AdminAuthHandler = {
         }
 
         const token = await generateJwtToken(exists.data._id, { user_type: 'admin', type: "access" }, APP.ACCESS_EXPIRY)
+        const refreshToken = await generateJwtToken(exists.data._id, { user_type: 'admin', type: "access" }, APP.REFRESH_EXPIRY)
+
         delete exists.data.password
 
-        return showResponse(true, responseMessage.admin.login_success, { ...exists.data, token }, statusCodes.SUCCESS)
+        return showResponse(true, responseMessage.admin.login_success, { ...exists.data, token, refreshToken }, statusCodes.SUCCESS)
 
     },
 
@@ -304,6 +307,32 @@ const AdminAuthHandler = {
         return showResponse(true, 'Uploading Process Starts Successfully', {}, statusCodes.SUCCESS)
 
     },
+
+    async refreshToken(data: any): Promise<ApiResponse> {
+        const { refresh_token } = data
+
+        let response: any = await decodeToken(refresh_token)
+        // console.log(response, "responseresponse")
+
+        if (!response.status) {
+            return showResponse(false, responseMessage?.middleware?.token_expired, null, statusCodes.REFRESH_TOKEN_ERROR);
+        }
+
+        let user_id = response?.data?.id
+
+        const findUser = await findOne(adminAuthModel, { _id: user_id });
+
+        if (!findUser.status) {
+            return showResponse(false, responseMessage.users.invalid_user, null, statusCodes.API_ERROR)
+        }
+
+        const accessToken = await generateJwtToken(findUser.data._id, { user_type: 'admin', type: "access" }, APP.ACCESS_EXPIRY)
+        const refreshToken = await generateJwtToken(findUser.data._id, { user_type: 'admin', type: "access" }, APP.REFRESH_EXPIRY)
+
+        return showResponse(true, 'token generated successfully', { ...findUser?.data, token: accessToken, refresh_token: refreshToken }, statusCodes.SUCCESS)
+
+    },
+
     async logoutUser(): Promise<ApiResponse> {
 
         return showResponse(true, responseMessage.users.logout_success, null, statusCodes.SUCCESS)

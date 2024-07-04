@@ -89,6 +89,15 @@ router.post('/upload_files', busboy.addToBusboy, async (req: Request | any, res:
 
 })
 
+router.post('/refresh_token', multer.addToMulter.none(), async (req: Request | any, res: Response) => {
+    const { refresh_token } = req.body
+    const controller = new AdminAuthController(req, res)
+    const result: ApiResponse = await controller.refreshToken(refresh_token);
+    return showOutput(res, result, result.code)
+
+})
+
+
 router.post('/logout', async (req: Request | any, res: Response) => {
     const userAuthController = new AdminAuthController(req, res)
     const result: ApiResponse = await userAuthController.logoutUser();

@@ -1522,6 +1522,47 @@
 				}
 			}
 		},
+		"/admin/auth/refresh_token": {
+			"post": {
+				"operationId": "RefreshToken",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Refresh token api\nprovide refresh token in this api and get new access token",
+				"tags": [
+					"Admin Auth"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"refresh_token": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"refresh_token"
+								]
+							}
+						}
+					}
+				}
+			}
+		},
 		"/admin/auth/logout": {
 			"post": {
 				"operationId": "LogoutUser",
