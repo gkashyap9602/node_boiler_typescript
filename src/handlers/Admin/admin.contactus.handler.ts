@@ -11,7 +11,7 @@ import path from 'path';
 import services from "../../services";
 
 const AdminContactUsHandler = {
-    async listContactDetails(sort_column: string = 'createdAt', sort_direction: string = 'desc', page: number | null = null, limit: number | null = null, search_key: string = ''): Promise<ApiResponse> {
+    async listContactDetails(sort_column: string = 'createdAt', sort_direction: string = 'desc', page = null, limit = null, search_key: string = ''): Promise<ApiResponse> {
 
         let matchObj: any = {
             status: { $ne: USER_STATUS.DELETED },

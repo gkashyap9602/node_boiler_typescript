@@ -22,7 +22,7 @@ const AdminUserHandler = {
 
     },
 
-    getUsersList: async (sort_column: string = 'createdAt', sort_direction: string = 'desc', page: number | null = null, limit: number | null = null, search_key: string = '', status?: number): Promise<ApiResponse> => {
+    getUsersList: async (sort_column: string = 'createdAt', sort_direction: string = 'desc', page = null, limit = null, search_key: string = '', status?: number): Promise<ApiResponse> => {
 
         const matchObj: any = {
             user_type: ROLE.USER, // 3 for users
