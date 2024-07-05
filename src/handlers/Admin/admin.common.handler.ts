@@ -23,7 +23,6 @@ const AdminCommonHandler = {
             question,
             answer,
             status: 1,
-            created_on: moment().unix()
         }
         const quesRef = new faqModel(newObj)
         const response = await createOne(quesRef);

@@ -193,7 +193,6 @@ const UserAuthHandler = {
         const hashed = await commonHelper.bycrptPasswordHash(password);
         data.password = hashed
         data.otp = otp
-        data.created_on = moment().unix()
 
         if (profile_pic) {
             //upload image to aws s3 bucket
@@ -301,7 +300,6 @@ const UserAuthHandler = {
     //         } else {
 
     //             data.password = hashed;
-    //             data.created_on = moment().unix();
     //             // data.otp = commonHelper.generateRandomOtp(4)
     //             data.otp = otp;
     //             if (profile_pic) {

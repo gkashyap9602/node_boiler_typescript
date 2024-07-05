@@ -22,10 +22,7 @@ const AdminUserHandler = {
 
     },
 
-    getUsersList: async (sort_column: string = 'created_on', sort_direction: string = 'desc', page: number = 1, limit: number = 10, search_key: string = '', status?: number): Promise<ApiResponse> => {
-
-        page = Number(page)
-        limit = Number(limit)
+    getUsersList: async (sort_column: string = 'createdAt', sort_direction: string = 'desc', page: number | null = null, limit: number | null = null, search_key: string = '', status?: number): Promise<ApiResponse> => {
 
         const matchObj: any = {
             user_type: ROLE.USER, // 3 for users
@@ -128,12 +125,12 @@ const AdminUserHandler = {
             {
                 $match: {
                     user_type: ROLE.USER,
-                    created_on: fetch_data_date // Filter documents within the last 30 days
+                    createdAt: fetch_data_date // Filter documents within the last 30 days
                 }
             },
             {
                 $addFields: {
-                    created_date: { $toDate: { $multiply: ["$created_on", 1000] } } // Convert timestamp to date format
+                    created_date: { $toDate: { $multiply: ["$createdAt", 1000] } } // Convert timestamp to date format
                 }
             },
             {

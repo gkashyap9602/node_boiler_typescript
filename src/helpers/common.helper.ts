@@ -134,7 +134,7 @@ const Comma_seprator = (x: any) => {
 
 
 //add this function where we cannot add query to get count of document example searchKey and add pagination at the end of query
-const getCountAndPagination = async (model: Model<any>, aggregate: any, page: number, limit: number) => {
+const getCountAndPagination = async (model: Model<any>, aggregate: any, page: any, limit: any) => {
 
     //this aggregation is for aggregate Model and add pagination at the end of the query aggregation
     const aggregation = [...aggregate]
@@ -146,23 +146,27 @@ const getCountAndPagination = async (model: Model<any>, aggregate: any, page: nu
     const countResult = await model.aggregate(pagePipelineCount)
     const totalCount = countResult?.[0]?.totalEntries || 0;
 
-    //add pagination at the end of the queuries
-    aggregation?.push(
+    // Add pagination stages if page and limit are provided
+    if (page && limit) {
 
-        {
-            $skip: (page - 1) * limit
-        },
-        {
-            $limit: limit
-        }
-    );
-    //ends 
+        page = Number(page);
+        limit = Number(limit);
+
+
+        aggregation.push(
+            {
+                $skip: (page - 1) * limit
+            },
+            {
+                $limit: limit
+            }
+        );
+    }
+
 
 
     return { totalCount, aggregation }
-}
-
-
+} //ends
 
 
 function generateRandomAlphanumeric(length: number) {

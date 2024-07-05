@@ -16,7 +16,6 @@ export const bootstrapAdmin = async function (cb: CallbackFunction) {
     email: `${APP.ADMIN_CRED_EMAIL}`,
     first_name: 'Admin',
     last_name: 'Account',
-    created_on: moment().unix(),
 
   };
 
@@ -24,7 +23,6 @@ export const bootstrapAdmin = async function (cb: CallbackFunction) {
     about: "<p> About us </p>",
     privacy_policy: "<p> Privacy Policy </p>",
     terms_conditions: "<p> Default Terms </p>",
-    created_on: moment().unix(),
   };
 
   const adminDoc = await findOne(adminModel, {});
