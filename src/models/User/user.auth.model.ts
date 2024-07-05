@@ -13,6 +13,7 @@ const UserSchema = new Schema(
         phone_number: { type: String, default: null },
         country_code: { type: String, default: null },
         is_verified: { type: Boolean, default: false },
+        //***Use When Social Login Used*/
         // social_account: [{
         //     source: {
         //         type: String,
@@ -37,6 +38,78 @@ const UserSchema = new Schema(
         //     default: 'email',
         //     Comment: "email for normal created google with google apple with apple "
         // },
+
+        //***Use When InApp Purchase Used */
+        // subscription_details: {
+        //     product_id: {
+        //         type: String,
+        //         default: '',
+        //         Comment: "Subscription Plan Product id"
+        //     },
+        //     purchased_in_device: {
+        //         type: String,
+        //         default: null,
+        //         Comment: "ios and android will be device type"
+        //     },
+        //     is_subscribed: {
+        //         type: Number,
+        //         default: SUBSCRIPTION_STATUS.INACTIVE //subscription status will be in number
+        //     },
+        //     is_cancelled: {
+        //         type: Boolean,
+        //         default: false,
+        //     },
+        //     original_transaction_id: {
+        //         type: String,
+        //         default: '',
+        //         Comment: "it is for ios device type"
+        //     },
+        //     purchase_token: {
+        //         type: String,
+        //         default: '',
+        //         Comment: "it is for android device type"
+        //     },
+        //     subscription_ends_on: {
+        //         type: Number,
+        //         default: 0,
+        //         Comment: "moment unix "
+        //     },
+
+
+        // },
+        //***Use When Stripe Subscription Used */
+        // subscription_details: {
+        //     is_subscribed: {
+        //         type: Boolean,
+        //         default: false
+        //     },
+        //     subscription_id: {
+        //         type: String,
+        //         default: null
+        //     },
+        //     subscription_status: {
+        //         type: String,
+        //         default: ''
+        //     },
+        //     invoice_url: {
+        //         type: String,
+        //         default: null
+        //     },
+        //     plan_type: {
+        //         type: String,
+        //         default: null,
+        //         Comment: "Product id or package id"
+        //     },
+        //     plan_start_date: {
+        //         type: Number,
+        //         default: null
+        //     },
+        //     plan_end_date: {
+        //         type: Number,
+        //         default: null
+        //     },
+        // },
+
         os_type: {
             type: String,
             default: ''

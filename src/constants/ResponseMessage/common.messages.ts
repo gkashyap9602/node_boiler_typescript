@@ -38,6 +38,12 @@ const common_messages = {
     password_incorrect: "Password Seems to be Incorrect",
     email_already: "Email is already registered with us",
     error_while_create_acc: "Error While Creating Account",
+    contactUs_success: "We have received your query, we will get back to you soon",
+    contactUs_error: "Oops! Something went wrong, Please try again",
+    contactUs_list: "Contact Us List",
+    contactUs_detail: "Contact Us Detail",
+    contactUs_deleted: "Contact Us Deleted",
+    contactUs_not_found: "Contact Us Not Found"
 }
 
 const middleware = {

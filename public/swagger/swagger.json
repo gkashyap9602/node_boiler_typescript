@@ -51,6 +51,54 @@
 		}
 	},
 	"paths": {
+		"/user/common/contactus/fill": {
+			"post": {
+				"operationId": "ContactUs",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Contact Us",
+				"tags": [
+					"User Common Routes"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"message": {
+										"type": "string"
+									},
+									"email": {
+										"type": "string"
+									},
+									"name": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"email",
+									"name"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
 		"/user/auth/login": {
 			"post": {
 				"operationId": "Login",
@@ -68,7 +116,7 @@
 				},
 				"description": "Get User login",
 				"tags": [
-					"User Auth"
+					"User Auth Routes"
 				],
 				"security": [],
 				"parameters": [],
@@ -117,7 +165,7 @@
 				},
 				"description": "Save a User",
 				"tags": [
-					"User Auth"
+					"User Auth Routes"
 				],
 				"security": [],
 				"parameters": [],
@@ -184,7 +232,7 @@
 				},
 				"description": "Upload a file",
 				"tags": [
-					"User Auth"
+					"User Auth Routes"
 				],
 				"security": [],
 				"parameters": [],
@@ -226,7 +274,7 @@
 				},
 				"description": "Forgot password api endpoint",
 				"tags": [
-					"User Auth"
+					"User Auth Routes"
 				],
 				"security": [],
 				"parameters": [],
@@ -267,7 +315,7 @@
 				},
 				"description": "Reset password api endpoint",
 				"tags": [
-					"User Auth"
+					"User Auth Routes"
 				],
 				"security": [],
 				"parameters": [],
@@ -312,7 +360,7 @@
 				},
 				"description": "Verify Otp Route  api endpoint",
 				"tags": [
-					"User Auth"
+					"User Auth Routes"
 				],
 				"security": [],
 				"parameters": [],
@@ -357,7 +405,7 @@
 				},
 				"description": "Resend Otp Route  api endpoint",
 				"tags": [
-					"User Auth"
+					"User Auth Routes"
 				],
 				"security": [],
 				"parameters": [],
@@ -398,7 +446,7 @@
 				},
 				"description": "Change Password endpoint",
 				"tags": [
-					"User Auth"
+					"User Auth Routes"
 				],
 				"security": [
 					{
@@ -447,7 +495,7 @@
 				},
 				"description": "Get User info",
 				"tags": [
-					"User Auth"
+					"User Auth Routes"
 				],
 				"security": [
 					{
@@ -474,7 +522,7 @@
 				},
 				"description": "Update User Profile",
 				"tags": [
-					"User Auth"
+					"User Auth Routes"
 				],
 				"security": [
 					{
@@ -529,7 +577,7 @@
 				},
 				"description": "Refresh tokne api\nprovide refresh token in this api and get new access token",
 				"tags": [
-					"User Auth"
+					"User Auth Routes"
 				],
 				"security": [],
 				"parameters": [],
@@ -570,7 +618,7 @@
 				},
 				"description": "Logout User",
 				"tags": [
-					"User Auth"
+					"User Auth Routes"
 				],
 				"security": [],
 				"parameters": []
@@ -593,7 +641,7 @@
 				},
 				"description": "delete user account\nUSER TYPE 2 FOR SPONSER 3 FOR USER",
 				"tags": [
-					"User Auth"
+					"User Auth Routes"
 				],
 				"security": [
 					{
@@ -737,7 +785,7 @@
 				},
 				"description": "Get User List",
 				"tags": [
-					"Admin User"
+					"Admin User Routes"
 				],
 				"security": [
 					{
@@ -816,7 +864,7 @@
 				},
 				"description": "Get User Details",
 				"tags": [
-					"Admin User"
+					"Admin User Routes"
 				],
 				"security": [
 					{
@@ -852,7 +900,7 @@
 				},
 				"description": "Update User Status",
 				"tags": [
-					"Admin User"
+					"Admin User Routes"
 				],
 				"security": [
 					{
@@ -902,7 +950,7 @@
 				},
 				"description": "Get Dashboard data",
 				"tags": [
-					"Admin User"
+					"Admin User Routes"
 				],
 				"security": [
 					{
@@ -919,6 +967,206 @@
 						}
 					}
 				]
+			}
+		},
+		"/admin/contactus/list": {
+			"get": {
+				"operationId": "ListContactDetails",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "List events.",
+				"tags": [
+					"Admin ContactUs Routes"
+				],
+				"security": [
+					{
+						"Bearer": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "sort_column",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "sort_direction",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "page",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "limit",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "search_key",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/admin/contactus/details": {
+			"get": {
+				"operationId": "GetContactDetail",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "List events.",
+				"tags": [
+					"Admin ContactUs Routes"
+				],
+				"security": [
+					{
+						"Bearer": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "contact_id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/admin/contactus/delete": {
+			"delete": {
+				"operationId": "DeleteContactUs",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Delete Contact.",
+				"tags": [
+					"Admin ContactUs Routes"
+				],
+				"security": [
+					{
+						"Bearer": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"contact_id": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"contact_id"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/contactus/reply": {
+			"post": {
+				"operationId": "ReplyContactus",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Reply TO Contact",
+				"tags": [
+					"Admin ContactUs Routes"
+				],
+				"security": [
+					{
+						"Bearer": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"html": {
+										"type": "string"
+									},
+									"contact_id": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"html",
+									"contact_id"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/admin/common/question": {
@@ -938,7 +1186,7 @@
 				},
 				"description": "Add Question  endpoint",
 				"tags": [
-					"Admin Common"
+					"Admin Common Routes"
 				],
 				"security": [
 					{
@@ -985,7 +1233,7 @@
 				},
 				"description": "Update Question endpoint",
 				"tags": [
-					"Admin Common"
+					"Admin Common Routes"
 				],
 				"security": [
 					{
@@ -1036,7 +1284,7 @@
 				},
 				"description": "Delete Question endpoint",
 				"tags": [
-					"Admin Common"
+					"Admin Common Routes"
 				],
 				"security": [
 					{
@@ -1081,7 +1329,7 @@
 				},
 				"description": "Update Common Content endpoint",
 				"tags": [
-					"Admin Common"
+					"Admin Common Routes"
 				],
 				"security": [
 					{
@@ -1134,7 +1382,7 @@
 				},
 				"description": "Get Admin login",
 				"tags": [
-					"Admin Auth"
+					"Admin Auth Routes"
 				],
 				"security": [],
 				"parameters": [],
@@ -1183,7 +1431,7 @@
 				},
 				"description": "Save a Admin",
 				"tags": [
-					"Admin Auth"
+					"Admin Auth Routes"
 				],
 				"security": [],
 				"parameters": [],
@@ -1224,7 +1472,7 @@
 				},
 				"description": "Reset password api endpoint",
 				"tags": [
-					"Admin Auth"
+					"Admin Auth Routes"
 				],
 				"security": [],
 				"parameters": [],
@@ -1269,7 +1517,7 @@
 				},
 				"description": "Verify Otp Route  api endpoint",
 				"tags": [
-					"Admin Auth"
+					"Admin Auth Routes"
 				],
 				"security": [],
 				"parameters": [],
@@ -1315,7 +1563,7 @@
 				},
 				"description": "Resend Otp Route  api endpoint",
 				"tags": [
-					"Admin Auth"
+					"Admin Auth Routes"
 				],
 				"security": [],
 				"parameters": [],
@@ -1356,7 +1604,7 @@
 				},
 				"description": "Change Password endpoint",
 				"tags": [
-					"Admin Auth"
+					"Admin Auth Routes"
 				],
 				"security": [
 					{
@@ -1405,7 +1653,7 @@
 				},
 				"description": "Get Admin info",
 				"tags": [
-					"Admin Auth"
+					"Admin Auth Routes"
 				],
 				"security": [
 					{
@@ -1432,7 +1680,7 @@
 				},
 				"description": "Update Admin Profile",
 				"tags": [
-					"Admin Auth"
+					"Admin Auth Routes"
 				],
 				"security": [
 					{
@@ -1490,7 +1738,7 @@
 				},
 				"description": "Upload a file\n1 for image 2 for video",
 				"tags": [
-					"Admin Auth"
+					"Admin Auth Routes"
 				],
 				"security": [],
 				"parameters": [],
@@ -1539,7 +1787,7 @@
 				},
 				"description": "Refresh token api\nprovide refresh token in this api and get new access token",
 				"tags": [
-					"Admin Auth"
+					"Admin Auth Routes"
 				],
 				"security": [],
 				"parameters": [],
@@ -1580,7 +1828,7 @@
 				},
 				"description": "Logout User",
 				"tags": [
-					"Admin Auth"
+					"Admin Auth Routes"
 				],
 				"security": [],
 				"parameters": []

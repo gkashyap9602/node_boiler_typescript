@@ -8,7 +8,7 @@ import statusCodes from '../../constants/statusCodes'
 import { tryCatchWrapper } from '../../utils/config.util';
 import { validateRefreshToken } from '../../validations/User/user.auth.validator';
 
-@Tags('Admin Auth')
+@Tags('Admin Auth Routes')
 @Route('/admin/auth')
 
 export default class AdminAuthController extends Controller {
@@ -29,7 +29,6 @@ export default class AdminAuthController extends Controller {
     public async login(@Body() request: { email: string, password: string, os_type: string }): Promise<ApiResponse> {
 
         const validate = validateAdminLogin(request);
-
         if (validate.error) {
             return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
@@ -70,7 +69,6 @@ export default class AdminAuthController extends Controller {
     public async forgotPassword(@Body() request: { email: string }): Promise<ApiResponse> {
 
         const validate = validateForgotPassword(request);
-
         if (validate.error) {
             return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
@@ -87,7 +85,6 @@ export default class AdminAuthController extends Controller {
     public async resetPassword(@Body() request: { email: string, new_password: string }): Promise<ApiResponse> {
 
         const validate = validateResetPassword(request);
-
         if (validate.error) {
             return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
@@ -104,7 +101,6 @@ export default class AdminAuthController extends Controller {
     public async verifyOtp(@Body() request: { email: string, otp: number }): Promise<ApiResponse> {
 
         const validate = validateVerifyOtp(request);
-
         if (validate.error) {
             return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
@@ -121,10 +117,10 @@ export default class AdminAuthController extends Controller {
     public async resendOtp(@Body() request: { email: string }): Promise<ApiResponse> {
 
         const validate = validateResendOtp(request);
-
         if (validate.error) {
             return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
+
         const wrappedFunc = tryCatchWrapper(handler.resendOtp);
         return wrappedFunc(request); // Invoking the wrapped function 
     }
@@ -140,7 +136,6 @@ export default class AdminAuthController extends Controller {
         const { old_password, new_password } = request;
 
         const validate = validateChangePassword({ old_password, new_password });
-
         if (validate.error) {
             return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
@@ -172,7 +167,6 @@ export default class AdminAuthController extends Controller {
         const body = { first_name, last_name, phone_number, country_code, greet_msg }
 
         const validate = validateUpdateProfile(body);
-
         if (validate.error) {
             return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
@@ -190,7 +184,6 @@ export default class AdminAuthController extends Controller {
     public async uploadFiles(@FormField() media_type: number, @UploadedFiles() files: Express.Multer.File[]): Promise<ApiResponse> {
 
         const validate = validateFileUpload({ media_type });
-
         if (validate.error) {
             return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }

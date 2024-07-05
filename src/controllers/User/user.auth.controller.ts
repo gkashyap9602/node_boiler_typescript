@@ -8,7 +8,7 @@ import statusCodes from '../../constants/statusCodes'
 import { tryCatchWrapper } from '../../utils/config.util';
 
 
-@Tags('User Auth')
+@Tags('User Auth Routes')
 @Route('/user/auth')
 
 export default class UserAuthController extends Controller {

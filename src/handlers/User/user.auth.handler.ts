@@ -189,7 +189,7 @@ const UserAuthHandler = {
             return showResponse(false, responseMessage.common.email_already, null, statusCodes.API_ERROR)
         }
 
-        const otp = commonHelper.generateRandomOtp(4)
+        const otp = commonHelper.generateOtp()
         const hashed = await commonHelper.bycrptPasswordHash(password);
         data.password = hashed
         data.otp = otp
@@ -260,7 +260,7 @@ const UserAuthHandler = {
     //         let hashed = await commonHelper.bycrptPasswordHash(password);
 
     //         // let otp = 1234;
-    //         let otp = commonHelper.generateRandomOtp(4)
+    //         let otp = commonHelper.generateOtp()
     //         if (existsUser.status) {
 
     //             //if user exist with same account source then throw error
@@ -300,7 +300,7 @@ const UserAuthHandler = {
     //         } else {
 
     //             data.password = hashed;
-    //             // data.otp = commonHelper.generateRandomOtp(4)
+    //             // data.otp = commonHelper.generateOtp()
     //             data.otp = otp;
     //             if (profile_pic) {
     //                 //upload image to aws s3 bucket
@@ -348,7 +348,7 @@ const UserAuthHandler = {
             return showResponse(false, responseMessage.users.not_registered, null, statusCodes.API_ERROR)
         }
 
-        const otp = commonHelper.generateRandomOtp(4);
+        const otp = commonHelper.generateOtp();
         const email_payload = { project_name: APP.PROJECT_NAME, user_name: exists?.data?.first_name, cidLogo: 'unique@Logo', otp }
         const template = await ejs.renderFile(path.join(process.cwd(), './src/templates', 'forgotPassword.ejs'), email_payload);
         const logoPath = path.join(process.cwd(), './public', 'logo.png');
@@ -454,7 +454,7 @@ const UserAuthHandler = {
 
         if (result.status) {
 
-            const otp = commonHelper.generateRandomOtp(4);
+            const otp = commonHelper.generateOtp();
             const email_payload = { project_name: APP.PROJECT_NAME, user_name: result?.data?.first_name, cidLogo: 'unique@Logo', otp }
             const template = await ejs.renderFile(path.join(process.cwd(), './src/templates', 'registration.ejs'), email_payload);
             const logoPath = path.join(process.cwd(), './public', 'logo.png');

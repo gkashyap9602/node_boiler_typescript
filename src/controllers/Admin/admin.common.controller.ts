@@ -8,7 +8,7 @@ import statusCodes from '../../constants/statusCodes'
 import { tryCatchWrapper } from '../../utils/config.util';
 
 
-@Tags('Admin Common')
+@Tags('Admin Common Routes')
 @Route('/admin/common')
 
 export default class AdminCommonController extends Controller {

@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs';
 import mongoose from 'mongoose'
 import { REDIS_CREDENTIAL } from '../constants/app.constant'
 import Queue from 'bull'
+import crypto from 'crypto'
 
 
 
@@ -188,6 +189,11 @@ function generateRandomNumeric(length: number) {
 }
 
 
+const generateOtp = () => {
+    return crypto.randomInt(1000, 9999);
+}
+
+
 function generateUniqueCustomerId() {
     // Generate an alphanumeric part (e.g., using random characters)
     const alphanumericPart = generateRandomAlphanumeric(14); // 14 characters long
@@ -337,4 +343,5 @@ export {
     formatDuration,
     generateSlotsForDay,
     validateMongoIdsInArrayForJoi,
+    generateOtp
 }
