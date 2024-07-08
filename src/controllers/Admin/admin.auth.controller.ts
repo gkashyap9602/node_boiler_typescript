@@ -177,22 +177,6 @@ export default class AdminAuthController extends Controller {
     //ends
 
     /**
-   * Upload a file
-   * 1 for image 2 for video
-   */
-    @Post("/upload_files")
-    public async uploadFiles(@FormField() media_type: number, @UploadedFiles() files: Express.Multer.File[]): Promise<ApiResponse> {
-
-        const validate = validateFileUpload({ media_type });
-        if (validate.error) {
-            return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
-        }
-        return handler.uploadFiles(files, media_type)
-    }
-    //ends
-
-
-    /**
     *  Refresh token api
     * provide refresh token in this api and get new access token 
     */

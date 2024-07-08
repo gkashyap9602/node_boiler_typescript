@@ -79,15 +79,6 @@ router.put('/profile', multer.addToMulter.single('profile_pic'), verifyTokenAdmi
 
 })
 
-//upload multiple files with busboy and redis queue
-router.post('/upload_files', busboy.addToBusboy, async (req: Request | any, res: Response) => {
-    const { media_type } = req.body
-    const controller = new AdminAuthController(req, res)
-    console.log(req.files, "req.filesss")
-    const result: ApiResponse = await controller.uploadFiles(media_type, req.files);
-    return showOutput(res, result, result.code)
-
-})
 
 router.post('/refresh_token', multer.addToMulter.none(), async (req: Request | any, res: Response) => {
     const { refresh_token } = req.body
