@@ -12,7 +12,10 @@ export interface AwsCredential {
     REGION: any;
     BUCKET_NAME: any;
     AWS_SECRET: any;
+    COLLECTION_ID_AWS_REKOGNITION: any;
+
 }
+
 export interface StripeCredential {
     STRIPE_PB_KEY: any;
     STRIPE_SEC_KEY: any;
@@ -27,7 +30,7 @@ export interface AppConstant {
     API_PREFIX: string;
     FRONTEND_URL: string;
     BITBUCKET_URL: string;
-    ADMIN_CRED_EMAIL:string
+    ADMIN_CRED_EMAIL: string
     JWT_SECRET: any,
     FILE_SIZE: number,
     PROJECT_NAME: string

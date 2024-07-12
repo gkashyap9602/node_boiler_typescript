@@ -80,7 +80,7 @@ const REDIS_CREDENTIAL = {
 //***** MAKE SURE FOR  DEV, PROD, AND STAGE ENVIOREMENENT USER ENV_PARMAS THAT ABOVE SHOWS AND SAVE IT IN AWS WITH SAME NAME  ******/
 const initializeAwsCredential = async () => {
   //call this function when paramters are stored to aws 
- 
+
   DB.MONGODB_URI = services.awsService.getParameterFromAWS({ name: DB_URI })
 
   APP.JWT_SECRET = services.awsService.getParameterFromAWS({ name: "API_SECRET" })
@@ -95,6 +95,7 @@ const initializeAwsCredential = async () => {
     REGION: services.awsService.getParameterFromAWS({ name: REGION }),
     AWS_SECRET: services.awsService.getSecretFromAWS("digismart"),
     BUCKET_NAME: services.awsService.getParameterFromAWS({ name: BUCKET }),
+    COLLECTION_ID_AWS_REKOGNITION: process.env.COLLECTION_ID_AWS_REKOGNITION, //use it if want to use image search in project
   };
 
   // STRIPE_CREDENTIAL = {

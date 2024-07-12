@@ -13,6 +13,7 @@ import fs from 'fs'
 import { showResponse } from "../utils/response.util";
 import { AWS_CREDENTIAL } from "../constants/app.constant";
 import { postParameter, getParameter, ApiResponse } from "../utils/interfaces.util";
+import statusCodes from "../constants/statusCodes";
 const cache = new NodeCache()
 const ssm = new AWS.SSM()
 
@@ -626,7 +627,115 @@ const uploadThumbnail = async (thumbnailUploadParams: any, thumbnail_file_path: 
             });
         });
     });
+} //ends
+
+//aws rekognition functions are here  step by step to search user by image 
+//1. first create collection in which all faces added when user in app or web upload  
+//2. second step is to add face every time user upload like for example  if user uploads profiles pic and we have to search according to profile pic then on time of upload add image in collection
+//3. search image in collection after al that you have to search image addedd in collection when user uploads 
+//4. list collections in aws rekognition that is created by you (optional)
+const awsFaceRekognitionFunctions = {
+    //provide unique id for collection you want to create
+    createCollectionAwsRekognition: async (collectionId: string) => {
+        try {
+            const rekognition = new AWS.Rekognition({
+                accessKeyId: await AWS_CREDENTIAL.ACCESSID,
+                secretAccessKey: await AWS_CREDENTIAL.AWS_SECRET,
+                region: await AWS_CREDENTIAL.REGION,
+            });
+
+            const params = { CollectionId: collectionId };
+
+            const collection = await rekognition.createCollection(params).promise();
+            // console.log(`Collection created: ${collection.CollectionArn}`);
+            return showResponse(true, "Collections created Successfully", collection.CollectionArn, statusCodes.SUCCESS)
+
+        } catch (error: any) {
+            console.error('Error searching faces in collection:', error);
+            return showResponse(false, error?.message ? error.message : error, null, statusCodes.API_ERROR)
+        }
+    },//ends
+
+    //here externalImageId you can store user id to find user information after search 
+    addFaceToCollectionAwsRekognition: async (collectionId: string, imageBuffer: any, externalImageId: string) => {
+        try {
+            const rekognition = new AWS.Rekognition({
+                accessKeyId: await AWS_CREDENTIAL.ACCESSID,
+                secretAccessKey: await AWS_CREDENTIAL.AWS_SECRET,
+                region: await AWS_CREDENTIAL.REGION,
+            });
+
+
+            const params = {
+                CollectionId: collectionId,
+                Image: {
+                    Bytes: imageBuffer,
+                },
+                ExternalImageId: externalImageId, // Unique ID for each face
+            };
+
+            const data = await rekognition.indexFaces(params).promise();
+            // console.log('Faces added:', data.FaceRecords);
+            return showResponse(true, "Faces added Successfully", data.FaceRecords, statusCodes.SUCCESS)
+        } catch (error: any) {
+            return showResponse(false, error?.message ? error.message : error, null, statusCodes.API_ERROR)
+        }
+    }, //ends
+
+    //search image with collection id & image buffer get it by multer or any other no need to upload image 
+    searchFaceInCollectionAwsRekognition: async (collectionId: string, imageBuffer: any) => {
+        try {
+            const rekognition = new AWS.Rekognition({
+                accessKeyId: await AWS_CREDENTIAL.ACCESSID,
+                secretAccessKey: await AWS_CREDENTIAL.AWS_SECRET,
+                region: await AWS_CREDENTIAL.REGION,
+            });
+
+            const params = {
+                CollectionId: collectionId,
+                Image: {
+                    Bytes: imageBuffer,
+                },
+            };
+
+            const response = await rekognition.searchFacesByImage(params).promise();
+            // console.log('Matching faces:', data.FaceMatches);
+
+            if (response.FaceMatches?.length == 0) {
+                return showResponse(false, "Face Not Matched With Any Image", response.FaceMatches, statusCodes.API_ERROR)
+            }
+
+            return showResponse(true, "Faces Match Successfully", response.FaceMatches, statusCodes.SUCCESS)
+
+        } catch (error: any) {
+            return showResponse(false, error?.message ? error.message : error, null, statusCodes.API_ERROR)
+        }
+    }, //ends
+
+    //list all collections in awsRekognition
+    listCollectionAwsRekognition: async () => {
+        try {
+            const rekognition = new AWS.Rekognition({
+                accessKeyId: await AWS_CREDENTIAL.ACCESSID,
+                secretAccessKey: await AWS_CREDENTIAL.AWS_SECRET,
+                region: await AWS_CREDENTIAL.REGION,
+            });
+
+            const params = {};
+
+            const response: any = await rekognition.listCollections(params).promise();
+            // console.log(response, 'Face_Collections:');
+
+            const collectionIds = response?.CollectionIds?.map((collectionId: any) => collectionId);
+            return showResponse(true, "Collections Ids Are Here", collectionIds, statusCodes.SUCCESS)
+
+        } catch (error: any) {
+            console.error('Error searching faces in collection:', error);
+            return showResponse(false, error?.message ? error.message : error, null, statusCodes.API_ERROR)
+        }
+    }, //ends
 }
+
 
 export {
     getParameterFromAWS,
@@ -639,6 +748,7 @@ export {
     uploadToS3ExcelSheet,
     uploadToS3,
     uploadThumbnail,
-    uploadQueueMediaToS3
+    uploadQueueMediaToS3,
+    awsFaceRekognitionFunctions
 
 }
