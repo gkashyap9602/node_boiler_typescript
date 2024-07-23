@@ -5,7 +5,6 @@ import * as fsHelper from '../helpers/fs.helper'
 //     region: "us-east-1",
 //     credentials: new AWS.SharedIniFileCredentials({ profile: "digismart" }),
 // });
-
 import path from 'path'
 import responseMessage from "../constants/ResponseMessage";
 import * as mediaHelper from "../helpers/media.helper";
@@ -16,6 +15,7 @@ import { postParameter, getParameter, ApiResponse } from "../utils/interfaces.ut
 import statusCodes from "../constants/statusCodes";
 const cache = new NodeCache()
 const ssm = new AWS.SSM()
+
 
 const getParameterFromAWS = (input: getParameter) => {
     const cachedValue = cache.get(input?.name);
@@ -597,38 +597,6 @@ const uploadVideoAndTranscode = async (files: any, media_type = 'videos') => {
     }
 } //ends
 
-const uploadThumbnail = async (thumbnailUploadParams: any, thumbnail_file_path: any) => {
-
-    const s3 = new AWS.S3({
-        accessKeyId: await AWS_CREDENTIAL.ACCESSID,
-        secretAccessKey: await AWS_CREDENTIAL.AWS_SECRET,
-        region: await AWS_CREDENTIAL.REGION,
-    });
-
-    const bucketName = await AWS_CREDENTIAL.BUCKET_NAME;
-    thumbnailUploadParams.Bucket = bucketName //define bucket name
-
-    return new Promise((resolve, reject) => {
-        s3.upload(thumbnailUploadParams, (err: any, data: any) => {
-            fs.unlink(thumbnail_file_path, (unlinkErr: any) => {
-                if (unlinkErr) {
-                    console.error('Error deleting file:', unlinkErr);
-                    reject(unlinkErr);
-                    return;
-                }
-                console.log('File deleted successfully');
-
-                if (err) {
-                    console.error('Thumbnail upload error:', err);
-                    resolve(showResponse(false, responseMessage?.common?.thumbnail_error, err, 200));
-                    return;
-                }
-                resolve(showResponse(true, responseMessage?.common?.thumbnail_generated, data?.Key || data?.key, 200));
-            });
-        });
-    });
-} //ends
-
 //aws rekognition functions are here  step by step to search user by image 
 //1. first create collection in which all faces added when user in app or web upload  
 //2. second step is to add face every time user upload like for example  if user uploads profiles pic and we have to search according to profile pic then on time of upload add image in collection
@@ -735,6 +703,40 @@ const awsFaceRekognitionFunctions = {
         }
     }, //ends
 }
+
+const uploadThumbnail = async (thumbnailUploadParams: any, thumbnail_file_path: any) => {
+
+    const s3 = new AWS.S3({
+        accessKeyId: await AWS_CREDENTIAL.ACCESSID,
+        secretAccessKey: await AWS_CREDENTIAL.AWS_SECRET,
+        region: await AWS_CREDENTIAL.REGION,
+    });
+
+    const bucketName = await AWS_CREDENTIAL.BUCKET_NAME;
+    thumbnailUploadParams.Bucket = bucketName //define bucket name
+
+    return new Promise((resolve, reject) => {
+        s3.upload(thumbnailUploadParams, (err: any, data: any) => {
+            fs.unlink(thumbnail_file_path, (unlinkErr: any) => {
+                if (unlinkErr) {
+                    console.error('Error deleting file:', unlinkErr);
+                    reject(unlinkErr);
+                    return;
+                }
+                console.log('File deleted successfully');
+
+                if (err) {
+                    console.error('Thumbnail upload error:', err);
+                    resolve(showResponse(false, responseMessage?.common?.thumbnail_error, err, 200));
+                    return;
+                }
+                resolve(showResponse(true, responseMessage?.common?.thumbnail_generated, data?.Key || data?.key, 200));
+            });
+        });
+    });
+} //ends
+
+
 
 
 export {
