@@ -236,106 +236,104 @@ const UserAuthHandler = {
 
     //user this register func if social login is used in project
     // async register(data: any, profile_pic: any): Promise<ApiResponse> {
-    //     try {
-    //         let { email, password } = data;
 
-    //         //check if match or not by email
-    //         let query = {
-    //             status: { $ne: USER_STATUS.DELETED },
-    //             $or: [
-    //                 { email },//if account email find then throw error already existed 
-    //                 {
-    //                     social_account: {
-    //                         $elemMatch: { email: email }  //if account finds with social email then create new if finds
-    //                     }
+    //     let { email, password } = data;
 
-    //                 },
-    //             ]
+    //     //check if match or not by email
+    //     let query = {
+    //         status: { $ne: USER_STATUS.DELETED },
+    //         $or: [
+    //             { email },//if account email find then throw error already existed 
+    //             {
+    //                 social_account: {
+    //                     $elemMatch: { email: email }  //if account finds with social email then create new if finds
+    //                 }
+
+    //             },
+    //         ]
+    //     }
+
+
+    //     // check if user exists
+    //     const existsUser = await findOne(userModel, query);
+
+    //     let hashed = await commonHelper.bycrptPasswordHash(password);
+
+    //     // let otp = 1234;
+    //     let otp = commonHelper.generateOtp()
+    //     if (existsUser.status) {
+
+    //         //if user exist with same account source then throw error
+    //         if (existsUser.data.account_source == 'email') {
+    //             return showResponse(false, responseMessage.users.email_already, null, statusCodes.API_ERROR);
     //         }
 
+    //         //if account source is different and user exist then update user details and its account source
+    //         let editObj = { ...data }
+    //         editObj.account_source = 'email'
+    //         editObj.password = hashed
+    //         editObj.otp = otp
 
-    //         // check if user exists
-    //         const existsUser = await findOne(userModel, query);
+    //         let response = await findOneAndUpdate(userModel, { _id: existsUser.data._id }, editObj);
+    //         let user_name = response.data?.first_name
 
-    //         let hashed = await commonHelper.bycrptPasswordHash(password);
-
-    //         // let otp = 1234;
-    //         let otp = commonHelper.generateOtp()
-    //         if (existsUser.status) {
-
-    //             //if user exist with same account source then throw error
-    //             if (existsUser.data.account_source == 'email') {
-    //                 return showResponse(false, responseMessage.users.email_already, null, null, 400);
+    //         const template = await ejs.renderFile(path.join(process.cwd(), './src/templates', 'registration.ejs'), { user_name, cidLogo: 'unique@Logo', otp });
+    //         const logoPath = path.join(process.cwd(), './public', 'logo.png');
+    //         //send email of attachment to admin
+    //         let to = `${response?.data?.email}`
+    //         let subject = `New user registered`
+    //         let attachments = [
+    //             {
+    //                 filename: 'logo.png',
+    //                 path: logoPath,
+    //                 cid: 'unique@Logo',
     //             }
+    //         ]
 
-    //             //if account source is different and user exist then update user details and its account source
-    //             let editObj = { ...data }
-    //             editObj.account_source = 'email'
-    //             editObj.password = hashed
-    //             editObj.otp = otp
+    //         await services.emailService.nodemail(to, subject, template, attachments)
 
-    //             let response = await findOneAndUpdate(userModel, { _id: existsUser.data._id }, editObj);
-    //             let user_name = response.data?.first_name
+    //         if (response.status) {
+    //             return showResponse(true, responseMessage.users.register_success, response.data, statusCodes.SUCCESS);
+    //         }
+    //         return showResponse(false, responseMessage.users.register_error, null, statusCodes.API_ERROR);
 
-    //             const template = await ejs.renderFile(path.join(process.cwd(), './src/templates', 'registration.ejs'), { user_name, cidLogo: 'unique@Logo', otp });
-    //             const logoPath = path.join(process.cwd(), './public', 'logo.png');
-    //             //send email of attachment to admin
-    //             let to = `${response?.data?.email}`
-    //             let subject = `New user registered`
-    //             let attachments = [
-    //                 {
-    //                     filename: 'logo.png',
-    //                     path: logoPath,
-    //                     cid: 'unique@Logo',
-    //                 }
-    //             ]
+    //     } else {
 
-    //             await services.emailService.nodemail(to, subject, template, attachments)
-
-    //             if (response.status) {
-    //                 return showResponse(true, responseMessage.users.register_success, response.data, {}, 200);
+    //         data.password = hashed;
+    //         // data.otp = commonHelper.generateOtp()
+    //         data.otp = otp;
+    //         if (profile_pic) {
+    //             //upload image to aws s3 bucket
+    //             const s3Upload = await services.awsService.uploadFileToS3([profile_pic])
+    //             if (!s3Upload.status) {
+    //                 return showResponse(false, responseMessage?.common.file_upload_error, null, statusCodes.FILE_UPLOAD_ERROR);
     //             }
-    //             return showResponse(false, responseMessage.users.register_error, null, null, 400);
-
-    //         } else {
-
-    //             data.password = hashed;
-    //             // data.otp = commonHelper.generateOtp()
-    //             data.otp = otp;
-    //             if (profile_pic) {
-    //                 //upload image to aws s3 bucket
-    //                 const s3Upload = await services.awsService.uploadFileToS3([profile_pic])
-    //                 if (!s3Upload.status) {
-    //                     return showResponse(false, responseMessage?.common.file_upload_error, null, null, 203);
-    //                 }
-    //                 data.profile_pic = s3Upload?.data[0]
+    //             data.profile_pic = s3Upload?.data[0]
+    //         }
+    //         let userRef = new userModel(data)
+    //         let result = await createOne(userRef)
+    //         if (!result.status) {
+    //             return showResponse(false, responseMessage.common.error_while_create_acc, null, statusCodes.API_ERROR)
+    //         }
+    //         const template = await ejs.renderFile(path.join(process.cwd(), './src/templates', 'registration.ejs'), { user_name: result?.data?.first_name, cidLogo: 'unique@Logo', otp });
+    //         const logoPath = path.join(process.cwd(), './public', 'logo.png');
+    //         //send email of attachment to admin
+    //         let to = `${result?.data?.email}`
+    //         let subject = `New user registered`
+    //         let attachments = [
+    //             {
+    //                 filename: 'logo.png',
+    //                 path: logoPath,
+    //                 cid: 'unique@Logo',
     //             }
-    //             let userRef = new userModel(data)
-    //             let result = await createOne(userRef)
-    //             if (!result.status) {
-    //                 return showResponse(false, responseMessage.common.error_while_create_acc, null, null, 400)
-    //             }
-    //             const template = await ejs.renderFile(path.join(process.cwd(), './src/templates', 'registration.ejs'), { user_name: result?.data?.first_name, cidLogo: 'unique@Logo', otp });
-    //             const logoPath = path.join(process.cwd(), './public', 'logo.png');
-    //             //send email of attachment to admin
-    //             let to = `${result?.data?.email}`
-    //             let subject = `New user registered`
-    //             let attachments = [
-    //                 {
-    //                     filename: 'logo.png',
-    //                     path: logoPath,
-    //                     cid: 'unique@Logo',
-    //                 }
-    //             ]
-    //             await services.emailService.nodemail(to, subject, template, attachments)
-    //             delete result?.data.password
-    //             return showResponse(true, responseMessage.users.register_success, result?.data, null, 200)
+    //         ]
+    //         await services.emailService.nodemail(to, subject, template, attachments)
+    //         delete result?.data.password
+    //         return showResponse(true, responseMessage.users.register_success, result?.data, statusCodes.SUCCESS)
 
-    //         } //ends else part
+    //     } //ends else part
 
-    //     } catch (err: any) {
-    //         return showResponse(false, err?.message ?? err, null, null, 400)
-    //     }
+
     // },
     //ends
     forgotPassword: async (data: any): Promise<ApiResponse> => {
