@@ -15,7 +15,6 @@ import statusCodes from '../../constants/statusCodes'
 const UserAuthHandler = {
 
     login: async (data: any): Promise<ApiResponse> => {
-
         const { email, password, os_type } = data;
         const exists = await findOne(userModel, { email, status: { $ne: USER_STATUS.DELETED } });
 
@@ -36,7 +35,6 @@ const UserAuthHandler = {
         }
 
         const os_update = await findOneAndUpdate(userModel, { _id: exists?.data?._id }, { os_type })
-
         if (!os_update) {
             return showResponse(false, responseMessage.users.login_error, null, statusCodes.API_ERROR)
         }
@@ -51,10 +49,9 @@ const UserAuthHandler = {
     },
 
     // social_login: async (data: any) => {
+    //     const { login_source, os_type, social_auth, email, name, user_type, profile_pic } = data;
 
-    //     let { login_source, os_type, social_auth, email, name, user_type, profile_pic } = data;
-
-    //     let matchObj = {
+    //     const matchObj = {
     //         status: { $ne: USER_STATUS.DELETED }, //user not deleted
     //         $or: [
     //             {
@@ -137,14 +134,13 @@ const UserAuthHandler = {
 
     update_social_info: async (findUser: any, model: any, data: any) => {
         try {
+            const { login_source, os_type, social_auth, email, name } = data
 
-            let { login_source, os_type, social_auth, email, name } = data
-
-            let editObj: any = {
+            const editObj: any = {
                 updated_on: moment().unix(),
             }
 
-            let social_account = {
+            const social_account = {
                 email,
                 source: login_source,
                 token: social_auth,
@@ -152,7 +148,7 @@ const UserAuthHandler = {
             }
 
             // Check if social account exists in device_info array
-            let accountIndex = findUser?.data?.social_account.findIndex((info: any) => info?.source === data?.login_source);
+            const accountIndex = findUser?.data?.social_account.findIndex((info: any) => info?.source === data?.login_source);
 
             //if exist then update else add new
             if (accountIndex !== -1) {
@@ -161,8 +157,7 @@ const UserAuthHandler = {
                 editObj.$push = { social_account: social_account }
             }
 
-            let response = await findAndUpdatePushOrSet(model, { _id: findUser.data._id }, editObj);
-
+            const response = await findAndUpdatePushOrSet(model, { _id: findUser.data._id }, editObj);
             //return update result
             if (response.status) {
                 return { status: true, data: response.data }
@@ -179,12 +174,9 @@ const UserAuthHandler = {
     },
 
     register: async (data: any, profile_pic: any): Promise<ApiResponse> => {
-
         const { email, password } = data;
-
         // check if user exists
         const exists = await findOne(userModel, { email });
-
         if (exists.status) {
             return showResponse(false, responseMessage.common.email_already, null, statusCodes.API_ERROR)
         }
@@ -204,13 +196,11 @@ const UserAuthHandler = {
             data.profile_pic = s3Upload?.data[0]
         }
 
-
         const userRef = new userModel(data)
         const result = await createOne(userRef)
 
         if (!result.status) {
             return showResponse(false, responseMessage.common.error_while_create_acc, null, statusCodes.API_ERROR)
-
         }
 
         const email_payload = { project_name: APP.PROJECT_NAME, user_name: result?.data?.first_name, cidLogo: 'unique@Logo', otp }
@@ -337,11 +327,9 @@ const UserAuthHandler = {
     // },
     //ends
     forgotPassword: async (data: any): Promise<ApiResponse> => {
-
         const { email } = data;
         // check if admin exists
         const exists = await findOne(userModel, { email, status: { $ne: USER_STATUS.DELETED } });
-
         if (!exists.status) {
             return showResponse(false, responseMessage.users.not_registered, null, statusCodes.API_ERROR)
         }
@@ -363,7 +351,6 @@ const UserAuthHandler = {
         ]
 
         const forgotPassMail = await services.emailService.nodemail(to, subject, template, attachments)
-
         if (forgotPassMail.status) {
 
             const userObj = {
@@ -372,7 +359,6 @@ const UserAuthHandler = {
             }
 
             await findByIdAndUpdate(userModel, userObj, (exists?.data?._id));
-
             return showResponse(true, responseMessage.users.otp_send, null, statusCodes.SUCCESS);
         }
 
@@ -380,32 +366,23 @@ const UserAuthHandler = {
     },
 
     uploadFile: async (data: any): Promise<ApiResponse> => {
-
         const { file } = data;
-
-        console.log(file, "fileeeAw")
-
         const s3Upload = await services.awsService.uploadFileToS3([file])
         if (!s3Upload.status) {
             return showResponse(false, responseMessage?.common.file_upload_error, {}, statusCodes.FILE_UPLOAD_ERROR);
         }
-
         return showResponse(true, responseMessage.common.file_upload_success, s3Upload?.data, statusCodes.SUCCESS)
 
     },
 
     resetPassword: async (data: any): Promise<ApiResponse> => {
-
         const { email, new_password } = data;
-
         const queryObject = { email, status: { $ne: 2 } }
-        // is_verified: true
-
+     
         const result = await findOne(userModel, queryObject);
         if (!result.status) {
             return showResponse(false, `${responseMessage.users.invalid_user} or email`, null, statusCodes.API_ERROR);
         }
-
         const hashed = await commonHelper.bycrptPasswordHash(new_password)
 
         const updateObj = {
@@ -415,41 +392,33 @@ const UserAuthHandler = {
         }
 
         const updated = await findByIdAndUpdate(userModel, updateObj, result?.data?._id)
-
         if (!updated.status) {
             return showResponse(false, responseMessage.users.password_reset_error, null, statusCodes.API_ERROR)
         }
-
         return showResponse(true, responseMessage.users.password_reset_success, null, statusCodes.SUCCESS)
 
     },
 
     verifyOtp: async (data: any): Promise<ApiResponse> => {
-
         const { email, otp } = data;
 
         const queryObject = { email, otp, status: { $ne: USER_STATUS.DELETED } }
 
         const findUser = await findOne(userModel, queryObject)
-
         if (findUser.status) {
             await findOneAndUpdate(userModel, queryObject, { is_verified: true })
-
             return showResponse(true, responseMessage.users.otp_verify_success, null, statusCodes.SUCCESS);
 
         }
-
         return showResponse(false, responseMessage.users.invalid_otp, null, statusCodes.API_ERROR);
 
     },
     //ques
     resendOtp: async (data: any): Promise<ApiResponse> => {
-
         const { email } = data;
         const queryObject = { email, status: { $ne: 2 } }
 
         const result = await findOne(userModel, queryObject);
-
         if (result.status) {
 
             const otp = commonHelper.generateOtp();
@@ -469,10 +438,8 @@ const UserAuthHandler = {
             ]
 
             const resendOtp = await services.emailService.nodemail(to, subject, template, attachments)
-
             if (resendOtp.status) {
                 await findOneAndUpdate(userModel, queryObject, { otp })
-
                 return showResponse(true, responseMessage.users.otp_resend, null, statusCodes.SUCCESS);
             }
 
@@ -483,14 +450,11 @@ const UserAuthHandler = {
     },
 
     changePassword: async (data: any, userId: string): Promise<ApiResponse> => {
-
         const { old_password, new_password } = data;
 
         const exists = await findOne(userModel, { _id: userId })
-
         if (!exists.status) {
             return showResponse(false, responseMessage.users.not_registered, null, statusCodes.API_ERROR)
-
         }
 
         const isValid = await commonHelper.verifyBycryptHash(old_password, exists.data?.password);
@@ -499,9 +463,7 @@ const UserAuthHandler = {
         }
 
         const hashed = await commonHelper.bycrptPasswordHash(new_password)
-
         const updated = await findByIdAndUpdate(userModel, { password: hashed }, userId)
-
         if (!updated.status) {
             return showResponse(false, responseMessage.users.password_change_failed, null, statusCodes.API_ERROR)
         }
@@ -510,19 +472,15 @@ const UserAuthHandler = {
     },
 
     getUserDetails: async (userId: string): Promise<ApiResponse> => {
-
         const getResponse = await findOne(userModel, { _id: userId }, { password: 0 });
-
         if (!getResponse.status) {
             return showResponse(false, responseMessage.users.invalid_user, null, statusCodes.API_ERROR)
         }
-
         return showResponse(true, responseMessage.users.user_detail, getResponse.data, statusCodes.SUCCESS)
 
     },
 
     updateUserProfile: async (data: any, user_id: string, profile_pic: any): Promise<ApiResponse> => {
-
         const { first_name, last_name, phone_number, country_code } = data
 
         const findUser = await findOne(userModel, { user_type: ROLE.USER, _id: user_id, status: { $ne: USER_STATUS.DELETED } })
@@ -530,9 +488,7 @@ const UserAuthHandler = {
             return showResponse(false, responseMessage.users.invalid_user, null, statusCodes.API_ERROR);
         }
 
-        const updateObj: any = {
-            // updated_on: moment().unix()
-        }
+        const updateObj: any = {}
         if (first_name) {
             updateObj.first_name = first_name
         }
@@ -552,7 +508,6 @@ const UserAuthHandler = {
             if (!s3Upload.status) {
                 return showResponse(false, responseMessage?.common.file_upload_error, null, statusCodes.FILE_UPLOAD_ERROR);
             }
-
             updateObj.profile_pic = s3Upload?.data[0]
         }
 
@@ -568,7 +523,7 @@ const UserAuthHandler = {
     async refreshToken(data: any): Promise<ApiResponse> {
         const { refresh_token } = data
 
-        let response: any = await decodeToken(refresh_token)
+        const response: any = await decodeToken(refresh_token)
         // console.log(response, "responseresponse")
 
         if (!response.status) {
@@ -578,8 +533,6 @@ const UserAuthHandler = {
         let user_id = response?.data?.id
 
         const findUser = await findOne(userModel, { _id: user_id });
-        // console.log(findUser, "findUserfindUser")
-
         if (!findUser.status) {
             return showResponse(false, responseMessage.users.invalid_user, null, statusCodes.API_ERROR)
         }
@@ -598,7 +551,6 @@ const UserAuthHandler = {
 
     },
     async logoutUser(): Promise<ApiResponse> {
-
         return showResponse(true, responseMessage.users.logout_success, null, statusCodes.SUCCESS)
 
     },
@@ -609,15 +561,12 @@ const UserAuthHandler = {
 
         if (result.status) {
             delete result.data.password
-
             const msg = status == 2 ? 'deleted' : 'deactivated'
             return showResponse(true, `User account has been ${msg} `, null, statusCodes.SUCCESS);
         }
         return showResponse(false, 'Error While Perform Operation', null, statusCodes.API_ERROR);
 
     }
-
-
 
 }
 

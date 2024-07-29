@@ -31,7 +31,6 @@ export default class AdminCommonController extends Controller {
     public async addQuestion(@Body() request: { question: string, answer: string }): Promise<ApiResponse> {
 
         const validate = validateAddQuestion(request);
-
         if (validate.error) {
             return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
@@ -50,7 +49,6 @@ export default class AdminCommonController extends Controller {
     public async updateQuestion(@Body() request: { question_id: string, question: string, answer: string }): Promise<ApiResponse> {
 
         const validate = validateUpdateQuestion(request);
-
         if (validate.error) {
             return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
@@ -69,7 +67,6 @@ export default class AdminCommonController extends Controller {
     public async deleteQuestion(@FormField() question_id: string): Promise<ApiResponse> {
 
         const validate = validateDeleteQuestion({ question_id });
-
         if (validate.error) {
             return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
@@ -88,7 +85,6 @@ export default class AdminCommonController extends Controller {
     public async updateCommonContent(@Body() request: { about: string, privacy_policy: string, terms_conditions: string }): Promise<ApiResponse> {
 
         const validate = validateCommonContent(request);
-
         if (validate.error) {
             return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }

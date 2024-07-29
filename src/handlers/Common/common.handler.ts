@@ -10,31 +10,24 @@ import statusCodes from '../../constants/statusCodes'
 const CommonHandler = {
 
     getCommonContent: async (): Promise<ApiResponse> => {
-
         const getResponse = await findOne(commonContentModel, {});
-
         if (!getResponse.status) {
             return showResponse(false, responseMessage.common.data_not_found, null, statusCodes.API_ERROR)
         }
-
         return showResponse(true, responseMessage.common.data_retreive_sucess, getResponse.data, statusCodes.SUCCESS)
 
     },
 
     getQuestions: async (): Promise<ApiResponse> => {
-
         const getResponse = await findAll(faqModel, {});
-
         if (getResponse.status) {
             return showResponse(true, responseMessage.admin.here_is_question, getResponse?.data, statusCodes.SUCCESS)
         }
-
         return showResponse(false, responseMessage.common.data_not_found, null, statusCodes.API_ERROR)
 
     },
 
     storeParameterToAws: async (name: string, value: string): Promise<ApiResponse> => {
-
         const response = await services.awsService.postParameterToAWS({
             name: name,
             value: value

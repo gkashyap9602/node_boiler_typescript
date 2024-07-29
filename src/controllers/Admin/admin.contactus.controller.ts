@@ -7,7 +7,6 @@ import statusCodes from '../../constants/statusCodes'
 import { showResponse } from '../../utils/response.util';
 import { tryCatchWrapper } from '../../utils/config.util';
 
-
 @Tags('Admin ContactUs Routes')
 @Route(`admin/contactus`)
 
@@ -46,7 +45,7 @@ export default class AdminController extends Controller {
     @Security('Bearer')
     @Get("/details")
     public async getContactDetail(@Query() contact_id: string): Promise<ApiResponse> {
-        let body = { contact_id };
+        const body = { contact_id };
 
         const validate = validateGetContactDetail(body);
         if (validate.error) {

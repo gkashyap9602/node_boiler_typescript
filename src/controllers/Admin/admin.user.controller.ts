@@ -44,13 +44,10 @@ export default class AdminUserController extends Controller {
     @Get("/details")
     public async getUserDetails(@Query() user_id: string): Promise<ApiResponse> {
 
-        console.log(user_id, "useriddd")
         const validate = validateGetCustomerDetails({ user_id });
-
         if (validate.error) {
             return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
-
 
         const wrappedFunc = tryCatchWrapper(handler.getUserDetails);
         return wrappedFunc(user_id); // Invoking the wrapped function 
@@ -67,11 +64,9 @@ export default class AdminUserController extends Controller {
     public async updateUserStatus(@Body() request: { user_id: string, status: number }): Promise<ApiResponse> {
 
         const validate = validateUpdateUserStatus(request);
-
         if (validate.error) {
             return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
-
 
         const wrappedFunc = tryCatchWrapper(handler.updateUserStatus);
         return wrappedFunc(request); // Invoking the wrapped function 
@@ -87,11 +82,9 @@ export default class AdminUserController extends Controller {
     public async getDashboardData(@Query() past_day?: string): Promise<ApiResponse> {
 
         const validate = validateDashboard({ past_day });
-
         if (validate.error) {
             return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
-
 
         const wrappedFunc = tryCatchWrapper(handler.getDashboardData);
         return wrappedFunc(past_day); // Invoking the wrapped function 

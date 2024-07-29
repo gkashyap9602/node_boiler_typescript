@@ -2,12 +2,9 @@ import express, { Request, Response } from 'express'
 import AdminCommonController from '../../controllers/Admin/admin.common.controller'
 import { showOutput } from '../../utils/response.util'
 import { ApiResponse } from '../../utils/interfaces.util'
-// import { authenticate } from '../middlewares/auth.middleware'
-// import { verifyTokenAdmin } from '../middlewares/auth.middleware'
 import middlewares from '../../middlewares'
 const { verifyTokenAdmin } = middlewares.auth
 const { addToMulter } = middlewares.fileUpload.multer
-
 const router = express.Router()
 
 

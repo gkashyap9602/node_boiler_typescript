@@ -10,11 +10,9 @@ import statusCodes from '../../constants/statusCodes'
 const AdminCommonHandler = {
 
     addQuestion: async (data: any): Promise<ApiResponse> => {
-
         const { question, answer } = data;
 
         const exists = await findOne(faqModel, { question })
-
         if (exists.status) {
             return showResponse(false, responseMessage.common.already_existed, null, statusCodes.API_ERROR)
         }
@@ -34,13 +32,9 @@ const AdminCommonHandler = {
     },
 
     updateQuestion: async (data: any): Promise<ApiResponse> => {
-
         const { answer, question, question_id } = data;
 
-        const updateObj: any = {
-            // updated_on: moment().unix()
-        }
-
+        const updateObj: any = {}
         if (answer) {
             updateObj.answer = answer
         }
@@ -56,11 +50,9 @@ const AdminCommonHandler = {
     },
 
     deleteQuestion: async (data: any): Promise<ApiResponse> => {
-
         const { question_id } = data;
 
         const exists = await findOne(faqModel, { _id: question_id })
-
         if (!exists.status) {
             return showResponse(false, responseMessage.common.not_exist, null, statusCodes.API_ERROR)
         }
@@ -73,8 +65,6 @@ const AdminCommonHandler = {
     },
 
     updateCommonContent: async (data: any): Promise<ApiResponse> => {
-
-        // data.updated_on = moment().unix()
         const response = await findOneAndUpdate(commonContentModel, {}, data);
         if (response.status) {
             return showResponse(true, responseMessage.admin.common_content_updated, response?.data, statusCodes.SUCCESS);

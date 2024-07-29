@@ -13,7 +13,6 @@ const AdminUserHandler = {
     getUserDetails: async (user_id: string): Promise<ApiResponse> => {
 
         const getResponse = await findOne(userModel, { _id: user_id, status: { $ne: USER_STATUS.DELETED } }, { password: 0 });
-
         if (!getResponse.status) {
             return showResponse(false, responseMessage.users.invalid_user, null, statusCodes.API_ERROR)
         }
@@ -76,28 +75,22 @@ const AdminUserHandler = {
     },
 
     updateUserStatus: async (data: any): Promise<ApiResponse> => {
-
         const { user_id, status } = data;
 
         const parsedStatus = Number(status);
         const queryObject = { _id: user_id, user_type: ROLE.USER } //usertype should be USER  = 3
 
         const result = await findOne(userModel, queryObject);
-
         if (!result.status) {
             return showResponse(false, responseMessage.users.invalid_user, null, statusCodes.API_ERROR);
         }
-        const editObj = {
-            status: parsedStatus,
-            // updated_on: moment().unix()
-        }
+        const editObj = { status: parsedStatus }
 
         const response = await findOneAndUpdate(userModel, queryObject, editObj);
         if (response.status) {
             const msg = parsedStatus == 2 ? "Deleted" : parsedStatus == 1 ? "Activated" : "Deactivated"
             return showResponse(true, `User Account Has Been ${msg}`, {}, statusCodes.SUCCESS);
         }
-
         return showResponse(false, "Error While Updating User Status", null, statusCodes.API_ERROR);
 
     },

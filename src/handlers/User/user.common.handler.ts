@@ -8,7 +8,6 @@ import adminContactusModel from '../../models/Admin/admin.contactus.model';
 const UserCommonHandler = {
 
     contactUs: async (data: any): Promise<ApiResponse> => {
-        
         const contactUsRef = new adminContactusModel(data);
 
         const response = await createOne(contactUsRef);

@@ -43,8 +43,8 @@ const AdminContactUsHandler = {
     },
 
     async getContactDetail(data: any): Promise<ApiResponse> {
-
         const { contact_id } = data;
+        
         let response = await findOne(adminContactUsModel, { _id: contact_id, status: { $ne: USER_STATUS.DELETED } }, {});
         if (!response.status) {
             return showResponse(false, responseMessage?.common?.contactUs_not_found, null, statusCodes.API_ERROR);
@@ -66,7 +66,6 @@ const AdminContactUsHandler = {
     },
 
     replyContactus: async (data: any): Promise<ApiResponse> => {
-
         const { contact_id, html } = data;
 
         const exists = await findOne(adminContactUsModel, { _id: contact_id, status: { $ne: USER_STATUS.DELETED } });
@@ -75,7 +74,6 @@ const AdminContactUsHandler = {
         }
 
         const logo = `${APP.BITBUCKET_URL}/${APP.PROJECT_LOGO}`;
-
         const email_payload = { project_name: APP.PROJECT_NAME, user_name: exists?.data?.name, exists, project_logo: logo, reply: html }
         const template = await ejs.renderFile(path.join(process.cwd(), './src/templates', 'contactUs.ejs'), email_payload);
         //send email of attachment to admin
@@ -88,7 +86,6 @@ const AdminContactUsHandler = {
             const userObj = { is_reply: true }
 
             await findByIdAndUpdate(adminContactUsModel, userObj, (exists?.data?._id));
-
             return showResponse(true, 'reply sent successfully', null, statusCodes.SUCCESS);
         }
 

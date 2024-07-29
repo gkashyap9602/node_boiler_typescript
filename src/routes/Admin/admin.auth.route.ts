@@ -5,7 +5,6 @@ import { ApiResponse } from '../../utils/interfaces.util'
 import middlewares from '../../middlewares'
 const { verifyTokenAdmin } = middlewares.auth
 const { multer, busboy } = middlewares.fileUpload
-
 const router = express.Router()
 
 router.post('/login', async (req: Request | any, res: Response) => {
@@ -87,7 +86,6 @@ router.post('/refresh_token', multer.addToMulter.none(), async (req: Request | a
     return showOutput(res, result, result.code)
 
 })
-
 
 router.post('/logout', async (req: Request | any, res: Response) => {
     const userAuthController = new AdminAuthController(req, res)

@@ -29,7 +29,6 @@ export default class UserAuthController extends Controller {
     public async login(@Body() request: { email: string, password: string, os_type: string }): Promise<ApiResponse> {
 
         const validate = validateUser(request);
-
         if (validate.error) {
             return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
@@ -49,7 +48,6 @@ export default class UserAuthController extends Controller {
     //         let body = { login_source, social_auth, email, name, user_type, os_type }
 
     //         const validate = validateSocialLogin(body);
-
     //         if (validate.error) {
     //             return showResponse(false, validate.error.message, null, statusCodes.API_ERROR)
     //         }
@@ -64,11 +62,9 @@ export default class UserAuthController extends Controller {
     */
     @Post("/register")
     public async register(@FormField() first_name: string, @FormField() last_name: string, @FormField() email: string, @FormField() password: string, @FormField() os_type: string, @FormField() phone_number?: string, @FormField() country_code?: string, @UploadedFile() profile_pic?: Express.Multer.File): Promise<ApiResponse> {
-
         const body = { first_name, last_name, email, password, phone_number, country_code, os_type }
 
         const validate = validateRegister(body);
-
         if (validate.error) {
             return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
@@ -84,8 +80,6 @@ export default class UserAuthController extends Controller {
     */
     @Post("/upload_file")
     public async uploadFile(@UploadedFile() file: Express.Multer.File): Promise<ApiResponse> {
-
-
         return handler.uploadFile({ file })
     }
     //ends
@@ -97,7 +91,6 @@ export default class UserAuthController extends Controller {
     public async forgotPassword(@Body() request: { email: string }): Promise<ApiResponse> {
 
         const validate = validateForgotPassword(request);
-
         if (validate.error) {
             return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
@@ -115,7 +108,6 @@ export default class UserAuthController extends Controller {
     public async resetPassword(@Body() request: { email: string, new_password: string }): Promise<ApiResponse> {
 
         const validate = validateResetPassword(request);
-
         if (validate.error) {
             return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
@@ -133,7 +125,6 @@ export default class UserAuthController extends Controller {
     public async verifyOtp(@Body() request: { email: string, otp: string }): Promise<ApiResponse> {
 
         const validate = validateVerifyOtp(request);
-
         if (validate.error) {
             return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
@@ -151,7 +142,6 @@ export default class UserAuthController extends Controller {
     public async resendOtp(@Body() request: { email: string }): Promise<ApiResponse> {
 
         const validate = validateResendOtp(request);
-
         if (validate.error) {
             return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
@@ -167,11 +157,9 @@ export default class UserAuthController extends Controller {
     @Security('Bearer')
     @Post("/change_password")
     public async changePassword(@Body() request: { old_password: string, new_password: string }): Promise<ApiResponse> {
-
         const { old_password, new_password } = request;
 
         const validate = validateChangePassword({ old_password, new_password });
-
         if (validate.error) {
             return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
@@ -200,11 +188,9 @@ export default class UserAuthController extends Controller {
     @Security('Bearer')
     @Put("/profile")
     public async updateUserProfile(@FormField() first_name?: string, @FormField() last_name?: string, @FormField() phone_number?: string, @FormField() country_code?: string, @UploadedFile() profile_pic?: Express.Multer.File): Promise<ApiResponse> {
-
         const body = { first_name, last_name, phone_number, country_code }
 
         const validate = validateUpdateProfile(body);
-
         if (validate.error) {
             return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
@@ -220,11 +206,9 @@ export default class UserAuthController extends Controller {
 */
     @Post("/refresh_token")
     public async refreshToken(@FormField() refresh_token: string): Promise<ApiResponse> {
-
-        let body = { refresh_token }
+        const body = { refresh_token }
 
         const validate = validateRefreshToken(body);
-
         if (validate.error) {
             return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
@@ -240,7 +224,6 @@ export default class UserAuthController extends Controller {
 */
     @Post("/logout")
     public async logoutUser(): Promise<ApiResponse> {
-
         const wrappedFunc = tryCatchWrapper(handler.logoutUser);
         return wrappedFunc(); // Invoking the wrapped function 
 
@@ -257,7 +240,6 @@ export default class UserAuthController extends Controller {
     public async deleteAccount(@Body() request: { user_id: string }): Promise<ApiResponse> {
 
         const validate = validateDeleteOrDeactivation(request);
-
         if (validate.error) {
             return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }

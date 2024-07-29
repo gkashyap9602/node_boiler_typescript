@@ -132,7 +132,6 @@ export default class AdminAuthController extends Controller {
     @Security('Bearer')
     @Post("/change_password")
     public async changePassword(@Body() request: { old_password: string, new_password: string }): Promise<ApiResponse> {
-
         const { old_password, new_password } = request;
 
         const validate = validateChangePassword({ old_password, new_password });
@@ -163,7 +162,6 @@ export default class AdminAuthController extends Controller {
     @Security('Bearer')
     @Put("/profile")
     public async updateAdminProfile(@FormField() first_name?: string, @FormField() last_name?: string, @FormField() phone_number?: string, @FormField() country_code?: string, @FormField() greet_msg?: boolean, @UploadedFile() profile_pic?: Express.Multer.File): Promise<ApiResponse> {
-
         const body = { first_name, last_name, phone_number, country_code, greet_msg }
 
         const validate = validateUpdateProfile(body);
@@ -182,7 +180,7 @@ export default class AdminAuthController extends Controller {
     */
     @Post("/refresh_token")
     public async refreshToken(@FormField() refresh_token: string): Promise<ApiResponse> {
-        let body = { refresh_token }
+        const body = { refresh_token }
 
         const validate = validateRefreshToken(body);
         if (validate.error) {
@@ -199,7 +197,6 @@ export default class AdminAuthController extends Controller {
 */
     @Post("/logout")
     public async logoutUser(): Promise<ApiResponse> {
-
         const wrappedFunc = tryCatchWrapper(handler.logoutUser);
         return wrappedFunc(); // Invoking the wrapped function 
 

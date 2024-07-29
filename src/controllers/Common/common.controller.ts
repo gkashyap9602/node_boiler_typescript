@@ -55,7 +55,6 @@ export default class CommonController extends Controller {
     public async storeParameterToAws(@FormField() name: string, @FormField() value: string): Promise<ApiResponse> {
 
         const validate = validateStoreParmeterToAws({ name, value });
-
         if (validate.error) {
             return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
