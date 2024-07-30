@@ -49,7 +49,8 @@ const UserAuthHandler = {
     },
 
     // social_login: async (data: any) => {
-    //     const { login_source, os_type, social_auth, email, name, user_type, profile_pic } = data;
+    //     const { login_source, social_auth, email, name, user_type, profile_pic } = data;
+    //     const model = ROLE_TYPE[user_type]
 
     //     const matchObj = {
     //         status: { $ne: USER_STATUS.DELETED }, //user not deleted
@@ -68,27 +69,23 @@ const UserAuthHandler = {
     //             },
 
     //         ]
-    //     }
+    //     } //match condition ends 
 
     //     //check user exist or not 
-    //     let findUser = await findOne(userModel, matchObj);
-    //     // console.log(findUser, 'newfindUser')
-
-    //     //if user finds then send response with jwt token
+    //     const findUser = await findOne(model, matchObj);
     //     if (findUser.status) {
     //         //check status of user
-    //         if (findUser.data?.status == 3) {
+    //         if (findUser.data?.status == USER_STATUS.DEACTIVATED) {
     //             return showResponse(false, "Your account has been deactivated contact support!!", null, statusCodes.API_ERROR);
     //         }
 
     //         //update social account array 
-    //         let updateSocialInfo = await UserAuthHandler.update_social_info(findUser, userModel, data)
-
+    //         const updateSocialInfo = await advisorClientSpAuthhandler.update_social_info(findUser, model, data)
     //         if (updateSocialInfo.status) {
-
-    //             const access_token = await generateJwtToken(findUser.data._id, { user_type: 'user', type: "access", role: findUser?.data?.user_type }, APP.ACCESS_EXPIRY)
-
-    //             let userData = { ...findUser?.data, token: access_token }
+    //             const token_payload = { user_type: 'user', type: "access", role: findUser?.data?.user_type }
+    //             const access_token = await generateJwtToken(findUser.data._id, token_payload, APP.ACCESS_EXPIRY)
+    //             const refresh_token = await generateJwtToken(findUser.data._id, token_payload, APP.REFRESH_EXPIRY)
+    //             const userData = { ...findUser?.data, token: access_token, refresh_token }
 
     //             return showResponse(true, `${responseMessage.users.login_success}`, userData, statusCodes.SUCCESS);
     //         }
@@ -107,21 +104,19 @@ const UserAuthHandler = {
     //                 }
     //             ],
     //             email,
-    //             name,
+    //             first_name: name ?? '',
     //             account_source: login_source,
     //             is_verified: false,
     //         };
 
-    //         let userRef = new userModel(newObj)
-    //         //create user with social info
-    //         let result = await createOne(userRef);
-
+    //         const userRef = new model(newObj)
+    //         const result = await createOne(userRef);
     //         if (result.status) {
-
-    //             const access_token = await generateJwtToken(result.data._id, { user_type: 'user', type: "access", role: result?.data?.user_type }, APP.ACCESS_EXPIRY)
-
     //             delete result?.data?.password
-    //             let userData = { ...result?.data, token: access_token }
+    //             const token_payload = { user_type: 'user', type: "access", role: result?.data?.user_type }
+    //             const access_token = await generateJwtToken(result.data._id, token_payload, APP.ACCESS_EXPIRY)
+    //             const refresh_token = await generateJwtToken(result.data._id, token_payload, APP.REFRESH_EXPIRY)
+    //             const userData = { ...result?.data, token: access_token, refresh_token }
 
     //             return showResponse(true, responseMessage.users.login_success, userData, statusCodes.SUCCESS);
 
@@ -131,7 +126,6 @@ const UserAuthHandler = {
 
     //     return showResponse(false, responseMessage.users.login_error, null, statusCodes.API_ERROR);
     // },
-
     update_social_info: async (findUser: any, model: any, data: any) => {
         try {
             const { login_source, os_type, social_auth, email, name } = data
