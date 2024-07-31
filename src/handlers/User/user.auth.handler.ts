@@ -372,11 +372,15 @@ const UserAuthHandler = {
     resetPassword: async (data: any): Promise<ApiResponse> => {
         const { email, new_password } = data;
         const queryObject = { email, status: { $ne: 2 } }
-     
+
         const result = await findOne(userModel, queryObject);
         if (!result.status) {
             return showResponse(false, `${responseMessage.users.invalid_user} or email`, null, statusCodes.API_ERROR);
         }
+        if (!result.data?.is_verified) {
+            return showResponse(false, `Verify Email First`, null, statusCodes.API_ERROR);
+        }
+
         const hashed = await commonHelper.bycrptPasswordHash(new_password)
 
         const updateObj = {
