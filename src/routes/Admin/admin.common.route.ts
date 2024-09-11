@@ -27,7 +27,7 @@ router.put('/question', verifyTokenAdmin, async (req: Request | any, res: Respon
 router.delete('/question', addToMulter.none(), verifyTokenAdmin, async (req: Request | any, res: Response) => {
     const { question_id } = req.body;
     const controller = new AdminCommonController(req, res)
-    const result: ApiResponse = await controller.deleteQuestion( question_id );
+    const result: ApiResponse = await controller.deleteQuestion(question_id);
     return showOutput(res, result, result.code)
 
 })

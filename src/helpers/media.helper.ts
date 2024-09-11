@@ -135,16 +135,16 @@ const exportJsonToExcel = (filteredData: any) => {
 const getAudioMetadata = (mediaBuffer: any, mediaFileObj: any) => {
     const mimeType = mediaFileObj?.mimeType || 'audio/mpeg'; // Default to MPEG audio if mimeType is not provided
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         mm.parseBuffer(mediaBuffer, mimeType)
             .then(metadata => {
                 // console.log(metadata, "metadataaaAudio");
                 const durationInSeconds = metadata.format.duration || 0;
                 const formattedDuration = commonHelper.formatDuration(durationInSeconds);
 
-                let song_title = metadata?.common?.title
+                const song_title = metadata?.common?.title
 
-                let musicMetadata = { duration: formattedDuration, title: song_title }
+                const musicMetadata = { duration: formattedDuration, title: song_title }
 
                 resolve(showResponse(true, `Duration: ${durationInSeconds} seconds`, musicMetadata, 200));
 

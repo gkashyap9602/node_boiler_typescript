@@ -1,12 +1,12 @@
 import Stripe from 'stripe';
 import { STRIPE_CREDENTIAL } from "../constants/app.constant";
 import { showResponse } from "../utils/response.util";
+import { generateTenDigitNumber } from './common.helper';
 
 
 const initialiseStripe = async () => {
     try {
         const STRIPE_SEC_KEY = await STRIPE_CREDENTIAL.STRIPE_SEC_KEY
-        console.log(STRIPE_CREDENTIAL.STRIPE_VERSION, "version stripe")
         const stripeInit = new Stripe(STRIPE_SEC_KEY, {
             // @ts-ignore
             apiVersion: STRIPE_CREDENTIAL.STRIPE_VERSION,
@@ -15,7 +15,6 @@ const initialiseStripe = async () => {
 
         return stripeInit
     } catch (error) {
-
         console.log(error, "eroorrr Stripe")
     }
 
@@ -23,10 +22,9 @@ const initialiseStripe = async () => {
 
 const createPaymentIntent = async (user_data: any, metadata: any, amount: number) => {
 
-    console.log(amount, "amountll")
     const paymentIntent: any = {
         currency: 'usd',
-        customer: user_data?.stripe_acc_id,
+        customer: user_data?.stripe_cus_id,
         amount: amount,
         automatic_payment_methods: {
             enabled: true
@@ -36,7 +34,6 @@ const createPaymentIntent = async (user_data: any, metadata: any, amount: number
     const stripe: any = await initialiseStripe()
 
     const stripePiResponse = await stripe.paymentIntents.create(paymentIntent);
-
     if (stripePiResponse) {
         return showResponse(true, 'Request success', stripePiResponse, 200);
     }
@@ -60,7 +57,7 @@ const createCustomerId = async (email: string) => {
 
 const getCustomerDetails = async (data: any) => {
     try {
-        let { stripe_customer_id, default_payment_source = false } = data
+        const { stripe_customer_id, default_payment_source = false } = data
 
         const stripe: any = await initialiseStripe()
         const customer = await stripe.customers.retrieve(stripe_customer_id);
@@ -81,7 +78,6 @@ const getCustomerDetails = async (data: any) => {
 
     } catch (error: any) {
         // Handle errors
-        console.error('stripe customer get Request failed!:', error);
         const errorMessage = error.raw ? error.raw.message : error.message;
         return showResponse(false, errorMessage, null, 400);
 
@@ -100,7 +96,6 @@ const getPaymentIntent = async (paymentIntentId: string) => {
 
     } catch (error: any) {
         // Handle errors
-        console.error('Error retrieving PaymentIntent:', error);
         const errorMessage = error.raw ? error.raw.message : error.message;
         return showResponse(false, errorMessage, null, 400);
 
@@ -110,8 +105,7 @@ const getPaymentIntent = async (paymentIntentId: string) => {
 const stripePaymentRefund = async (transferId: string, refundAmountInCents: any, appointmentId: any) => {
     const stripe: any = await initialiseStripe()
 
-    console.log(refundAmountInCents, "refundAmountInCents")
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         stripe.refunds.create({
             amount: refundAmountInCents, // already in cents
             charge: transferId,
@@ -149,7 +143,6 @@ const getSubscriptionList = async () => {
 
     } catch (error: any) {
         // Handle errors
-        console.error('Error retrieving Subscription List:', error);
         const errorMessage = error.raw ? error.raw.message : error.message;
         return showResponse(false, errorMessage, null, 400);
 
@@ -166,12 +159,10 @@ const getProductList = async (limit = 10) => {
 
         if (subscriptionList) {
 
-            let listPayload = await Promise.all(subscriptionList?.data?.map(async (val: any) => {
-                // console.log(val, "valvalval");
-                let price_value = await getPriceValue(val?.default_price);
-                // console.log(price_value, "price_value");
+            const listPayload = await Promise.all(subscriptionList?.data?.map(async (val: any) => {
+                const price_value = await getPriceValue(val?.default_price);
 
-                let obj = { ...val, price_value: price_value?.data }; // Assuming price_value is an array, use price_value[0].data if you want the first element
+                const obj = { ...val, price_value: price_value?.data }; // Assuming price_value is an array, use price_value[0].data if you want the first element
                 return obj;
             }))
 
@@ -188,7 +179,6 @@ const getProductList = async (limit = 10) => {
 
     } catch (error: any) {
         // Handle errors
-        console.error('Error retrieving Subscription List:', error);
         const errorMessage = error.raw ? error.raw.message : error.message;
         return showResponse(false, errorMessage, null, 400);
 
@@ -203,7 +193,7 @@ const getSubscriptionProductDetails = async (product_id: string) => {
         const subscriptionProduct = await stripe.products.retrieve(product_id)
         if (subscriptionProduct) {
 
-            let priceValueData = await getPriceValue(subscriptionProduct?.default_price);
+            const priceValueData = await getPriceValue(subscriptionProduct?.default_price);
             const productData = { ...subscriptionProduct, price_value: priceValueData?.data }
 
             return showResponse(true, 'Product Details Found ', productData, 200);
@@ -213,7 +203,6 @@ const getSubscriptionProductDetails = async (product_id: string) => {
 
     } catch (error: any) {
         // Handle errors
-        console.error('Error retrieving Product Details:', error);
         const errorMessage = error.raw ? error.raw.message : error.message;
         return showResponse(false, errorMessage, 'Product DetailsRequest failed!!', 400);
 
@@ -225,7 +214,7 @@ const purchaseSubscriptionStripe = async (stripe_customer_id: string, price_id: 
     try {
         const stripe: any = await initialiseStripe()
 
-        let subscription_options: any = {
+        const subscription_options: any = {
             customer: stripe_customer_id,
             items: [{ price: price_id }],
             metadata: metadata,
@@ -240,8 +229,6 @@ const purchaseSubscriptionStripe = async (stripe_customer_id: string, price_id: 
             if (!customer.status) {
                 return showResponse(false, customer?.message, customer?.data, 400);
             }
-            console.log(customer, "customer");
-
 
             //add default payment method card to pay if default card is set 
             subscription_options.payment_settings = { payment_method_types: ['card'] }
@@ -255,8 +242,6 @@ const purchaseSubscriptionStripe = async (stripe_customer_id: string, price_id: 
         }
 
         const subscription = await stripe.subscriptions.create(subscription_options);
-        console.log(subscription, "subscription");
-
         if (subscription) {
             return showResponse(true, 'Subscription Created Successfully', subscription, 200);
         }
@@ -264,7 +249,6 @@ const purchaseSubscriptionStripe = async (stripe_customer_id: string, price_id: 
 
     } catch (error: any) {
         // Handle errors
-        console.error('Error retrieving Subscription Creation:', error);
         const errorMessage = error.raw ? error.raw.message : error.message;
         return showResponse(false, errorMessage, null, 400);
 
@@ -278,7 +262,7 @@ const getPriceValue = async (price_id: string) => {
         const getPrice = await stripe.prices.retrieve(price_id)
         if (getPrice) {
             // Extract the numeric value
-            let amount = getPrice.unit_amount_decimal / 100  // Divide by 100 to convert from cents to dollars
+            const amount = getPrice.unit_amount_decimal / 100  // Divide by 100 to convert from cents to dollars
             return showResponse(true, 'Price is', amount, 200);
 
         }
@@ -286,7 +270,6 @@ const getPriceValue = async (price_id: string) => {
 
     } catch (error: any) {
         // Handle errors
-        console.error('Error retrieving Price:', error);
         const errorMessage = error.raw ? error.raw.message : error.message;
         return showResponse(false, errorMessage, null, 400);
 
@@ -305,7 +288,7 @@ const saveCardStripe = async (customer_id: string, token_id: string) => {
 
     } catch (error: any) {
         // Handle errors
-        console.error('Error Card Saved :', error);
+        // console.error('Error Card Saved :', error);
         const errorMessage = error.raw ? error.raw.message : error.message;
         return showResponse(false, errorMessage, 'Card Saved Request failed!!', 400);
 
@@ -318,7 +301,6 @@ const getSavedResourceList = async (customer_id: string) => {
         const stripe: any = await initialiseStripe()
 
         const cardList = await stripe.customers.listSources(customer_id, { object: 'card' });
-        console.log(cardList, "cardList")
         if (cardList) {
             return showResponse(true, 'Card List Fetched Successfully', cardList?.data, 200);
         }
@@ -338,8 +320,6 @@ const cancelUserSubscription = async (subscription_id: string) => {
         const stripe: any = await initialiseStripe()
 
         const subscriptionCancel = await stripe.subscriptions.cancel(subscription_id);
-        console.log(subscriptionCancel?.status, "subscriptionCancel->canceled")
-
         if (subscriptionCancel) {
             return showResponse(true, 'Subscription Cancel Successfully', subscriptionCancel, 200);
         }
@@ -416,18 +396,12 @@ const getCustomerCardDetails = async (customer_id: string, token_id: string) => 
 const checkDuplicateCardStripe = async (customer_id: string, token_id: string) => {
     try {
         const cardData = await getCardTokenDetails(token_id)
-        // console.log(cardData, "token");
-
         const cardFingerPrint = cardData?.data?.card?.fingerprint
-        // console.log(cardFingerPrint, "cardDataa");
         const cardList = await getSavedResourceList(customer_id)
-        // console.log(cardList, "cardList");
 
         if (cardList?.data?.length > 0) {
             const cardsDataList = cardList?.data
             const isDuplicate = cardsDataList.some((card: any) => card.fingerprint === cardFingerPrint)
-            // console.log(isDuplicate, "isDuplicate");
-
             if (isDuplicate) {
                 return showResponse(true, 'Card is already added', null, 200);
             }
@@ -445,15 +419,12 @@ const checkDuplicateCardStripe = async (customer_id: string, token_id: string) =
 const createProductPackage = async (payload: any) => { //interval is like month year package
     try {
         //set default interval to year if interval not provided
-        let { package_name, description, metadata = {}, price, interval = 'year' } = payload
-        price = Math.round(price * 100)
-
-        console.log(interval, "intervalSide")
-
+        const { package_name, description, metadata = {}, interval = 'year' } = payload
+        const price = Math.round(payload?.price * 100)
         const stripe: any = await initialiseStripe();
 
         // Create the product
-        let productPayload = {
+        const productPayload = {
             name: package_name,
             description,
             metadata: metadata,
@@ -467,8 +438,6 @@ const createProductPackage = async (payload: any) => { //interval is like month 
         };
 
         const product = await stripe.products.create(productPayload);
-        // console.log(product, "productt")
-
         if (product) {
             return showResponse(true, 'Product and Price Created Successfully', product, 200);
         }
@@ -487,18 +456,18 @@ const updateProductPackage = async (payload: any) => { //interval is like month 
     try {
         //product is by default set to true if payload not provide to false means inactivate/archive the product 
         //interval year by default if interval is not provided
-        let { product_id, package_name, description, metadata, price, interval = 'year', active = true } = payload
-
+        const { product_id, package_name, description, metadata, interval = 'year', active = true } = payload
+        let price = payload?.price
         const stripe: any = await initialiseStripe();
 
-        let productUpdatePayload: any = { active }
+        const productUpdatePayload: any = { active }
         let default_price: any
 
         //if price yet to be chnage than create price and update product
         if (price) {
             price = Math.round(price * 100)
 
-            let pricePayload: any = {
+            const pricePayload: any = {
                 product: product_id,
                 unit_amount: price,
                 currency: 'usd',
@@ -511,8 +480,6 @@ const updateProductPackage = async (payload: any) => { //interval is like month 
             }
 
             const newPriceObj = await stripe.prices.create(pricePayload);
-            console.log(newPriceObj, "newPriceObj");
-
             if (newPriceObj) {
                 default_price = newPriceObj?.id
             }
@@ -534,9 +501,7 @@ const updateProductPackage = async (payload: any) => { //interval is like month 
             productUpdatePayload.metadata = metadata
         }
 
-        console.log(productUpdatePayload, "productUpdatePayload")
         const productUpdate = await stripe.products.update(product_id, productUpdatePayload);
-        // console.log(product, "productt")
         if (productUpdate) {
             return showResponse(true, 'Product Updated Successfully', productUpdate, 200);
         }
@@ -556,7 +521,6 @@ const deleteProductPackage = async (product_id: string) => { //interval is like 
         const stripe: any = await initialiseStripe();
 
         const productDelete = await stripe.products.del(product_id);
-        // console.log(product, "productt")
         if (productDelete && productDelete?.deleted) {
             return showResponse(true, 'Product Deleted Successfully', productDelete, 200);
         }
@@ -577,8 +541,6 @@ const activeOrInactiveProductPrice = async (price_id: string, price_status: bool
         const stripe: any = await initialiseStripe();
 
         const priceUpdate = await stripe.prices.update(price_id, { lookup_key: 'MY_LOOKUP_KEY', active: price_status, });
-        console.log(priceUpdate, "priceUpdate")
-
         if (priceUpdate) {
             return showResponse(true, 'Product Price Update Successfully', priceUpdate, 200);
         }
@@ -593,28 +555,207 @@ const activeOrInactiveProductPrice = async (price_id: string, price_status: bool
     }
 };
 
+//----------connect stripe---------------------
+const createPayout = async (data: any, currency = 'usd') => {
+    try {
+        const { amount, cardId } = data
+        const stripe: any = await initialiseStripe()
+        const payout = await stripe.payouts.create({
+            amount: amount * 100, // Amount in cents
+            currency: currency,
+            method: 'instant',
+            destination: cardId,
+        });
+        // return payout;
+        return showResponse(true, 'payout create Successfully', payout, 200);
+    } catch (error: any) {
+        console.error('Error creating payout:', error);
+        const errorMessage = error.raw ? error.raw.message : error.message;
+        return showResponse(false, errorMessage, null, 400);
+    }
+}
+
+
+const getCustomer = async (customerId: string) => {
+    try {
+        const stripe: any = await initialiseStripe()
+        const customer = await stripe.customers.retrieve(customerId);
+
+        return showResponse(true, 'customer Details Fetch Successfully', customer, 200);
+
+        // return customer;
+    } catch (error: any) {
+        console.error('Error retrieving customer:', error);
+        const errorMessage = error.raw ? error.raw.message : error.message;
+        return showResponse(false, errorMessage, null, 400);
+    }
+}
+const createStripeConnectedAccount = async (email: string) => {
+    try {
+        const stripe: any = await initialiseStripe(); // Initialise Stripe instance
+
+        // Create Stripe account parameters
+        const accountParams = {
+            type: 'express',
+            country: 'US',
+            email: email,
+            business_type: 'individual',
+            capabilities: {
+                card_payments: { requested: true },
+                transfers: { requested: true }
+            }
+        };
+
+        // Create the Stripe account
+        const account = await stripe.accounts.create(accountParams);
+        // Create account link for onboarding
+        const accountLink = await stripe.accountLinks.create({
+            account: account.id,
+            refresh_url: 'https://dev.galileotax.com/setup',
+            return_url: "https://dev.galileotax.com/setup",
+            type: 'account_onboarding'
+        });
+        // Return the created account object
+        if (!account) {
+            return showResponse(false, 'account Creation failed', null, 400);
+        }
+        return showResponse(true, 'account Created Successfully', { account, accountLink }, 200);
+
+
+    } catch (error: any) {
+        console.error('Error creating Stripe account:', error);
+        const errorMessage = error.raw ? error.raw.message : error.message;
+        return showResponse(false, errorMessage, null, 400);
+    }
+};
+
+const reteriveStripeConnectedAccount = async (account_id: string) => {
+    try {
+
+        const stripe: any = await initialiseStripe()
+        const account = await stripe.accounts.retrieve(account_id);
+        if (account) {
+            return showResponse(true, 'account Details Fetch Successfully', account, 200);
+        }
+        return showResponse(false, 'account Details Fetch failed', null, 400);
+    } catch (error: any) {
+        console.error('Error creating Stripe account:', error);
+        const errorMessage = error.raw ? error.raw.message : error.message;
+        return showResponse(false, errorMessage, null, 400);
+    }
+}
+
+
+const transferMoney = async (amount: number, account_id: string,) => {
+    try {
+        const transfer_id = generateTenDigitNumber();
+        const transferObj = {
+            amount: amount * 100, // Amount in cents
+            currency: 'usd',
+            destination: account_id, // Connected account ID
+            transfer_group: transfer_id // Transfer group ID unique
+        }
+        const stripe: any = await initialiseStripe(); // Initialise Stripe instance
+        const transferData = await stripe.transfers.create(transferObj);
+        if (transferData?.transfer_group === transfer_id) {
+            return showResponse(true, 'Transfer Successful', transferData, 200);
+        }
+        return showResponse(false, 'Transfer failed', null, 400);
+    } catch (error: any) {
+        console.error('Error transferring money:', error);
+        const errorMessage = error.raw ? error.raw.message : error.message;
+        return showResponse(false, errorMessage, null, 400);
+
+    }
+}
+
+const tranferList = async (limit: number = 10) => {
+    try {
+        const stripe: any = await initialiseStripe()
+        const trnasferList = await stripe.transfers.list({
+            limit: limit
+        });
+        if (trnasferList) {
+            return showResponse(true, 'Tranfer List  is', trnasferList, 200);
+        }
+        return showResponse(false, 'Request failed!!', null, 400);
+    } catch (error: any) {
+        console.error('Error Listsing tranfered money:', error);
+        const errorMessage = error.raw ? error.raw.message : error.message;
+        return showResponse(false, errorMessage, null, 400);
+
+    }
+}
+
+const connectExternalAccount = async (account_id: string, token_id: string) => {
+    const stripe: any = await initialiseStripe()
+
+    const externalAccountData = await stripe.accounts.createExternalAccount(account_id, { external_account: token_id });
+    if (externalAccountData) {
+        return showResponse(true, 'External Account Connected Successfully', externalAccountData, 200); // return account id starts with 'ba_
+    }
+    return showResponse(false, 'External Account Connection failed', null, 400);
+}
+
+const reteriveExternalAccount = async (account_id: string, external_account_id: string) => {
+    const stripe: any = await initialiseStripe()
+
+    const externalAccountData = await stripe.accounts.retrieveExternalAccount(account_id, external_account_id);
+    if (externalAccountData) {
+        return showResponse(true, 'External Account Details Fetched Successfully', externalAccountData, 200);
+    }
+    return showResponse(false, 'External Account Details Fetch failed', null, 400);
+}
+
+const deleteExternalAccount = async (account_id: string, external_account_id: string) => {
+
+    const stripe: any = await initialiseStripe()
+    const deleteAcc = await stripe.accounts.deleteExternalAccount(account_id, external_account_id);
+    if (deleteAcc?.deleted) {
+        return showResponse(true, 'External Account Deleted Successfully', null, 200);
+    }
+    return showResponse(false, 'External Account Deletion failed', null, 400);
+}
+
+
 
 export {
+    //common functions
     initialiseStripe,
     createPaymentIntent,
     stripePaymentRefund,
     getPaymentIntent,
     createCustomerId,
-    getSubscriptionList,
-    getProductList,
-    purchaseSubscriptionStripe,
     getPriceValue,
     getCustomerDetails,
+
+    //Card Or Resource Functions
     saveCardStripe,
     deleteCardStripe,
-    getSavedResourceList,
+    getSavedResourceList,//card list 
     getCardTokenDetails,
     checkDuplicateCardStripe,
     getCustomerCardDetails,
+    //subscription or Product  Functions
+    getSubscriptionList,
+    getProductList,
+    purchaseSubscriptionStripe,
     createProductPackage,
     updateProductPackage,
     getSubscriptionProductDetails,
     deleteProductPackage,
     cancelUserSubscription,
-    activeOrInactiveProductPrice
+    activeOrInactiveProductPrice,
+    //connect stripe Functions
+    createPayout,
+    getCustomer,
+    createStripeConnectedAccount,
+    //transfer fund Functions
+    transferMoney,
+    tranferList,
+    //connect external account Functions
+    connectExternalAccount,
+    reteriveExternalAccount,
+    deleteExternalAccount,
+    reteriveStripeConnectedAccount
 }

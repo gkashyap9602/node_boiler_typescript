@@ -1,5 +1,5 @@
 import rateLimit from 'express-rate-limit'
-import { APP, REDIS_CREDENTIAL } from '../constants/app.constant'
+import { APP } from '../constants/app.constant'
 import { showResponse } from './response.util';
 import statusCodes from '../constants/statusCodes'
 import { NextFunction, Response, Request } from 'express';

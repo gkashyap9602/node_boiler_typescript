@@ -20,18 +20,18 @@ const initizalizeMediaQueue = (filesObj: any, index: number, buffer: any, QueryD
 
     //starts the queue process
     MediaQueue.process(async (job: any, done: any) => {
-        let mediaFiles = job?.data //single media in file object
+        const mediaFiles = job?.data //single media in file object
 
         //upload media to s3  one by one 
         services.awsService.uploadQueueMediaToS3([mediaFiles]).then(async (uploaded_file_url: any) => {
-            let addObj = {
+            const addObj = {
                 media_type,
                 url: uploaded_file_url[0]
             };
 
-            let ref = new galleryModel(addObj)
+            const ref = new galleryModel(addObj)
 
-            let saveMedia = await createOne(ref)
+            const saveMedia = await createOne(ref)
             // console.log(saveMedia, "saveMediaa")
             if (!saveMedia.status) {
                 console.log('Error While Save Media in Database')

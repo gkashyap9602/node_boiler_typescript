@@ -13,12 +13,12 @@ import services from "../../services";
 const AdminContactUsHandler = {
     async listContactDetails(sort_column: string = 'createdAt', sort_direction: string = 'desc', page = null, limit = null, search_key: string = ''): Promise<ApiResponse> {
 
-        let matchObj: any = {
+        const matchObj: any = {
             status: { $ne: USER_STATUS.DELETED },
             name: { $regex: search_key, $options: 'i' }
         }
 
-        let aggregate = [
+        const aggregate = [
             {
                 $match: {
                     ...matchObj
@@ -36,8 +36,8 @@ const AdminContactUsHandler = {
 
         ];
 
-        let { totalCount, aggregation } = await getCountAndPagination(adminContactUsModel, aggregate, page, limit);
-        let result = await adminContactUsModel.aggregate(aggregation)
+        const { totalCount, aggregation } = await getCountAndPagination(adminContactUsModel, aggregate, page, limit);
+        const result = await adminContactUsModel.aggregate(aggregation)
         return showResponse(true, responseMessage?.common.data_retreive_sucess, { result, totalCount }, statusCodes.SUCCESS);
 
     },
@@ -45,10 +45,11 @@ const AdminContactUsHandler = {
     async getContactDetail(data: any): Promise<ApiResponse> {
         const { contact_id } = data;
         
-        let response = await findOne(adminContactUsModel, { _id: contact_id, status: { $ne: USER_STATUS.DELETED } }, {});
+        const response = await findOne(adminContactUsModel, { _id: contact_id, status: { $ne: USER_STATUS.DELETED } }, {});
         if (!response.status) {
             return showResponse(false, responseMessage?.common?.contactUs_not_found, null, statusCodes.API_ERROR);
         }
+
         return showResponse(true, responseMessage?.common?.contactUs_detail, response.data, statusCodes.SUCCESS);
 
     },

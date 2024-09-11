@@ -84,6 +84,7 @@ const AdminUserHandler = {
         if (!result.status) {
             return showResponse(false, responseMessage.users.invalid_user, null, statusCodes.API_ERROR);
         }
+        
         const editObj = { status: parsedStatus }
 
         const response = await findOneAndUpdate(userModel, queryObject, editObj);
@@ -91,6 +92,7 @@ const AdminUserHandler = {
             const msg = parsedStatus == 2 ? "Deleted" : parsedStatus == 1 ? "Activated" : "Deactivated"
             return showResponse(true, `User Account Has Been ${msg}`, {}, statusCodes.SUCCESS);
         }
+
         return showResponse(false, "Error While Updating User Status", null, statusCodes.API_ERROR);
 
     },

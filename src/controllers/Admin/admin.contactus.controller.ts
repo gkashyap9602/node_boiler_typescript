@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Route, Controller, Tags, Post, Body, Get, Security, Query, Put, FormField, UploadedFile, Delete } from 'tsoa';
+import { Route, Controller, Tags, Post, Body, Get, Security, Query, Delete } from 'tsoa';
 import { ApiResponse } from '../../utils/interfaces.util';
 import { validateGetContactDetail, validateDeleteContactUs, validateListContactDetails, validateReplyContactUs } from '../../validations/Admin/admin.contactus.validator';
 import handlers from '../../handlers/Admin/admin.contactus.handler';

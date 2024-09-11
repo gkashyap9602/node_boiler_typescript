@@ -2,9 +2,8 @@ import { findOne, createOne } from '../helpers/db.helpers';
 import adminModel from '../models/Admin/admin.auth.model';
 import commonContentModel from '../models/Admin/commonContent.model';
 import * as commonHelper from '../helpers/common.helper';
-import moment from 'moment';
-import { APP, AWS_CREDENTIAL } from '../constants/app.constant'
-import services from '../services';
+import { APP } from '../constants/app.constant'
+// import services from '../services';
 
 
 type CallbackFunction = () => void; // Define the type of the callback function

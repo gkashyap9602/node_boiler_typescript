@@ -44,6 +44,12 @@ const formatDuration = (durationInSeconds: number) => { //in number not string
     return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 };
 
+
+const generateTenDigitNumber = () => {
+    return crypto.randomInt(1000000000, 9999999999);
+}
+
+
 const generateRandomOtp = (len: number) => {
     const digits = '0123456789';
     let OTP = '';
@@ -272,7 +278,7 @@ function generateSlotsForDay(availability: any) { //availability array
 
         const generatedSlots = [];
 
-        let currentSlotStart = startDateTime.clone();
+        const currentSlotStart = startDateTime.clone();
         while (currentSlotStart.isBefore(endDateTime)) {
             const currentSlotEnd = currentSlotStart.clone().add(slotDuration);
             generatedSlots.push({
@@ -322,6 +328,72 @@ const validateMongoIdsInArrayForJoi = (value: any, helpers: any) => {
     return value;
 };
 
+function generateUniquePassword() {
+    // Generate an alphanumeric part (e.g., using random characters)
+    const alphanumericPart = generateRandomAlphanumeric(6);
+
+    return alphanumericPart;
+}
+
+function cleanCurrency(value: string | number): number {
+    if (typeof value === 'string') {
+        // Remove any dollar signs, commas, and whitespace, then convert to number
+        const cleanedValue = value.replace(/[$,]/g, '').trim();
+        return Number(cleanedValue);
+    } else if (typeof value === 'number') {
+        // If the value is already a number, return it as is
+        return value;
+    } else {
+        // If the value is neither a string nor a number, return 0 (or handle as you prefer)
+        return 0;
+    }
+}
+
+// Function to check if each row has all required fields
+const checkRequiredFields = (requiredHeadings: Array<string>, dynamicHeadings: Array<string>, rowsData: any) => {
+
+    const missingHeadings: any = []
+
+    const allRowsHaveRequiredHeadings = rowsData.every((row: any, rowIndex: number) => {
+        const missing: any = [];
+
+        // Check base required headings
+        requiredHeadings.forEach((heading: any) => {
+            if (!(heading in row)) {
+                missing.push(heading);
+            }
+        });
+
+        // Check dynamic headings for hourly rentals (1 to 5)
+        for (let i = 1; i <= 5; i++) {
+            dynamicHeadings.forEach((dynamicHeading: any) => {
+                const headingName = `${dynamicHeading} ${i}`;
+                if (!(headingName in row)) {
+                    missing.push(headingName);
+                }
+            });
+        }
+
+        // If there are missing headings, add them to missingHeadings array with the row index
+        if (missing.length > 0) {
+            missingHeadings.push({ rowIndex: rowIndex + 1, missing });
+            return false;
+        }
+
+        return true;
+    });
+
+    return { status: allRowsHaveRequiredHeadings, missingHeadings };
+};
+
+
+const formatDateTOMonthDayYear = (unixTimestamp: number): string => {
+    const date = new Date(unixTimestamp * 1000); // Convert Unix timestamp to milliseconds
+    const month = ('0' + (date.getMonth() + 1)).slice(-2); // Months are zero-based
+    const day = ('0' + date.getDate()).slice(-2);
+    const year = date.getFullYear();
+    return `${month}-${day}-${year}`;
+}
 
 export {
     bycrptPasswordHash,
@@ -344,5 +416,11 @@ export {
     formatDuration,
     generateSlotsForDay,
     validateMongoIdsInArrayForJoi,
-    generateOtp
+    generateOtp,
+    generateUniquePassword,
+    checkRequiredFields,
+    cleanCurrency,
+    generateTenDigitNumber,
+    generateRandomAlphanumeric,
+    formatDateTOMonthDayYear
 }

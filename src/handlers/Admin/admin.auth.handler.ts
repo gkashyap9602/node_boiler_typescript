@@ -252,7 +252,7 @@ const AdminAuthHandler = {
     async refreshToken(data: any): Promise<ApiResponse> {
         const { refresh_token } = data
 
-        let response: any = await decodeToken(refresh_token)
+        const response: any = await decodeToken(refresh_token)
         if (!response.status) {
             return showResponse(false, responseMessage?.middleware?.token_expired, null, statusCodes.REFRESH_TOKEN_ERROR);
         }

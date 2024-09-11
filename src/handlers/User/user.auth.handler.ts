@@ -128,7 +128,7 @@ const UserAuthHandler = {
     // },
     update_social_info: async (findUser: any, model: any, data: any) => {
         try {
-            const { login_source, os_type, social_auth, email, name } = data
+            const { login_source, social_auth, email, name } = data
 
             const editObj: any = {
                 updated_on: moment().unix(),
@@ -522,8 +522,6 @@ const UserAuthHandler = {
         const { refresh_token } = data
 
         const response: any = await decodeToken(refresh_token)
-        // console.log(response, "responseresponse")
-
         if (!response.status) {
             return showResponse(false, responseMessage?.middleware?.token_expired, null, statusCodes.REFRESH_TOKEN_ERROR);
         }
@@ -543,18 +541,20 @@ const UserAuthHandler = {
         }
 
         const accessToken = await generateJwtToken(findUser.data._id, { user_type: 'user', type: "access", role: findUser?.data?.user_type }, APP.ACCESS_EXPIRY)
-        const refreshToken = await generateJwtToken(findUser.data._id, { user_type: 'user', type: "access", role: findUser?.data?.user_type }, APP.REFRESH_EXPIRY)
+        // const refreshToken = await generateJwtToken(findUser.data._id, { user_type: 'user', type: "access", role: findUser?.data?.user_type }, APP.REFRESH_EXPIRY)
 
-        return showResponse(true, 'token generated successfully', { token: accessToken, refresh_token: refreshToken }, statusCodes.SUCCESS)
+        return showResponse(true, 'token generated successfully', { token: accessToken }, statusCodes.SUCCESS)
 
     },
+
     async logoutUser(): Promise<ApiResponse> {
         return showResponse(true, responseMessage.users.logout_success, null, statusCodes.SUCCESS)
 
     },
+
     async deleteAccount(data: any): Promise<ApiResponse> {
         const { user_id } = data
-        let status = USER_STATUS.DELETED
+        const status = USER_STATUS.DELETED
         const result = await findByIdAndUpdate(userModel, { status }, user_id);
 
         if (result.status) {

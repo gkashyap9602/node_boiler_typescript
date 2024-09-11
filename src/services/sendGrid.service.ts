@@ -1,4 +1,3 @@
-import nodemailer from 'nodemailer'
 import { showResponse } from "../utils/response.util";
 import { ApiResponse } from "../utils/interfaces.util";
 import { EMAIL_CREDENTIAL } from "../constants/app.constant";
@@ -26,7 +25,7 @@ const sendgridMail = async (to: string, subject: string, body: any, attachments:
                 // attachments
             }
             
-            sgMail.send(mailOptions).then((response) => {
+            sgMail.send(mailOptions).then(() => {
 
                 return resolve(showResponse(true, 'Email Sent Successfully', null, statusCodes.SUCCESS));
             }).catch((error: any) => {

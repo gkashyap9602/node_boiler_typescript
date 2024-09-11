@@ -3,7 +3,7 @@ import AdminController from '../../controllers/Admin/admin.contactus.controller'
 import { showOutput } from '../../utils/response.util';
 import { ApiResponse } from '../../utils/interfaces.util';
 import middlewares from '../../middlewares';
-let { verifyTokenAdmin } = middlewares.auth;
+const { verifyTokenAdmin } = middlewares.auth;
 
 const router = express.Router();
 

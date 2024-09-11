@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
-import { Route, Controller, Tags, Post, Body, Get, Security, Put, FormField, UploadedFile, UploadedFiles } from 'tsoa'
+import { Route, Controller, Tags, Post, Body, Get, Security, Put, FormField, UploadedFile } from 'tsoa'
 import { ApiResponse } from '../../utils/interfaces.util';
-import { validateChangePassword, validateForgotPassword, validateFileUpload, validateUpdateProfile, validateResetPassword, validateAdminLogin, validateResendOtp, validateVerifyOtp } from '../../validations/Admin/admin.auth.validator';
+import { validateChangePassword, validateForgotPassword, validateUpdateProfile, validateResetPassword, validateAdminLogin, validateResendOtp, validateVerifyOtp } from '../../validations/Admin/admin.auth.validator';
 import handler from '../../handlers/Admin/admin.auth.handler'
 import { showResponse } from '../../utils/response.util';
 import statusCodes from '../../constants/statusCodes'

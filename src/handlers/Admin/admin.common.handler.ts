@@ -1,4 +1,3 @@
-import moment from 'moment';
 import { ApiResponse } from "../../utils/interfaces.util";
 import { showResponse } from "../../utils/response.util";
 import { findOne, createOne, findByIdAndUpdate, findOneAndUpdate, findByIdAndRemove } from "../../helpers/db.helpers";
@@ -66,9 +65,11 @@ const AdminCommonHandler = {
 
     updateCommonContent: async (data: any): Promise<ApiResponse> => {
         const response = await findOneAndUpdate(commonContentModel, {}, data);
+
         if (response.status) {
             return showResponse(true, responseMessage.admin.common_content_updated, response?.data, statusCodes.SUCCESS);
         }
+
         return showResponse(false, responseMessage.common.update_failed, {}, statusCodes.API_ERROR)
     },
 

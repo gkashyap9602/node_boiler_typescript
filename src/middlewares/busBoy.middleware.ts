@@ -6,7 +6,7 @@ import fs from 'fs'
 const busboyMultipleMedia = (req: Request) => {
     return new Promise(async (resolve, reject) => {
         try {
-            let busboy = Busboy({ headers: req.headers });
+            const busboy = Busboy({ headers: req.headers });
             const files: any = []
             const fields: any = {};
 
@@ -84,7 +84,7 @@ const busboyMultipleMedia = (req: Request) => {
 const addToBusboy = async (req: Request, res: Response, next: NextFunction) => {
     try {
         console.log("under busboy middleware")
-        let response: any = await busboyMultipleMedia(req);
+        const response: any = await busboyMultipleMedia(req);
         console.log(response?.files.lenght, "lenghtresponse files")
         req.files = response?.files
         req.body = { ...response?.fields, uploading: true }
