@@ -526,7 +526,7 @@ const UserAuthHandler = {
             return showResponse(false, responseMessage?.middleware?.token_expired, null, statusCodes.REFRESH_TOKEN_ERROR);
         }
 
-        let user_id = response?.data?.id
+        const user_id = response?.data?.id
 
         const findUser = await findOne(userModel, { _id: user_id });
         if (!findUser.status) {

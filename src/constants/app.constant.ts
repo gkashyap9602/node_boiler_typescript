@@ -15,7 +15,7 @@ if (envConfig.error) {
 const ENV_PARMAS = getEnvironmentParams(process.env.ENV_MODE, 'BOILERPLATE', 'BP')
 console.log(ENV_PARMAS, "Parms For Aws Parameter store")
 
-const { ADMIN_EMAIL, ACCESSID, REGION, DB_URI, BUCKET, SMTP_APP_PASSWORD, STRIPE_SEC_KEY, STRIPE_PB_KEY, STMP_EMAIL } = ENV_PARMAS
+const { ADMIN_EMAIL, ACCESSID, REGION, DB_URI, BUCKET, SMTP_APP_PASSWORD, STMP_EMAIL } = ENV_PARMAS
 
 
 let AWS_CREDENTIAL: AwsCredential
@@ -99,8 +99,8 @@ const initializeAwsCredential = async () => {
   };
 
   // STRIPE_CREDENTIAL = {
-  //   STRIPE_PB_KEY: services.awsService.getParameterFromAWS({ name: STRIPE_PB_KEY }),
-  //   STRIPE_SEC_KEY: services.awsService.getParameterFromAWS({ name: STRIPE_SEC_KEY }),
+  //   STRIPE_PB_KEY: services.awsService.getParameterFromAWS({ name: ENV_PARMAS.STRIPE_PB_KEY }),
+  //   STRIPE_SEC_KEY: services.awsService.getParameterFromAWS({ name: ENV_PARMAS.STRIPE_SEC_KEY }),
   //   STRIPE_VERSION: '2024-04-10'
   // };
 

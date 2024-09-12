@@ -169,16 +169,15 @@ const createVideoThumbnail = async (video_file_name: string, file_url: string) =
     console.log(video_file_name, "videoFileName")
     console.log(file_url, "file_url")
 
-    return new Promise(async (resolve) => {
+    const aws_file_link = `${APP.BITBUCKET_URL}/${file_url}`
+    const response = await axios.get(aws_file_link, {
+        responseType: 'arraybuffer',
+    });
+
+    return new Promise((resolve) => {
         try {
 
             const output_file_name = `${video_file_name}-thumbnail.jpg`;
-
-            const aws_file_link = `${APP.BITBUCKET_URL}/${file_url}`
-
-            const response = await axios.get(aws_file_link, {
-                responseType: 'arraybuffer',
-            });
 
             const mediaBuffer = Buffer.from(response.data);
 

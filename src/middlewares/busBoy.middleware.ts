@@ -3,11 +3,12 @@ import Busboy from 'busboy';
 import fs from 'fs'
 
 
+
 const busboyMultipleMedia = (req: Request) => {
-    return new Promise(async (resolve, reject) => {
+    return new Promise((resolve, reject) => {
         try {
             const busboy = Busboy({ headers: req.headers });
-            const files: any = []
+            const files: any = [];
             const fields: any = {};
 
             // Create a directory for uploads if it doesn't exist
@@ -19,10 +20,10 @@ const busboyMultipleMedia = (req: Request) => {
 
             const filePromises: any = [];
 
-            //start busboy
-            busboy.on('file', function async(fieldName, fileStream, fileObject: any) {
-                const fileName = `${(fieldName)}-${Date.now()}-${(fileObject?.filename)}`
-                const filePath: any = uploadDir + '/' + fileName
+            // Start busboy
+            busboy.on('file', (fieldName, fileStream, fileObject: any) => {
+                const fileName = `${fieldName}-${Date.now()}-${fileObject?.filename}`;
+                const filePath: any = `${uploadDir}/${fileName}`;
                 const writeStream = fs.createWriteStream(filePath);
                 const fileBuffer: any = []; // Buffer to store file data
 
@@ -31,20 +32,18 @@ const busboyMultipleMedia = (req: Request) => {
                     fileBuffer.push(chunk);
                 });
 
-
                 filePromises.push(
                     new Promise((resolveFile, rejectFile) => {
-                        writeStream.on('finish', async () => {
+                        writeStream.on('finish', () => {
                             try {
-                                fileObject = {
+                                const fileObjectWithDetails = {
                                     ...fileObject,
                                     filename: fileName,
                                     filePath,
                                     fieldName,
                                     fileBuffer: Buffer.concat(fileBuffer) // Concatenate file buffer chunks
-
                                 };
-                                files.push(fileObject);
+                                files.push(fileObjectWithDetails);
                                 resolveFile(true);
                             } catch (error) {
                                 rejectFile(error);
@@ -54,30 +53,102 @@ const busboyMultipleMedia = (req: Request) => {
                         fileStream.pipe(writeStream);
                     })
                 );
-            }); //file promise ends
+            }); // file promise ends
 
-
-            busboy.on('field', function (fieldname, val) {
+            busboy.on('field', (fieldname, val) => {
                 fields[fieldname] = val;
             });
 
-            busboy.on('finish', async () => {
-                try {
-                    await Promise.all(filePromises);
-                    resolve({ files: files, fields: fields });
-                } catch (error) {
-                    reject(error);
-                }
+            busboy.on('finish', () => {
+                Promise.all(filePromises)
+                    .then(() => resolve({ files: files, fields: fields }))
+                    .catch((error) => reject(error));
             });
 
-            //handler busboy error
-            busboy.on('error', err => reject(err));
+            // Handler busboy error
+            busboy.on('error', (err) => reject(err));
             req.pipe(busboy);
         } catch (error: any) {
-            resolve({ status: false, message: error.message });
+            reject({ status: false, message: error.message });
         }
     });
-} //ends busboy
+} // ends busboy
+
+// const busboyMultipleMedia = (req: Request) => {
+//     return new Promise(async (resolve, reject) => {
+//         try {
+//             const busboy = Busboy({ headers: req.headers });
+//             const files: any = []
+//             const fields: any = {};
+
+//             // Create a directory for uploads if it doesn't exist
+//             const uploadDir = `${process.cwd()}/public/uploads/media`;
+
+//             if (!fs.existsSync(uploadDir)) {
+//                 fs.mkdirSync(uploadDir, { recursive: true });
+//             }
+
+//             const filePromises: any = [];
+
+//             //start busboy
+//             busboy.on('file', function async(fieldName, fileStream, fileObject: any) {
+//                 const fileName = `${(fieldName)}-${Date.now()}-${(fileObject?.filename)}`
+//                 const filePath: any = uploadDir + '/' + fileName
+//                 const writeStream = fs.createWriteStream(filePath);
+//                 const fileBuffer: any = []; // Buffer to store file data
+
+//                 // Write file data to buffer
+//                 fileStream.on('data', (chunk) => {
+//                     fileBuffer.push(chunk);
+//                 });
+
+
+//                 filePromises.push(
+//                     new Promise((resolveFile, rejectFile) => {
+//                         writeStream.on('finish', async () => {
+//                             try {
+//                                 fileObject = {
+//                                     ...fileObject,
+//                                     filename: fileName,
+//                                     filePath,
+//                                     fieldName,
+//                                     fileBuffer: Buffer.concat(fileBuffer) // Concatenate file buffer chunks
+
+//                                 };
+//                                 files.push(fileObject);
+//                                 resolveFile(true);
+//                             } catch (error) {
+//                                 rejectFile(error);
+//                             }
+//                         });
+
+//                         fileStream.pipe(writeStream);
+//                     })
+//                 );
+//             }); //file promise ends
+
+
+//             busboy.on('field', function (fieldname, val) {
+//                 fields[fieldname] = val;
+//             });
+
+//             busboy.on('finish', async () => {
+//                 try {
+//                     await Promise.all(filePromises);
+//                     resolve({ files: files, fields: fields });
+//                 } catch (error) {
+//                     reject(error);
+//                 }
+//             });
+
+//             //handler busboy error
+//             busboy.on('error', err => reject(err));
+//             req.pipe(busboy);
+//         } catch (error: any) {
+//             resolve({ status: false, message: error.message });
+//         }
+//     });
+// } //ends busboy
 
 
 

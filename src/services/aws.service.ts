@@ -182,10 +182,7 @@ const uploadFileToS3 = async (files: [any]): Promise<ApiResponse> => {
 };
 
 
-
-const uploadQueueMediaToS3 = async (files: any) => { //files should be in an array 
-
-    // console.log(AWS_CREDENTIAL, "AWS_CREDENTIALAWS_SECRET")
+const uploadQueueMediaToS3 = async (files: any[]) => { // files should be in an array
     const s3 = new AWS.S3({
         accessKeyId: await AWS_CREDENTIAL.ACCESSID,
         secretAccessKey: await AWS_CREDENTIAL.AWS_SECRET,
@@ -194,49 +191,104 @@ const uploadQueueMediaToS3 = async (files: any) => { //files should be in an arr
 
     const bucketName = await AWS_CREDENTIAL.BUCKET_NAME;
 
-    return new Promise(async (resolve, reject) => {
-        try {
-            const uploadedKeys: any = [];
+    return new Promise((resolve, reject) => {
+        // Prepare a function to handle file uploads
+        const uploadFiles = files.map((fileData: any) => {
+            const { filename, mimeType, fieldName, filePath } = fileData;
+            const filepath = path.join(filePath);
 
-            await Promise.all(files.map(async (fileData: any) => {
-                const { filename, mimeType, fieldName, filePath } = fileData;
+            const params: any = {
+                Bucket: bucketName,
+                ContentType: mimeType?.indexOf("image") >= 0 ? "image/webp" : mimeType,
+                Key: `${fieldName}/${filename}`,
+                Body: '',
+            };
 
-                // const extension = path.extname(filename)
-                const filepath = path.join(filePath)
-
-                const params: any = {
-                    Bucket: bucketName,
-                    ContentType: mimeType?.indexOf("image") >= 0 ? "image/webp" : mimeType,
-                    Key: `${fieldName}/${filename}`,
-                    Body: '',
-                };
-
-                if (mimeType?.indexOf("image") >= 0) {
-                    params.Body = await mediaHelper.convertImageToWebp(fs.readFileSync(filepath))
-                } else {
-                    params.Body = fs.readFileSync(filepath)
-                }
-
-                const uploadResult: any = await s3.upload(params).promise();
-
-                uploadedKeys.push(uploadResult.Key || uploadResult.key);
-
-                fs.unlink(filepath, (err) => {
-                    if (err) {
-                        // console.error('Error deleting file:', err);
-                        return;
-                    }
-                    // console.log('File deleted successfully');
+            return (mimeType?.indexOf("image") >= 0 ?
+                mediaHelper.convertImageToWebp(fs.readFileSync(filepath)) :
+                Promise.resolve(fs.readFileSync(filepath))
+            ).then((body) => {
+                params.Body = body;
+                return s3.upload(params).promise().then((uploadResult: any) => {
+                    // Unlink file after upload
+                    fs.unlink(filepath, (err) => {
+                        if (err) {
+                            console.error('Error deleting file:', err);
+                        } else {
+                            console.log('File deleted successfully');
+                        }
+                    });
+                    return uploadResult.Key || uploadResult.key;
                 });
-            }));
+            });
+        });
 
-            resolve(uploadedKeys); //success
-        } catch (err) {
-            console.error('Error uploading files to S3 ', err);
-            reject(err); //error
-        }
+        Promise.all(uploadFiles)
+            .then((uploadedKeys) => {
+                resolve(uploadedKeys); // success
+            })
+            .catch((err) => {
+                console.error('Error uploading files to S3', err);
+                reject(err); // error
+            });
     });
-}
+};
+
+//*******below function is working but it not use promise correctly so we recreate it above testing pending *********
+// const uploadQueueMediaToS3 = async (files: any) => { //files should be in an array 
+
+//     // console.log(AWS_CREDENTIAL, "AWS_CREDENTIALAWS_SECRET")
+//     const s3 = new AWS.S3({
+//         accessKeyId: await AWS_CREDENTIAL.ACCESSID,
+//         secretAccessKey: await AWS_CREDENTIAL.AWS_SECRET,
+//         region: await AWS_CREDENTIAL.REGION,
+//     });
+
+//     const bucketName = await AWS_CREDENTIAL.BUCKET_NAME;
+
+//     return new Promise(async (resolve, reject) => {
+//         try {
+//             const uploadedKeys: any = [];
+
+//             await Promise.all(files.map(async (fileData: any) => {
+//                 const { filename, mimeType, fieldName, filePath } = fileData;
+
+//                 // const extension = path.extname(filename)
+//                 const filepath = path.join(filePath)
+
+//                 const params: any = {
+//                     Bucket: bucketName,
+//                     ContentType: mimeType?.indexOf("image") >= 0 ? "image/webp" : mimeType,
+//                     Key: `${fieldName}/${filename}`,
+//                     Body: '',
+//                 };
+
+//                 if (mimeType?.indexOf("image") >= 0) {
+//                     params.Body = await mediaHelper.convertImageToWebp(fs.readFileSync(filepath))
+//                 } else {
+//                     params.Body = fs.readFileSync(filepath)
+//                 }
+
+//                 const uploadResult: any = await s3.upload(params).promise();
+
+//                 uploadedKeys.push(uploadResult.Key || uploadResult.key);
+
+//                 fs.unlink(filepath, (err) => {
+//                     if (err) {
+//                         // console.error('Error deleting file:', err);
+//                         return;
+//                     }
+//                     // console.log('File deleted successfully');
+//                 });
+//             }));
+
+//             resolve(uploadedKeys); //success
+//         } catch (err) {
+//             console.error('Error uploading files to S3 ', err);
+//             reject(err); //error
+//         }
+//     });
+// }
 
 
 const uploadToS3ExcelSheet = async (excelBuffer: any, fileName: any) => {
@@ -407,13 +459,15 @@ const unlinkFromS3Bucket = async (fileUrls: any) => { //fileUrls should be array
 };//ends
 
 //files -->> multer req.files  array of object 
-const uploadVideoAndTranscode = async (files: any, media_type = 'videos') => {
+
+
+const uploadVideoAndTranscode = async (files: any[], media_type = 'videos') => {
     try {
-        const ACCESSID = await AWS_CREDENTIAL.ACCESSID
-        const AWS_SECRET = await AWS_CREDENTIAL.AWS_SECRET
-        const REGION = await AWS_CREDENTIAL.REGION
-        const output_bucket_name = await AWS_CREDENTIAL.BUCKET_NAME
-        const input_bucket_name = await AWS_CREDENTIAL.BUCKET_NAME
+        const ACCESSID = await AWS_CREDENTIAL.ACCESSID;
+        const AWS_SECRET = await AWS_CREDENTIAL.AWS_SECRET;
+        const REGION = await AWS_CREDENTIAL.REGION;
+        const output_bucket_name = await AWS_CREDENTIAL.BUCKET_NAME;
+        const input_bucket_name = await AWS_CREDENTIAL.BUCKET_NAME;
 
         const s3 = new AWS.S3({
             accessKeyId: ACCESSID,
@@ -421,181 +475,336 @@ const uploadVideoAndTranscode = async (files: any, media_type = 'videos') => {
             region: REGION,
         });
 
-        const pipeline_id = await getParameterFromAWS({ name: "PIPELINE_ID" })
+        const pipeline_id = await getParameterFromAWS({ name: "PIPELINE_ID" });
         const ElasticTranscoder = new AWS.ElasticTranscoder({ region: REGION, apiVersion: '2012-09-25' });
 
-        // let preset_high_quality = await createPreset(ElasticTranscoder)
-        // console.log(preset_high_quality, "preset_high_quality")
-        // Get the URLs of the transcoded files
-        // const transcoded_video_baseUrl = await getParameterFromAWS({ name: videoBaseName })
-        // const transcoded_video_baseUrl = BUCKET_URL
+        // Prepare a function to handle file uploads
+        const uploadFiles = files.map((file: any) => {
+            const ext: any = path.extname(file?.originalname ?? file?.fieldname ?? file?.mimetype);
+            const fileName = `${file.fieldname}-${Date.now().toString()}${ext}`;
+            // const filepath = path.join(file.filepath);
 
-        // let fileName = Date.now().toString() + Math.floor(Math.random() * 1000);
-
-        const s3UploadPromises = files?.map(async (file: any) => {
-            return new Promise(async (resolve) => {
-                const ext: any = path.extname(file?.originalname ?? file?.fieldname ?? file?.mimetype);
-                const fileName = `${file.fieldname}-${Date.now().toString()}${ext}`;
-
-                if (file?.mimetype.indexOf("image") >= 0) {
-                    const imageNewBuffer = await mediaHelper.convertImageToWebp(file?.buffer);
-                    if (imageNewBuffer) {
-                        const params = {
-                            Bucket: input_bucket_name,
-                            ContentType: "image/webp",
-                            Key: fileName + "/" + fileName + ".webp",
-                            Body: imageNewBuffer,
-                        };
-                        s3.upload(params, (error: any, data: any) => {
-                            if (error) {
-                                console.log('bucketerror', error)
-                                resolve(null);
-                            } else {
-                                resolve({ thumb_url: data.key });
-                            }
-                        });
-                    }
-
-                } else if (file?.mimetype.indexOf("video") >= 0) { //VIDEO TRANSCODE
-
-                    console.log("videoTranscodeSIde")
-                    // const fileExt = path.extname(file?.originalname)
-                    const folder_Key = `${file.fieldname}/${media_type}/${fileName}`
-
-                    const upload_params = {
+            if (file?.mimetype.indexOf("image") >= 0) {
+                return mediaHelper.convertImageToWebp(file?.buffer).then((imageNewBuffer) => {
+                    const params: any = {
                         Bucket: input_bucket_name,
-                        ContentType: file?.mimetype,
-                        Key: folder_Key,
-                        Body: file?.buffer,
-                    }
-                    s3.upload(upload_params, async (error: any, data: any) => {
-                        if (error) {
-                            console.log('file upload to s3 error', error)
-                            return resolve(null);
+                        ContentType: "image/webp",
+                        Key: `${fileName}/${fileName}.webp`,
+                        Body: imageNewBuffer,
+                    };
+                    return s3.upload(params).promise().then((data: any) => ({
+                        thumb_url: data.Key,
+                    })).catch((error) => {
+                        console.log('bucketerror', error);
+                        return null;
+                    });
+                });
+            } else if (file?.mimetype.indexOf("video") >= 0) {
+                const folder_Key = `${file.fieldname}/${media_type}/${fileName}`;
+
+                const upload_params = {
+                    Bucket: input_bucket_name,
+                    ContentType: file?.mimetype,
+                    Key: folder_Key,
+                    Body: file?.buffer,
+                };
+
+                return s3.upload(upload_params).promise().then(async (data: any) => {
+                    const OutputKeyPrefix = `${data.Key.split('.')[0]}/`;
+
+                    const outputs = [
+                        {
+                            Key: `${OutputKeyPrefix}hls_400k`,
+                            PresetId: '1351620000001-200050',
+                            SegmentDuration: '10'
+                        },
+                        {
+                            Key: `${OutputKeyPrefix}hls_1m`,
+                            PresetId: '1351620000001-200030',
+                            SegmentDuration: '10'
+                        },
+                        {
+                            Key: `${OutputKeyPrefix}hls_2m`,
+                            PresetId: '1351620000001-200010',
+                            SegmentDuration: '10'
+                        },
+                        {
+                            Key: `${OutputKeyPrefix}thumbnails`,
+                            PresetId: '1351620000001-200030',
+                            ThumbnailPattern: `${OutputKeyPrefix}thumbnails/thumbnail-{count}`,
                         }
+                    ];
 
-                        // Set output prefix
-                        const OutputKeyPrefix = `${data?.Key.split('.')[0]}/`; //it is the path where files stored
+                    const params: any = {
+                        PipelineId: pipeline_id,
+                        Input: { Key: data.Key },
+                        Outputs: outputs,
+                    };
 
-                        console.log(OutputKeyPrefix, "OutputKeyPrefix")
-
-                        // Set the output parameters
-                        const outputs = [
-                            {
-                                Key: OutputKeyPrefix + 'hls_400k',
-                                PresetId: '1351620000001-200050',
-                                SegmentDuration: '10'
-                            },
-                            {
-                                Key: OutputKeyPrefix + 'hls_1m',
-                                PresetId: '1351620000001-200030',
-                                SegmentDuration: '10'
-                            },
-                            {
-                                Key: OutputKeyPrefix + 'hls_2m',
-                                PresetId: '1351620000001-200010',
-                                SegmentDuration: '10'
-                            },
-                            {
-                                Key: OutputKeyPrefix + 'thumbnails',
-                                PresetId: '1351620000001-200030', // Preset for generating thumbnails
-                                ThumbnailPattern: OutputKeyPrefix + 'thumbnails/thumbnail-{count}', // Pattern for thumbnail file names
-                            }
-                        ];
-
-                        // Set the input parameters
-                        const input = { Key: data?.Key };
-
-                        // Set the job parameters
-                        const params: any = {
-                            PipelineId: pipeline_id,
-                            Input: input,
-                            Outputs: outputs,
-                        };
-
-                        console.log('job_created')
-                        // Create the transcoding job
-                        const jobResponse = await ElasticTranscoder.createJob(params).promise();
-
-                        console.log(jobResponse, "jobResponse")
-                        // Extract thumbnail URLs from the job response
+                    return ElasticTranscoder.createJob(params).promise().then(() => {
                         const hls400kUrl = `${OutputKeyPrefix}hls_400k.m3u8`;
                         const hls1mUrl = `${OutputKeyPrefix}hls_1m.m3u8`;
                         const hls2mUrl = `${OutputKeyPrefix}hls_2m.m3u8`;
-                        // const hls400kUrl = `${transcoded_video_baseUrl}${OutputKeyPrefix}hls_400k.m3u8`;
-                        // const hls1mUrl = `${transcoded_video_baseUrl}${OutputKeyPrefix}hls_1m.m3u8`;
-                        // const hls2mUrl = `${transcoded_video_baseUrl}${OutputKeyPrefix}hls_2m.m3u8`;
 
-                        // Create the playlist string
                         const playlistString = "#EXTM3U\n" +
                             "#EXT-X-VERSION:3\n" +
                             "#EXT-X-STREAM-INF:BANDWIDTH=400000,RESOLUTION=640x360\n" +
-                            hls400kUrl + "\n" +
+                            `${hls400kUrl}\n` +
                             "#EXT-X-STREAM-INF:BANDWIDTH=1000000,RESOLUTION=960x540\n" +
-                            hls1mUrl + "\n" +
+                            `${hls1mUrl}\n` +
                             "#EXT-X-STREAM-INF:BANDWIDTH=2000000,RESOLUTION=1280x720\n" +
-                            hls2mUrl + "\n";
+                            `${hls2mUrl}\n`;
 
-                        // Create playlist.m3u8 file
                         const playlistParams = {
                             Bucket: output_bucket_name,
                             Key: `${OutputKeyPrefix}playlist.m3u8`,
                             ContentType: 'application/x-mpegURL',
-                            Body: playlistString
+                            Body: playlistString,
                         };
 
-                        console.log("put objectt", playlistParams.Key)
-
-                        const transcode_output = {
-                            video_url: playlistParams.Key,
-                            thumb_url: OutputKeyPrefix + 'thumbnails/thumbnail-{count}'
-                        }
-
-                        const transcode_res = await s3.putObject(playlistParams).promise();
-
-                        if (transcode_res && transcode_res.ETag && transcode_res.ServerSideEncryption) {
-                            resolve({ status: true, data: { ...transcode_output } });
-                        } else {
-                            resolve({ status: false, data: null });
-                            console.log('Object upload failed:', transcode_res);
-                        }
-
-                    })
-                } else {
-                    resolve({ status: false, data: null });
-                }
-            })
-        })
-
-        //resolve all promises
-        const s3UploadResults = await Promise.all(s3UploadPromises);
-
-        console.log(s3UploadResults, "s3UploadResults")
-
-
-        const trancode_result = {
-            video_url: "",
-            thumb_url: ""
-
-        }
-
-        s3UploadResults?.map((resp) => {
-            if (resp && resp?.data?.video_url) {
-                trancode_result.video_url = resp?.data?.video_url
-                trancode_result.thumb_url = resp?.data?.thumb_url
+                        return s3.putObject(playlistParams).promise().then((transcode_res) => {
+                            if (transcode_res && transcode_res.ETag && transcode_res.ServerSideEncryption) {
+                                return {
+                                    video_url: playlistParams.Key,
+                                    thumb_url: `${OutputKeyPrefix}thumbnails/thumbnail-{count}`
+                                };
+                            } else {
+                                console.log('Object upload failed:', transcode_res);
+                                return null;
+                            }
+                        });
+                    });
+                }).catch((error) => {
+                    console.log('file upload to s3 error', error);
+                    return null;
+                });
+            } else {
+                return Promise.resolve(null);
             }
-        })
+        });
 
-        if (trancode_result?.video_url) {
-            return showResponse(true, responseMessage?.common?.file_upload_success, trancode_result, 200)
-        }
+        // Resolve all promises
+        return Promise.all(uploadFiles).then((s3UploadResults) => {
+            const trancode_result = {
+                video_url: "",
+                thumb_url: ""
+            };
 
-        return showResponse(false, responseMessage?.common?.file_upload_error, null, 200)
+            s3UploadResults.forEach((resp: any) => {
+                if (resp && resp.data?.video_url) {
+                    trancode_result.video_url = resp.data.video_url;
+                    trancode_result.thumb_url = resp.data.thumb_url;
+                }
+            });
+
+            if (trancode_result.video_url) {
+                return showResponse(true, responseMessage?.common?.file_upload_success, trancode_result, 200);
+            }
+
+            return showResponse(false, responseMessage?.common?.file_upload_error, null, 200);
+        }).catch((err) => {
+            console.log(`Error creating transcoding job`, err);
+            return showResponse(false, responseMessage?.common?.file_upload_error, err, 200);
+        });
+
     } catch (err) {
-        console.log(`Error creating transcoding job`, err);
-        return showResponse(false, responseMessage?.common?.file_upload_error, err, 200)
+        console.log(`Error initializing AWS services`, err);
+        return showResponse(false, responseMessage?.common?.file_upload_error, err, 200);
     }
-} //ends
+};
+
+
+//*******below function is working but it not use promise correctly so we recreate it above testing pending *********
+
+// const uploadVideoAndTranscode = async (files: any, media_type = 'videos') => {
+//     try {
+//         const ACCESSID = await AWS_CREDENTIAL.ACCESSID
+//         const AWS_SECRET = await AWS_CREDENTIAL.AWS_SECRET
+//         const REGION = await AWS_CREDENTIAL.REGION
+//         const output_bucket_name = await AWS_CREDENTIAL.BUCKET_NAME
+//         const input_bucket_name = await AWS_CREDENTIAL.BUCKET_NAME
+
+//         const s3 = new AWS.S3({
+//             accessKeyId: ACCESSID,
+//             secretAccessKey: AWS_SECRET,
+//             region: REGION,
+//         });
+
+//         const pipeline_id = await getParameterFromAWS({ name: "PIPELINE_ID" })
+//         const ElasticTranscoder = new AWS.ElasticTranscoder({ region: REGION, apiVersion: '2012-09-25' });
+
+//         // let preset_high_quality = await createPreset(ElasticTranscoder)
+//         // console.log(preset_high_quality, "preset_high_quality")
+//         // Get the URLs of the transcoded files
+//         // const transcoded_video_baseUrl = await getParameterFromAWS({ name: videoBaseName })
+//         // const transcoded_video_baseUrl = BUCKET_URL
+
+//         // let fileName = Date.now().toString() + Math.floor(Math.random() * 1000);
+
+//         const s3UploadPromises = files?.map(async (file: any) => {
+//             return new Promise(async (resolve) => {
+//                 const ext: any = path.extname(file?.originalname ?? file?.fieldname ?? file?.mimetype);
+//                 const fileName = `${file.fieldname}-${Date.now().toString()}${ext}`;
+
+//                 if (file?.mimetype.indexOf("image") >= 0) {
+//                     const imageNewBuffer = await mediaHelper.convertImageToWebp(file?.buffer);
+//                     if (imageNewBuffer) {
+//                         const params = {
+//                             Bucket: input_bucket_name,
+//                             ContentType: "image/webp",
+//                             Key: fileName + "/" + fileName + ".webp",
+//                             Body: imageNewBuffer,
+//                         };
+//                         s3.upload(params, (error: any, data: any) => {
+//                             if (error) {
+//                                 console.log('bucketerror', error)
+//                                 resolve(null);
+//                             } else {
+//                                 resolve({ thumb_url: data.key });
+//                             }
+//                         });
+//                     }
+
+//                 } else if (file?.mimetype.indexOf("video") >= 0) { //VIDEO TRANSCODE
+
+//                     console.log("videoTranscodeSIde")
+//                     // const fileExt = path.extname(file?.originalname)
+//                     const folder_Key = `${file.fieldname}/${media_type}/${fileName}`
+
+//                     const upload_params = {
+//                         Bucket: input_bucket_name,
+//                         ContentType: file?.mimetype,
+//                         Key: folder_Key,
+//                         Body: file?.buffer,
+//                     }
+//                     s3.upload(upload_params, async (error: any, data: any) => {
+//                         if (error) {
+//                             console.log('file upload to s3 error', error)
+//                             return resolve(null);
+//                         }
+
+//                         // Set output prefix
+//                         const OutputKeyPrefix = `${data?.Key.split('.')[0]}/`; //it is the path where files stored
+
+//                         console.log(OutputKeyPrefix, "OutputKeyPrefix")
+
+//                         // Set the output parameters
+//                         const outputs = [
+//                             {
+//                                 Key: OutputKeyPrefix + 'hls_400k',
+//                                 PresetId: '1351620000001-200050',
+//                                 SegmentDuration: '10'
+//                             },
+//                             {
+//                                 Key: OutputKeyPrefix + 'hls_1m',
+//                                 PresetId: '1351620000001-200030',
+//                                 SegmentDuration: '10'
+//                             },
+//                             {
+//                                 Key: OutputKeyPrefix + 'hls_2m',
+//                                 PresetId: '1351620000001-200010',
+//                                 SegmentDuration: '10'
+//                             },
+//                             {
+//                                 Key: OutputKeyPrefix + 'thumbnails',
+//                                 PresetId: '1351620000001-200030', // Preset for generating thumbnails
+//                                 ThumbnailPattern: OutputKeyPrefix + 'thumbnails/thumbnail-{count}', // Pattern for thumbnail file names
+//                             }
+//                         ];
+
+//                         // Set the input parameters
+//                         const input = { Key: data?.Key };
+
+//                         // Set the job parameters
+//                         const params: any = {
+//                             PipelineId: pipeline_id,
+//                             Input: input,
+//                             Outputs: outputs,
+//                         };
+
+//                         console.log('job_created')
+//                         // Create the transcoding job
+//                         const jobResponse = await ElasticTranscoder.createJob(params).promise();
+
+//                         console.log(jobResponse, "jobResponse")
+//                         // Extract thumbnail URLs from the job response
+//                         const hls400kUrl = `${OutputKeyPrefix}hls_400k.m3u8`;
+//                         const hls1mUrl = `${OutputKeyPrefix}hls_1m.m3u8`;
+//                         const hls2mUrl = `${OutputKeyPrefix}hls_2m.m3u8`;
+//                         // const hls400kUrl = `${transcoded_video_baseUrl}${OutputKeyPrefix}hls_400k.m3u8`;
+//                         // const hls1mUrl = `${transcoded_video_baseUrl}${OutputKeyPrefix}hls_1m.m3u8`;
+//                         // const hls2mUrl = `${transcoded_video_baseUrl}${OutputKeyPrefix}hls_2m.m3u8`;
+
+//                         // Create the playlist string
+//                         const playlistString = "#EXTM3U\n" +
+//                             "#EXT-X-VERSION:3\n" +
+//                             "#EXT-X-STREAM-INF:BANDWIDTH=400000,RESOLUTION=640x360\n" +
+//                             hls400kUrl + "\n" +
+//                             "#EXT-X-STREAM-INF:BANDWIDTH=1000000,RESOLUTION=960x540\n" +
+//                             hls1mUrl + "\n" +
+//                             "#EXT-X-STREAM-INF:BANDWIDTH=2000000,RESOLUTION=1280x720\n" +
+//                             hls2mUrl + "\n";
+
+//                         // Create playlist.m3u8 file
+//                         const playlistParams = {
+//                             Bucket: output_bucket_name,
+//                             Key: `${OutputKeyPrefix}playlist.m3u8`,
+//                             ContentType: 'application/x-mpegURL',
+//                             Body: playlistString
+//                         };
+
+//                         console.log("put objectt", playlistParams.Key)
+
+//                         const transcode_output = {
+//                             video_url: playlistParams.Key,
+//                             thumb_url: OutputKeyPrefix + 'thumbnails/thumbnail-{count}'
+//                         }
+
+//                         const transcode_res = await s3.putObject(playlistParams).promise();
+
+//                         if (transcode_res && transcode_res.ETag && transcode_res.ServerSideEncryption) {
+//                             resolve({ status: true, data: { ...transcode_output } });
+//                         } else {
+//                             resolve({ status: false, data: null });
+//                             console.log('Object upload failed:', transcode_res);
+//                         }
+
+//                     })
+//                 } else {
+//                     resolve({ status: false, data: null });
+//                 }
+//             })
+//         })
+
+//         //resolve all promises
+//         const s3UploadResults = await Promise.all(s3UploadPromises);
+
+//         console.log(s3UploadResults, "s3UploadResults")
+
+
+//         const trancode_result = {
+//             video_url: "",
+//             thumb_url: ""
+
+//         }
+
+//         s3UploadResults?.map((resp) => {
+//             if (resp && resp?.data?.video_url) {
+//                 trancode_result.video_url = resp?.data?.video_url
+//                 trancode_result.thumb_url = resp?.data?.thumb_url
+//             }
+//         })
+
+//         if (trancode_result?.video_url) {
+//             return showResponse(true, responseMessage?.common?.file_upload_success, trancode_result, 200)
+//         }
+
+//         return showResponse(false, responseMessage?.common?.file_upload_error, null, 200)
+//     } catch (err) {
+//         console.log(`Error creating transcoding job`, err);
+//         return showResponse(false, responseMessage?.common?.file_upload_error, err, 200)
+//     }
+// } //ends
 
 //aws rekognition functions are here  step by step to search user by image 
 //1. first create collection in which all faces added when user in app or web upload  

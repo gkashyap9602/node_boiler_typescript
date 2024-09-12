@@ -29,6 +29,7 @@ module.exports = {
         "@typescript-eslint"
     ],
     "rules": {
-        "@typescript-eslint/no-explicit-any": "off" // Disable the rule
+        "@typescript-eslint/no-explicit-any": "off", // Disable the rule
+        "@typescript-eslint/no-var-requires": "off" // Disable the rule
     }
 }

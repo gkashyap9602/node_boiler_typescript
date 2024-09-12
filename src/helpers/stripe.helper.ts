@@ -8,7 +8,6 @@ const initialiseStripe = async () => {
     try {
         const STRIPE_SEC_KEY = await STRIPE_CREDENTIAL.STRIPE_SEC_KEY
         const stripeInit = new Stripe(STRIPE_SEC_KEY, {
-            // @ts-ignore
             apiVersion: STRIPE_CREDENTIAL.STRIPE_VERSION,
             typescript: true
         });

@@ -22,7 +22,7 @@ const sendgridMail = async (to: string, subject: string, body: any, attachments:
                 from: SENDGRID_UNAME,
                 subject,
                 html: body,
-                // attachments
+                attachments
             }
             
             sgMail.send(mailOptions).then(() => {
