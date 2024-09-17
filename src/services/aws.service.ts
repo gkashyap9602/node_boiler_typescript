@@ -347,9 +347,9 @@ const uploadToS3 = async (files: any[], key?: string) => {
                 let fileName: string = "";
                 console.log(file.mimetype, "mimeeeeMMM");
 
-                if (file?.mimetype?.indexOf("image" && !file.originalname.endsWith(".psd")) >= 0) {
+                if (file?.mimetype?.includes("image") && !file.originalname.endsWith(".psd")) {
                     // image file
-                    fileName = `${file.fieldname}-${Date.now().toString()}-${file?.originalname?.replace('.webp')}.webp`;
+                    fileName = `${file.fieldname}-${Date.now().toString()}-${file?.originalname?.replace('.webp', '')}.webp`;
                 } else {
                     fileName = `${file.fieldname}-${Date.now().toString()}${ext}`;
                 }
@@ -357,7 +357,7 @@ const uploadToS3 = async (files: any[], key?: string) => {
 
                 const params: any = {
                     Bucket: bucketName,
-                    ContentType: file?.mimetype?.indexOf("image" && !file.originalname.endsWith(".psd")) >= 0 ? "image/webp" : file?.mimetype,
+                    ContentType : file?.mimetype?.includes("image") && !file.originalname.endsWith(".psd")  ? "image/webp" : file?.mimetype,
                     Key: `${file.fieldname}/${fileName}`,
                     Body: bufferImage,
                 };
