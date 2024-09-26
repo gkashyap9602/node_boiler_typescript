@@ -55,6 +55,9 @@ const UserAuthHandler = {
     //     const matchObj = {
     //         status: { $ne: USER_STATUS.DELETED }, //user not deleted
     //         $or: [
+    // {
+    //     email: email,
+    // },
     //             {
     //                 social_account: {
     //                     $elemMatch: { email: email }
