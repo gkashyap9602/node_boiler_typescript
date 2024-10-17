@@ -7,7 +7,6 @@ import { showResponse } from '../../utils/response.util';
 import statusCodes from '../../constants/statusCodes'
 import { tryCatchWrapper } from '../../utils/config.util';
 
-
 @Tags('User Auth Routes')
 @Route('/user/auth')
 
@@ -97,7 +96,6 @@ export default class UserAuthController extends Controller {
 
         const wrappedFunc = tryCatchWrapper(handler.forgotPassword);
         return wrappedFunc(request); // Invoking the wrapped function 
-
     }
     //ends
 
@@ -114,7 +112,6 @@ export default class UserAuthController extends Controller {
 
         const wrappedFunc = tryCatchWrapper(handler.resetPassword);
         return wrappedFunc(request); // Invoking the wrapped function 
-
     }
     //ends
 
@@ -175,10 +172,8 @@ export default class UserAuthController extends Controller {
     @Security('Bearer')
     @Get("/details")
     public async getUserDetails(): Promise<ApiResponse> {
-        // console.log(req.body.user, "")
         const wrappedFunc = tryCatchWrapper(handler.getUserDetails);
         return wrappedFunc(this.userId); // Invoking the wrapped function 
-
     }
     //ends
 
@@ -215,7 +210,6 @@ export default class UserAuthController extends Controller {
 
         const wrappedFunc = tryCatchWrapper(handler.refreshToken);
         return wrappedFunc(body); // Invoking the wrapped function 
-
     }
     //ends
 
@@ -226,14 +220,11 @@ export default class UserAuthController extends Controller {
     public async logoutUser(): Promise<ApiResponse> {
         const wrappedFunc = tryCatchWrapper(handler.logoutUser);
         return wrappedFunc(); // Invoking the wrapped function 
-
-
     }
     //ends
 
     /**
 * delete user account
-* USER TYPE 2 FOR SPONSER 3 FOR USER
 */
     @Security('Bearer')
     @Delete("/delete_account")
@@ -246,12 +237,7 @@ export default class UserAuthController extends Controller {
 
         const wrappedFunc = tryCatchWrapper(handler.deleteAccount);
         return wrappedFunc(request); // Invoking the wrapped function 
-
-
-    }
-    //ends
-
-
+    } //ends
 }
 
 

@@ -639,7 +639,7 @@
 						}
 					}
 				},
-				"description": "delete user account\nUSER TYPE 2 FOR SPONSER 3 FOR USER",
+				"description": "delete user account",
 				"tags": [
 					"User Auth Routes"
 				],
@@ -1429,7 +1429,7 @@
 						}
 					}
 				},
-				"description": "Save a Admin",
+				"description": "Forgot password api endpoint",
 				"tags": [
 					"Admin Auth Routes"
 				],

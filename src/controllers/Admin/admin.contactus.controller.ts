@@ -36,7 +36,6 @@ export default class AdminController extends Controller {
 
         const wrappedFunc = tryCatchWrapper(handlers.listContactDetails);
         return wrappedFunc(sort_column, sort_direction, page, limit, search_key);
-
     }
 
     /**
@@ -70,7 +69,6 @@ export default class AdminController extends Controller {
 
         const wrappedFunc = tryCatchWrapper(handlers.deleteContactUs);
         return wrappedFunc(request);
-
     }
     //ends
 

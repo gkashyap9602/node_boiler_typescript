@@ -38,8 +38,6 @@ const CommonHandler = {
         }
         return showResponse(false, responseMessage?.common.parameter_store_post_error, null, statusCodes.API_ERROR);
     },
-
-
 }
 
 export default CommonHandler 

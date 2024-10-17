@@ -9,7 +9,6 @@ const statusCodes = {
     ACCOUNT_DELETED: 410,        //  no longer available
     SERVER_TRYCATCH_ERROR: 500, // server error 
     TOO_MANY_REQUESTS: 429, // Too Many Request
-
 }
 
 export default statusCodes

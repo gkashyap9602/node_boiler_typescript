@@ -13,8 +13,6 @@ export const getEnvironmentParams = (env: any, project_name: string, project_ini
     project_name = project_name.toUpperCase()
     const admin_email = project_name.toLowerCase()
     const initial_for_aws = project_initial.toUpperCase()
-
-    console.log(admin_email, "admin_email")
     const env_obj = <any>{
         'PROD': {
             DB_NAME: `${initial_for_aws}_DB_NAME_PROD`,

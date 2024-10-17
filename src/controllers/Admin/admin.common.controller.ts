@@ -22,7 +22,6 @@ export default class AdminCommonController extends Controller {
         this.userId = req.body.user ? req.body.user.id : ''
     }
 
-
     /**
 * Add Question  endpoint
 */
@@ -37,7 +36,6 @@ export default class AdminCommonController extends Controller {
 
         const wrappedFunc = tryCatchWrapper(handler.addQuestion);
         return wrappedFunc(request); // Invoking the wrapped function 
-
     }
     //ends
 
@@ -55,7 +53,6 @@ export default class AdminCommonController extends Controller {
 
         const wrappedFunc = tryCatchWrapper(handler.updateQuestion);
         return wrappedFunc(request); // Invoking the wrapped function 
-
     }
     //ends
 
@@ -73,7 +70,6 @@ export default class AdminCommonController extends Controller {
 
         const wrappedFunc = tryCatchWrapper(handler.deleteQuestion);
         return wrappedFunc({ question_id }); // Invoking the wrapped function 
-
     }
     //ends
 
@@ -91,15 +87,8 @@ export default class AdminCommonController extends Controller {
 
         const wrappedFunc = tryCatchWrapper(handler.updateCommonContent);
         return wrappedFunc(request); // Invoking the wrapped function 
-
     }
     //ends
-
-
-
-
-
-
 }
 
 

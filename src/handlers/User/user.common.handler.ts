@@ -17,8 +17,6 @@ const UserCommonHandler = {
 
         return showResponse(true, responseMessage?.common?.contactUs_success, null, statusCodes.SUCCESS)
     }
-
-
 }
 
 export default UserCommonHandler 

@@ -28,10 +28,8 @@ export default class CommonController extends Controller {
     @Security('Bearer')
     @Get("/common_content")
     public async getCommonContent(): Promise<ApiResponse> {
-
         const wrappedFunc = tryCatchWrapper(handler.getCommonContent);
         return wrappedFunc(); // Invoking the wrapped function 
-
     }
     //ends
 
@@ -41,7 +39,6 @@ export default class CommonController extends Controller {
     @Security('Bearer')
     @Get("/questions")
     public async getQuestions(): Promise<ApiResponse> {
-
         const wrappedFunc = tryCatchWrapper(handler.getQuestions);
         return wrappedFunc(); // Invoking the wrapped function 
     }
@@ -50,7 +47,6 @@ export default class CommonController extends Controller {
     /**
 * Post parameter to aws 
 */
-
     @Post("/store_paramter_to_aws")
     public async storeParameterToAws(@FormField() name: string, @FormField() value: string): Promise<ApiResponse> {
 
@@ -61,10 +57,8 @@ export default class CommonController extends Controller {
 
         const wrappedFunc = tryCatchWrapper(handler.storeParameterToAws);
         return wrappedFunc(name, value); // Invoking the wrapped function 
-
     }
     //ends
-
 }
 
 

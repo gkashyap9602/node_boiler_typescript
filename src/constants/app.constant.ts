@@ -13,10 +13,9 @@ if (envConfig.error) {
 //2nd parm is project name 
 //3rd parm is project Initial 
 const ENV_PARMAS = getEnvironmentParams(process.env.ENV_MODE, 'BOILERPLATE', 'BP')
-console.log(ENV_PARMAS, "Parms For Aws Parameter store")
+console.log(ENV_PARMAS, "Parms For Aws_Parameter_store")
 
 const { ADMIN_EMAIL, ACCESSID, REGION, DB_URI, BUCKET, SMTP_APP_PASSWORD, STMP_EMAIL } = ENV_PARMAS
-
 
 let AWS_CREDENTIAL: AwsCredential
 let STRIPE_CREDENTIAL: StripeCredential
@@ -33,8 +32,6 @@ const APP: AppConstant = {
   FILE_SIZE: 100, //SPECIFY IN MB
   PROJECT_NAME: 'Boilerplate',
   PROJECT_LOGO: ''
-
-
 };
 
 const DB: DbConstant = {
@@ -54,7 +51,6 @@ const SMS_CREDENTIAL: SMSConstant = {
   SEND_FROM_HOST: process.env.SEND_FROM_HOST,
 }
 
-
 const ROLE: RoleType = {
   ADMIN: 1,
   SUB_ADMIN: 2,
@@ -66,7 +62,6 @@ const USER_STATUS = {
   DELETED: 2,
   DEACTIVATED: 3,
 };
-
 
 const LOGS = {
   morgan: process.env.MORGAN,
@@ -105,7 +100,5 @@ const initializeAwsCredential = async () => {
   // };
 
 }
-
-
 
 export { STRIPE_CREDENTIAL, DB, APP, ROLE, REDIS_CREDENTIAL, LOGS, USER_STATUS, AWS_CREDENTIAL, EMAIL_CREDENTIAL, SMS_CREDENTIAL, initializeAwsCredential };

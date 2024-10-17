@@ -13,7 +13,6 @@ import { ROLE } from '../../constants/app.constant'
 import statusCodes from '../../constants/statusCodes'
 import adminAuthModel from '../../models/Admin/admin.auth.model';
 
-
 const AdminAuthHandler = {
 
     login: async (data: any): Promise<ApiResponse> => {
@@ -39,7 +38,6 @@ const AdminAuthHandler = {
 
         delete exists.data.password
         return showResponse(true, responseMessage.admin.login_success, { ...exists.data, token, refreshToken }, statusCodes.SUCCESS)
-
     },
 
     register: async (data: any): Promise<ApiResponse> => {
@@ -58,7 +56,6 @@ const AdminAuthHandler = {
         }
 
         return showResponse(true, responseMessage.admin.admin_created, null, statusCodes.SUCCESS)
-
     },
 
     forgotPassword: async (data: any): Promise<ApiResponse> => {
@@ -97,7 +94,6 @@ const AdminAuthHandler = {
         }
 
         return showResponse(false, responseMessage.users.forgot_password_email_error, null, statusCodes.API_ERROR)
-
     },
 
     resetPassword: async (data: any): Promise<ApiResponse> => {
@@ -134,7 +130,6 @@ const AdminAuthHandler = {
         }
 
         return showResponse(false, `${responseMessage.users.invalid_otp} or email`, null, statusCodes.API_ERROR);
-
     },
 
     resendOtp: async (data: any): Promise<ApiResponse> => {
@@ -169,7 +164,6 @@ const AdminAuthHandler = {
         }
 
         return showResponse(false, responseMessage.users.invalid_email, null, statusCodes.API_ERROR);
-
     },
 
     changePassword: async (data: any, adminId: string): Promise<ApiResponse> => {
@@ -272,9 +266,7 @@ const AdminAuthHandler = {
 
     async logoutUser(): Promise<ApiResponse> {
         return showResponse(true, responseMessage.users.logout_success, null, statusCodes.SUCCESS)
-
     },
-
 }
 
 export default AdminAuthHandler 

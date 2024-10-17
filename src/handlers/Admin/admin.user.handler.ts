@@ -18,7 +18,6 @@ const AdminUserHandler = {
         }
 
         return showResponse(true, responseMessage.users.user_detail, getResponse.data, statusCodes.SUCCESS)
-
     },
 
     getUsersList: async (sort_column: string = 'createdAt', sort_direction: string = 'desc', page = null, limit = null, search_key: string = '', status?: number): Promise<ApiResponse> => {
@@ -71,7 +70,6 @@ const AdminUserHandler = {
         }
 
         return showResponse(true, responseMessage?.common.data_retreive_sucess, { result, totalCount }, statusCodes.SUCCESS);
-
     },
 
     updateUserStatus: async (data: any): Promise<ApiResponse> => {
@@ -94,7 +92,6 @@ const AdminUserHandler = {
         }
 
         return showResponse(false, "Error While Updating User Status", null, statusCodes.API_ERROR);
-
     },
 
     getDashboardData: async (past_day: string = 'MAX'): Promise<ApiResponse> => {
@@ -157,9 +154,7 @@ const AdminUserHandler = {
         }
 
         return showResponse(true, 'Dashboard data is here', { user_summary, dashboard }, statusCodes.SUCCESS);
-
     },
-
 }
 
 export default AdminUserHandler 

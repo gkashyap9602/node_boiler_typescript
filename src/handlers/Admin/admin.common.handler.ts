@@ -72,7 +72,6 @@ const AdminCommonHandler = {
 
         return showResponse(false, responseMessage.common.update_failed, {}, statusCodes.API_ERROR)
     },
-
 }
 
 export default AdminCommonHandler;

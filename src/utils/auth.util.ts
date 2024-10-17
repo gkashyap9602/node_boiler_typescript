@@ -115,6 +115,5 @@ export const decodeToken = async (token: string) => {
         console.log("in catch middleware check token error : ", error)
         return showResponse(false, responseMessage?.middleware?.invalid_access_token, null, statusCodes.SERVER_TRYCATCH_ERROR);
     }
-
 }
 

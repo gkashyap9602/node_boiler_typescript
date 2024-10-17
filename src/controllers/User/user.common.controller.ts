@@ -7,7 +7,6 @@ import statusCodes from '../../constants/statusCodes'
 import { tryCatchWrapper } from '../../utils/config.util';
 import { validateAddContactUs } from '../../validations/Admin/admin.contactus.validator';
 
-
 @Tags('User Common Routes')
 @Route('/user/common')
 
@@ -36,10 +35,7 @@ export default class UserCommonController extends Controller {
 
         const wrappedFunc = tryCatchWrapper(handler.contactUs);
         return wrappedFunc(request); // Invoking the wrapped function 
-
     }
-
-
 }
 
 

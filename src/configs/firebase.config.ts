@@ -1,5 +1,4 @@
 import firebaseAdmin from 'firebase-admin'
-
 import serviceAccount from '../../public/firebase/firebase.sdk.json'
 
 firebaseAdmin.initializeApp({

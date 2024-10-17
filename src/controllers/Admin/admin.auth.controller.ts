@@ -39,30 +39,6 @@ export default class AdminAuthController extends Controller {
     //ends
 
     /**
-    * Save a Admin
-    */
-    // @Post("/register")
-    // public async register(@Body() request: { email: string, first_name: string, last_name: string, password: string }): Promise<ApiResponse> {
-    //     try {
-    //         const validatedSignup = validateRegister(request);
-
-    //         if (validatedSignup.error) {
-    //             return showResponse(false, validatedSignup.error.message, null, null, 400)
-    //         }
-
-    //         return handler.register(request)
-
-    //     }
-    //     catch (err: any) {
-    //         // logger.error(`${this.req.ip} ${err.message}`)
-    //         return err
-
-    //     }
-    // }
-    //ends
-
-
-    /**
     * Forgot password api endpoint
     */
     @Post("/forgot_password")
@@ -150,7 +126,6 @@ export default class AdminAuthController extends Controller {
     @Security('Bearer')
     @Get("/details")
     public async getAdminDetails(): Promise<ApiResponse> {
-
         const wrappedFunc = tryCatchWrapper(handler.getAdminDetails);
         return wrappedFunc(this.userId); // Invoking the wrapped function 
     }
@@ -199,12 +174,8 @@ export default class AdminAuthController extends Controller {
     public async logoutUser(): Promise<ApiResponse> {
         const wrappedFunc = tryCatchWrapper(handler.logoutUser);
         return wrappedFunc(); // Invoking the wrapped function 
-
-
     }
     //ends
-
-
 }
 
 

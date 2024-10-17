@@ -29,7 +29,6 @@ router.post('/register', multer.addToMulter.single('profile_pic'), async (req: R
     return showOutput(res, result, result.code)
 })
 
-
 router.post('/upload_file', multer.addToMulter.single('file'), async (req: Request | any, res: Response) => {
     const controller = new UserAuthController(req, res)
     const result: ApiResponse = await controller.uploadFile(req.file as Express.Multer.File);
@@ -42,7 +41,6 @@ router.post('/forgot_password', async (req: Request | any, res: Response) => {
     const controller = new UserAuthController(req, res)
     const result: ApiResponse = await controller.forgotPassword({ email });
     return showOutput(res, result, result.code)
-
 })
 
 router.post('/reset_password', async (req: Request | any, res: Response) => {
@@ -52,13 +50,11 @@ router.post('/reset_password', async (req: Request | any, res: Response) => {
     return showOutput(res, result, result.code)
 })
 
-
 router.post('/verify_otp', async (req: Request | any, res: Response) => {
     const { email, otp } = req.body;
     const controller = new UserAuthController(req, res)
     const result: ApiResponse = await controller.verifyOtp({ email, otp });
     return showOutput(res, result, result.code)
-
 })
 
 router.post('/resend_otp', async (req: Request | any, res: Response) => {
@@ -66,7 +62,6 @@ router.post('/resend_otp', async (req: Request | any, res: Response) => {
     const controller = new UserAuthController(req, res)
     const result: ApiResponse = await controller.resendOtp({ email });
     return showOutput(res, result, result.code)
-
 })
 
 
@@ -75,14 +70,12 @@ router.post('/change_password', verifyTokenUser, async (req: Request | any, res:
     const controller = new UserAuthController(req, res)
     const result: ApiResponse = await controller.changePassword({ old_password, new_password });
     return showOutput(res, result, result.code)
-
 })
 
 router.get('/details', verifyTokenUser, async (req: Request | any, res: Response) => {
     const controller = new UserAuthController(req, res)
     const result: ApiResponse = await controller.getUserDetails();
     return showOutput(res, result, result.code)
-
 })
 
 router.put('/profile', multer.addToMulter.single('profile_pic'), verifyTokenUser, async (req: Request | any, res: Response) => {
@@ -90,23 +83,19 @@ router.put('/profile', multer.addToMulter.single('profile_pic'), verifyTokenUser
     const controller = new UserAuthController(req, res)
     const result: ApiResponse = await controller.updateUserProfile(first_name, last_name, phone_number, country_code, req.file);
     return showOutput(res, result, result.code)
-
 })
-
 
 router.post('/refresh_token', multer.addToMulter.none(), async (req: Request | any, res: Response) => {
     const { refresh_token } = req.body
     const commonController = new UserAuthController(req, res)
     const result: ApiResponse = await commonController.refreshToken(refresh_token);
     return showOutput(res, result, result.code)
-
 })
 
 router.post('/logout', async (req: Request | any, res: Response) => {
     const userAuthController = new UserAuthController(req, res)
     const result: ApiResponse = await userAuthController.logoutUser();
     return showOutput(res, result, result.code)
-
 })
 
 router.delete('/delete_account', verifyTokenUser, async (req: Request | any, res: Response) => {
