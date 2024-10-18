@@ -145,7 +145,7 @@ const AdminAuthHandler = {
             const logoPath = path.join(process.cwd(), './public', 'logo.png');
 
             const to = `${result?.data?.email}`
-            const subject = `Resend Otp`
+            const subject = `Your Verification Code`
 
             const attachments = [
                 {
