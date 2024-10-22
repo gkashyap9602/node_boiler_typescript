@@ -17,6 +17,7 @@ const convertImageToWebp = async (imageInBuffer: any) => {
     // console.log(imageInBuffer, "imageinbuffer")
     return new Promise((resolve) => {
         sharp(imageInBuffer)
+            .rotate()
             .webp({ quality: 50 })
             .toBuffer()
             .then(async (newBuffer) => {
