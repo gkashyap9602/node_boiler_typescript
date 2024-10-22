@@ -17,7 +17,15 @@ const app: Application = express();
 initializeAwsCredential()
 
 // initialize database connection 
-connection()
+connection().then(() => {
+  bootstrapAdmin(() => {
+    console.log("Bootstraping finished!");
+  });
+
+}).catch((err: any) => {
+  console.log(err, "error Bootstraping");
+
+})
 
 app.use(helmet())
 
@@ -62,10 +70,6 @@ app.use("/swagger", serve,
 app.use("/api/v1", Routes);
 
 app.use(handleFileSize) //use it after routes
-
-bootstrapAdmin(() => {
-  console.log("Bootstraping finished!");
-});
 
 app.listen(APP.PORT, () => {
   console.log("Server is running on port", APP.PORT);
