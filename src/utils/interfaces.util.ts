@@ -29,6 +29,7 @@ export interface AppConstant {
     PORT: number | string;
     API_PREFIX: string;
     FRONTEND_URL: string;
+    OUTPUT_BITBUCKET_URL: string;
     BITBUCKET_URL: string;
     ADMIN_CRED_EMAIL: string
     JWT_SECRET: any,

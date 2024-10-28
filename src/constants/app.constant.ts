@@ -27,6 +27,7 @@ const APP: AppConstant = {
   API_PREFIX: process.env.API_PREFIX || "/api/v1",
   FRONTEND_URL: process.env.FRONTEND_URL || '',
   BITBUCKET_URL: process.env.BITBUCKET_URL || '',
+  OUTPUT_BITBUCKET_URL: process.env.OUTPUT_BITBUCKET_URL || '',
   JWT_SECRET: process.env.SECRET || "secret",
   ADMIN_CRED_EMAIL: ADMIN_EMAIL,
   FILE_SIZE: 100, //SPECIFY IN MB
