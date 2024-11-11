@@ -4,7 +4,7 @@
 // import { showResponse } from "../utils/response.util";
 // import * as processQueue from './redis.queue'
 
-//thease files are multer uploaded files in array
+// // thease files are multer uploaded files in array
 // const uploadFiles = async (files: any, media_type: number): Promise<ApiResponse> => {
 //     // console.log(files, "filesfiles")
 //     if (files?.length === 0) {
