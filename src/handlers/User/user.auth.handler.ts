@@ -217,7 +217,7 @@ const UserAuthHandler = {
 
         await services.emailService.nodemail(to, subject, template, attachments)
         delete result?.data.password
-        return showResponse(true, responseMessage.users.register_success, result?.data, statusCodes.SUCCESS)
+        return showResponse(true, responseMessage.users.register_success, {}, statusCodes.SUCCESS)
 
     },//ends
 
@@ -280,7 +280,7 @@ const UserAuthHandler = {
     //         await services.emailService.nodemail(to, subject, template, attachments)
 
     //         if (response.status) {
-    //             return showResponse(true, responseMessage.users.register_success, response.data, statusCodes.SUCCESS);
+    //             return showResponse(true, responseMessage.users.register_success, null, statusCodes.SUCCESS);
     //         }
     //         return showResponse(false, responseMessage.users.register_error, null, statusCodes.API_ERROR);
 
@@ -316,7 +316,7 @@ const UserAuthHandler = {
     //         ]
     //         await services.emailService.nodemail(to, subject, template, attachments)
     //         delete result?.data.password
-    //         return showResponse(true, responseMessage.users.register_success, result?.data, statusCodes.SUCCESS)
+    //         return showResponse(true, responseMessage.users.register_success, null, statusCodes.SUCCESS)
 
     //     } //ends else part
 
