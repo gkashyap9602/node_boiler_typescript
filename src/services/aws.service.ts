@@ -132,6 +132,7 @@ const sendSMSService = async (to: number, Message: string) => {
 
 const uploadFileToS3 = async (files: [any]): Promise<ApiResponse> => {
     console.log(files, "filess>>>")
+    Array.isArray(files) ? files : [files];
     return new Promise((resolve) => {
         try {
             const webpFilesArray: any = [];
@@ -391,6 +392,7 @@ const uploadToS3 = async (files: any[], key?: string) => {
 
 const unlinkFromS3Bucket = async (fileUrls: any) => { //fileUrls should be array of urls and mandatory 
     try {
+        Array.isArray(fileUrls) ? fileUrls : [fileUrls];
         // console.log(files, "filessss uploadToS3 side");
         const s3 = new AWS.S3({
             accessKeyId: await AWS_CREDENTIAL.ACCESSID,
