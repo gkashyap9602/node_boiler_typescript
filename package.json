@@ -20,7 +20,7 @@
       "src"
     ],
     "ext": "ts",
-    "exec": "ts-node src/server.ts"
+    "exec": "npm run lint && ts-node src/server.ts"
   },
   "dependencies": {
     "@hapi/joi": "^17.1.1",

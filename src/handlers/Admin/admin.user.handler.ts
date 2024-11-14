@@ -10,16 +10,6 @@ import statusCodes from '../../constants/statusCodes'
 
 const AdminUserHandler = {
 
-    getUserDetails: async (user_id: string): Promise<ApiResponse> => {
-
-        const getResponse = await findOne(userModel, { _id: user_id, status: { $ne: USER_STATUS.DELETED } }, { password: 0 });
-        if (!getResponse.status) {
-            return showResponse(false, responseMessage.users.invalid_user, null, statusCodes.API_ERROR)
-        }
-
-        return showResponse(true, responseMessage.users.user_detail, getResponse.data, statusCodes.SUCCESS)
-    },
-
     getUsersList: async (sort_column: string = 'createdAt', sort_direction: string = 'desc', page = null, limit = null, search_key: string = '', status?: number): Promise<ApiResponse> => {
 
         const matchObj: any = {
@@ -63,14 +53,21 @@ const AdminUserHandler = {
 
         //add this function where we cannot add query to get count of document example searchKey and add pagination at the end of query
         const { totalCount, aggregation } = await commonHelper.getCountAndPagination(userModel, aggregate, page, limit)
-
         const result = await userModel.aggregate(aggregation)
-        if (result.length === 0) {
-            return showResponse(true, responseMessage?.common.data_retreive_sucess, { result, totalCount }, statusCodes.SUCCESS);
-        }
 
         return showResponse(true, responseMessage?.common.data_retreive_sucess, { result, totalCount }, statusCodes.SUCCESS);
     },
+
+    getUserDetails: async (user_id: string): Promise<ApiResponse> => {
+
+        const getResponse = await findOne(userModel, { _id: user_id, status: { $ne: USER_STATUS.DELETED } }, { password: 0 });
+        if (!getResponse.status) {
+            return showResponse(false, responseMessage.users.invalid_user, null, statusCodes.API_ERROR)
+        }
+
+        return showResponse(true, responseMessage.users.user_detail, getResponse.data, statusCodes.SUCCESS)
+    },
+
 
     updateUserStatus: async (data: any): Promise<ApiResponse> => {
         const { user_id, status } = data;
@@ -82,7 +79,7 @@ const AdminUserHandler = {
         if (!result.status) {
             return showResponse(false, responseMessage.users.invalid_user, null, statusCodes.API_ERROR);
         }
-        
+
         const editObj = { status: parsedStatus }
 
         const response = await findOneAndUpdate(userModel, queryObject, editObj);
