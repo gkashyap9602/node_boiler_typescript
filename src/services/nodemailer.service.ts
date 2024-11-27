@@ -8,7 +8,7 @@ const nodemail = async (to: string, subject: string, body: any, attachments: any
     const SENDGRID_API = await EMAIL_CREDENTIAL.SENDGRID_API
     const SENDGRID_API_KEY = await EMAIL_CREDENTIAL.SENDGRID_API_KEY
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
 
         try {
             const transporter = nodemailer.createTransport({
@@ -30,7 +30,7 @@ const nodemail = async (to: string, subject: string, body: any, attachments: any
             }
             transporter.sendMail(mailOptions, (error: any) => {
                 if (error) {
-                    return reject(showResponse(false, 'Email Sent Error', error, 200));
+                    return resolve(showResponse(false, 'Email Sent Error', error, 200));
                 }
 
                 // console.log(data, "datatatatataemail")
@@ -38,7 +38,7 @@ const nodemail = async (to: string, subject: string, body: any, attachments: any
             })
         } catch (err) {
             console.log("in catch err", err)
-            return reject(showResponse(false, "Error while sending Email", err, 200));
+            return resolve(showResponse(false, "Error while sending Email", err, 200));
         }
     });
 }

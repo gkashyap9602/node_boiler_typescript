@@ -83,12 +83,13 @@ const AdminUserHandler = {
         const editObj = { status: parsedStatus }
 
         const response = await findOneAndUpdate(userModel, queryObject, editObj);
-        if (response.status) {
-            const msg = parsedStatus == 2 ? "Deleted" : parsedStatus == 1 ? "Activated" : "Deactivated"
-            return showResponse(true, `User Account Has Been ${msg}`, {}, statusCodes.SUCCESS);
+        if (!response.status) {
+            return showResponse(false, "Error While Updating User Status", null, statusCodes.API_ERROR);
         }
 
-        return showResponse(false, "Error While Updating User Status", null, statusCodes.API_ERROR);
+        const msg = parsedStatus == 2 ? "Deleted" : parsedStatus == 1 ? "Activated" : "Deactivated"
+        return showResponse(true, `User Account Has Been ${msg}`, {}, statusCodes.SUCCESS);
+
     },
 
     getDashboardData: async (past_day: string = 'MAX'): Promise<ApiResponse> => {

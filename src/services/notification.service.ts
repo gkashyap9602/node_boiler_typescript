@@ -2,15 +2,28 @@ import firebaseAdmin from "../configs/firebase.config";
 import { showResponse } from "../utils/response.util";
 
 const sendTopicNotification = (topic: string, title: string, message: string, data: any) => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         try {
+
+            //no need to parse stringify data in fronend 
+            const stringData = Object.keys(data).reduce((acc: any, key) => {
+                acc[key] = String(data[key]);
+                return acc;
+            }, {});
+
             const messageData = {
-                topic: topic,
+                topic: topic.toString(),
                 notification: {
                     title: title,
                     body: message
                 },
-                data: { data: JSON.stringify(data) }
+                data: stringData,
+                android: {
+                    notification: {
+                        channel_id: "high-priority-channel" as any, // Must match the ID created in the app
+                        priority: "high" as any  // Sets the priority for pre-Oreo devices
+                    }
+                },
             };
 
             firebaseAdmin.messaging().send(messageData)
@@ -20,12 +33,12 @@ const sendTopicNotification = (topic: string, title: string, message: string, da
                 })
                 .catch((error) => {
                     console.log(error);
-                    return reject(showResponse(false, "Failed to send notification", error, 500));
+                    return resolve(showResponse(false, "Failed to send notification", error, 500));
                 });
 
         } catch (err: any) {
             console.log(err);
-            return reject(showResponse(true, "Unable to send notification", err.message, 200));
+            return resolve(showResponse(true, "Unable to send notification", err.message, 200));
         }
     });
 }

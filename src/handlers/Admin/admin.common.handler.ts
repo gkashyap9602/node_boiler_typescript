@@ -16,11 +16,7 @@ const AdminCommonHandler = {
             return showResponse(false, responseMessage.common.already_existed, null, statusCodes.API_ERROR)
         }
 
-        const newObj = {
-            question,
-            answer,
-            status: 1,
-        }
+        const newObj = { question, answer, status: 1 }
         const quesRef = new faqModel(newObj)
         const response = await createOne(quesRef);
 
@@ -65,7 +61,6 @@ const AdminCommonHandler = {
 
     updateCommonContent: async (data: any): Promise<ApiResponse> => {
         const response = await findOneAndUpdate(commonContentModel, {}, data);
-
         if (response.status) {
             return showResponse(true, responseMessage.admin.common_content_updated, response?.data, statusCodes.SUCCESS);
         }

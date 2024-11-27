@@ -8,7 +8,7 @@ import * as commonHelper from "../../helpers/common.helper";
 import adminModel from "../../models/Admin/admin.auth.model";
 import services from '../../services';
 import responseMessage from '../../constants/ResponseMessage'
-import { APP } from '../../constants/app.constant';
+import { APP, USER_STATUS } from '../../constants/app.constant';
 import { ROLE } from '../../constants/app.constant'
 import statusCodes from '../../constants/statusCodes'
 import adminAuthModel from '../../models/Admin/admin.auth.model';
@@ -70,7 +70,6 @@ const AdminAuthHandler = {
         const email_payload = { project_name: APP.PROJECT_NAME, user_name: exists?.data?.first_name, cidLogo: 'unique@Logo', otp }
         const template = await ejs.renderFile(path.join(process.cwd(), './src/templates', 'forgotPassword.ejs'), email_payload);
         const logoPath = path.join(process.cwd(), './public', 'logo.png');
-
         const to = `${exists?.data?.email}`
         const subject = `Forgot Password`
 
@@ -83,17 +82,13 @@ const AdminAuthHandler = {
         ]
 
         const forgotPassMail = await services.emailService.nodemail(to, subject, template, attachments)
-        if (forgotPassMail.status) {
-            const userObj = {
-                otp,
-                // updated_on: moment().unix()
-            }
-            await findByIdAndUpdate(adminModel, userObj, (exists?.data?._id));
-
-            return showResponse(true, responseMessage.users.otp_send, null, statusCodes.SUCCESS);
+        if (!forgotPassMail.status) {
+            return showResponse(false, responseMessage.users.forgot_password_email_error, null, statusCodes.API_ERROR)
         }
 
-        return showResponse(false, responseMessage.users.forgot_password_email_error, null, statusCodes.API_ERROR)
+        await findByIdAndUpdate(adminModel, { otp }, exists?.data?._id);
+        return showResponse(true, responseMessage.users.otp_send, null, statusCodes.SUCCESS);
+
     },
 
     resetPassword: async (data: any): Promise<ApiResponse> => {
@@ -134,36 +129,36 @@ const AdminAuthHandler = {
 
     resendOtp: async (data: any): Promise<ApiResponse> => {
         const { email } = data;
-        const queryObject = { email, status: { $ne: 2 } }
+        const queryObject = { email, status: { $ne: USER_STATUS.DELETED } }
 
         const result = await findOne(adminModel, queryObject);
-        if (result.status) {
-
-            const otp = commonHelper.generateOtp();
-            const email_payload = { project_name: APP.PROJECT_NAME, user_name: result?.data?.first_name, cidLogo: 'unique@Logo', otp }
-            const template = await ejs.renderFile(path.join(process.cwd(), './src/templates', 'registration.ejs'), email_payload);
-            const logoPath = path.join(process.cwd(), './public', 'logo.png');
-
-            const to = `${result?.data?.email}`
-            const subject = `Your Verification Code`
-
-            const attachments = [
-                {
-                    filename: 'logo.png',
-                    path: logoPath,
-                    cid: 'unique@Logo',
-                }
-            ]
-
-            const resendOtp = await services.emailService.nodemail(to, subject, template, attachments)
-            if (resendOtp.status) {
-                await findOneAndUpdate(adminModel, queryObject, { otp })
-
-                return showResponse(true, responseMessage.users.otp_resend, null, statusCodes.SUCCESS);
-            }
+        if (!result.status) {
+            return showResponse(false, responseMessage.users.invalid_email, null, statusCodes.API_ERROR);
         }
 
-        return showResponse(false, responseMessage.users.invalid_email, null, statusCodes.API_ERROR);
+        const otp = commonHelper.generateOtp();
+        const email_payload = { project_name: APP.PROJECT_NAME, user_name: result?.data?.first_name, cidLogo: 'unique@Logo', otp }
+        const template = await ejs.renderFile(path.join(process.cwd(), './src/templates', 'registration.ejs'), email_payload);
+        const logoPath = path.join(process.cwd(), './public', 'logo.png');
+        const to = `${result?.data?.email}`
+        const subject = `Your Verification Code`
+
+        const attachments = [
+            {
+                filename: 'logo.png',
+                path: logoPath,
+                cid: 'unique@Logo',
+            }
+        ]
+
+        const resendOtp = await services.emailService.nodemail(to, subject, template, attachments)
+        if (!resendOtp.status) {
+            return showResponse(false, resendOtp.message, null, statusCodes.API_ERROR);
+        }
+
+        await findOneAndUpdate(adminModel, queryObject, { otp })
+        return showResponse(true, responseMessage.users.otp_resend, null, statusCodes.SUCCESS);
+
     },
 
     changePassword: async (data: any, adminId: string): Promise<ApiResponse> => {

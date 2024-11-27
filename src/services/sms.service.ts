@@ -27,7 +27,7 @@ const sendSMSWithTwillio = async (to: string, body: string) => {
 
 
 const sendSMSWithAwsSNS = (to: number, Message: string) => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         try {
             const sns = new AWS.SNS();
             const params: any = {
@@ -37,7 +37,7 @@ const sendSMSWithAwsSNS = (to: number, Message: string) => {
             // Send the SMS
             sns.publish(params, (err, data) => {
                 if (err) {
-                    return reject(
+                    return resolve(
                         showResponse(
                             false,
                             responseMessage?.common?.sms_sent_error,
@@ -58,7 +58,7 @@ const sendSMSWithAwsSNS = (to: number, Message: string) => {
             });
         } catch (err) {
             console.log("in catch err", err);
-            return reject(
+            return resolve(
                 showResponse(false, responseMessage?.common?.aws_error, err, 200)
             );
         }

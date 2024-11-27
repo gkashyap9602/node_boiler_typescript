@@ -283,8 +283,8 @@ export const getCount = (Model: Model<any>, query: any): Promise<ApiResponse> =>
     });
 };
 
-//examp edit obj -- >> device_info:{device_id:"string",os:string}
 
+//examp edit obj -- >> { $push: { tax_filing: { $each: tax_filing } } }
 //let response = await findAndUpdatePushOrSet(model, { _id: findUser.data._id }, editObj); //edit obj is object that you want to push in array 
 export const findAndUpdatePushOrSet = (Model: Model<any>, matchObj: any, updateMethodWithObject: any): Promise<ApiResponse> => {
     return Model.findOneAndUpdate(matchObj, updateMethodWithObject, { new: true })
@@ -301,7 +301,7 @@ export const findAndUpdatePushOrSet = (Model: Model<any>, matchObj: any, updateM
         });
 };
 
-// { $inc: { fieldNameToIncrement: 1 } }, 
+// { fieldNameToIncrement: 1 },  1 for increment -1 for decrement
 export const findValueAndIncrement = (Model: Model<any>, matchObj: any, incObjectWithValue: any): Promise<ApiResponse> => {
     return new Promise((resolve) => {
         Model.findOneAndUpdate(matchObj, { $inc: incObjectWithValue }, { returnOriginal: true }) //Return the updated document

@@ -43,7 +43,6 @@ const UserAuthHandler = {
         delete exists.data.password
         const refresh_token = await generateJwtToken(exists.data._id, { user_type: 'user', type: "access", role: exists?.data?.user_type }, APP.REFRESH_EXPIRY)
 
-
         return showResponse(true, responseMessage.users.login_success, { ...exists.data, token, refresh_token }, statusCodes.SUCCESS)
 
     },
@@ -348,28 +347,25 @@ const UserAuthHandler = {
         ]
 
         const forgotPassMail = await services.emailService.nodemail(to, subject, template, attachments)
-        if (forgotPassMail.status) {
+        if (!forgotPassMail.status) {
+            return showResponse(false, responseMessage.users.forgot_password_email_error, null, statusCodes.API_ERROR)
 
-            const userObj = {
-                otp,
-                updated_on: moment().unix()
-            }
-
-            await findByIdAndUpdate(userModel, userObj, (exists?.data?._id));
-            return showResponse(true, responseMessage.users.otp_send, null, statusCodes.SUCCESS);
         }
 
-        return showResponse(false, responseMessage.users.forgot_password_email_error, null, statusCodes.API_ERROR)
+        await findByIdAndUpdate(userModel, { otp }, exists?.data?._id);
+        return showResponse(true, responseMessage.users.otp_send, null, statusCodes.SUCCESS);
+
     },
 
     uploadFile: async (data: any): Promise<ApiResponse> => {
         const { file } = data;
+
         const s3Upload = await services.awsService.uploadFileToS3([file])
         if (!s3Upload.status) {
             return showResponse(false, responseMessage?.common.file_upload_error, {}, statusCodes.FILE_UPLOAD_ERROR);
         }
-        return showResponse(true, responseMessage.common.file_upload_success, s3Upload?.data, statusCodes.SUCCESS)
 
+        return showResponse(true, responseMessage.common.file_upload_success, s3Upload?.data, statusCodes.SUCCESS)
     },
 
     resetPassword: async (data: any): Promise<ApiResponse> => {
@@ -411,42 +407,43 @@ const UserAuthHandler = {
             return showResponse(true, responseMessage.users.otp_verify_success, null, statusCodes.SUCCESS);
 
         }
+
         return showResponse(false, responseMessage.users.invalid_otp, null, statusCodes.API_ERROR);
 
     },
     //ques
     resendOtp: async (data: any): Promise<ApiResponse> => {
         const { email } = data;
-        const queryObject = { email, status: { $ne: 2 } }
+        const queryObject = { email, status: { $ne: USER_STATUS.DELETED } }
 
         const result = await findOne(userModel, queryObject);
-        if (result.status) {
-
-            const otp = commonHelper.generateOtp();
-            const email_payload = { project_name: APP.PROJECT_NAME, user_name: result?.data?.first_name, cidLogo: 'unique@Logo', otp }
-            const template = await ejs.renderFile(path.join(process.cwd(), './src/templates', 'registration.ejs'), email_payload);
-            const logoPath = path.join(process.cwd(), './public', 'logo.png');
-
-            const to = `${result?.data?.email}`
-            const subject = `Your Verification Code`
-
-            const attachments = [
-                {
-                    filename: 'logo.png',
-                    path: logoPath,
-                    cid: 'unique@Logo',
-                }
-            ]
-
-            const resendOtp = await services.emailService.nodemail(to, subject, template, attachments)
-            if (resendOtp.status) {
-                await findOneAndUpdate(userModel, queryObject, { otp })
-                return showResponse(true, responseMessage.users.otp_resend, null, statusCodes.SUCCESS);
-            }
-
+        if (!result.status) {
+            return showResponse(false, responseMessage.users.invalid_email, null, statusCodes.API_ERROR);
         }
 
-        return showResponse(false, responseMessage.users.invalid_email, null, statusCodes.API_ERROR);
+        const otp = commonHelper.generateOtp();
+        const email_payload = { project_name: APP.PROJECT_NAME, user_name: result?.data?.first_name, cidLogo: 'unique@Logo', otp }
+        const template = await ejs.renderFile(path.join(process.cwd(), './src/templates', 'registration.ejs'), email_payload);
+        const logoPath = path.join(process.cwd(), './public', 'logo.png');
+
+        const to = `${result?.data?.email}`
+        const subject = `Your Verification Code`
+
+        const attachments = [
+            {
+                filename: 'logo.png',
+                path: logoPath,
+                cid: 'unique@Logo',
+            }
+        ]
+
+        const resendOtp = await services.emailService.nodemail(to, subject, template, attachments)
+        if (!resendOtp.status) {
+            return showResponse(false, resendOtp.message, null, statusCodes.API_ERROR);
+        }
+
+        await findOneAndUpdate(userModel, queryObject, { otp })
+        return showResponse(true, responseMessage.users.otp_resend, null, statusCodes.SUCCESS);
 
     },
 
@@ -513,11 +510,12 @@ const UserAuthHandler = {
         }
 
         const result = await findByIdAndUpdate(userModel, updateObj, user_id);
-        if (result.status) {
-            delete result.data.password
-            return showResponse(true, responseMessage.users.user_account_updated, result.data, statusCodes.SUCCESS);
+        if (!result.status) {
+            return showResponse(false, responseMessage.users.user_account_update_error, null, statusCodes.API_ERROR);
         }
-        return showResponse(false, responseMessage.users.user_account_update_error, null, statusCodes.API_ERROR);
+
+        delete result.data.password
+        return showResponse(true, responseMessage.users.user_account_updated, result.data, statusCodes.SUCCESS);
 
     },
 
@@ -562,7 +560,7 @@ const UserAuthHandler = {
 
         if (result.status) {
             delete result.data.password
-            const msg = status == 2 ? 'deleted' : 'deactivated'
+            const msg = status == USER_STATUS.DELETED ? 'deleted' : 'deactivated'
             return showResponse(true, `User account has been ${msg} `, null, statusCodes.SUCCESS);
         }
         return showResponse(false, 'Error While Perform Operation', null, statusCodes.API_ERROR);
