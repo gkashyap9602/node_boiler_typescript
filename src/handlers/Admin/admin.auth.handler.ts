@@ -124,7 +124,7 @@ const AdminAuthHandler = {
             return showResponse(true, responseMessage.users.otp_verify_success, null, statusCodes.SUCCESS);
         }
 
-        return showResponse(false, `${responseMessage.users.invalid_otp} or email`, null, statusCodes.API_ERROR);
+        return showResponse(false, responseMessage.users.invalid_otp, null, statusCodes.API_ERROR);
     },
 
     resendOtp: async (data: any): Promise<ApiResponse> => {
