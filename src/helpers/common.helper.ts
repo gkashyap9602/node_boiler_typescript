@@ -5,6 +5,7 @@ import mongoose from 'mongoose'
 import { REDIS_CREDENTIAL } from '../constants/app.constant'
 import Queue from 'bull'
 import crypto from 'crypto'
+import { IRecordOfAny } from '../utils/interfaces.util';
 
 
 
@@ -395,6 +396,20 @@ const formatDateTOMonthDayYear = (unixTimestamp: number): string => {
     return `${month}-${day}-${year}`;
 }
 
+function getFirstNameFromEmail(email: string): string {
+    return email.split('@')[0];
+}
+
+
+function keysDeleteFromObject(userData: IRecordOfAny, keys: string[] = ['password', 'otp', 'social_account', 'is_verified', 'status']): void {
+    keys.forEach((key) => {
+        if (key in userData) {
+            delete userData[key];
+        }
+    });
+}
+
+
 export {
     bycrptPasswordHash,
     verifyBycryptHash,
@@ -422,5 +437,7 @@ export {
     cleanCurrency,
     generateTenDigitNumber,
     generateRandomAlphanumeric,
-    formatDateTOMonthDayYear
+    formatDateTOMonthDayYear,
+    getFirstNameFromEmail,
+    keysDeleteFromObject
 }

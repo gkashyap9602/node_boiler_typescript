@@ -7,7 +7,7 @@ import { decodeToken, generateJwtToken } from "../../utils/auth.util";
 import * as commonHelper from "../../helpers/common.helper";
 import adminModel from "../../models/Admin/admin.auth.model";
 import services from '../../services';
-import responseMessage from '../../constants/ResponseMessage'
+import responseMessage from '../../constants/responseMessages'
 import { APP, USER_STATUS } from '../../constants/app.constant';
 import { ROLE } from '../../constants/app.constant'
 import statusCodes from '../../constants/statusCodes'

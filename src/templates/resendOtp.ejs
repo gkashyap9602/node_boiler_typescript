@@ -22,10 +22,10 @@
     >
       <div style="text-align: center; padding: 10px">
         <% if (project_logo) { %>
-          <img src="<%= project_logo %>" alt="logo" style="max-height: 75px; max-width: 75px;" />
-          <% } else { %>
-            <img src="cid:<%= cidLogo %>" alt="logo" style="max-height: 75px; max-width: 75px;" />
-      <% } %>
+            <img src="<%= project_logo %>" alt="logo" style="max-height: 75px; max-width: 75px;" />
+            <% } else { %>
+              <img src="cid:<%= cidLogo %>" alt="logo" style="max-height: 75px; max-width: 75px;" />
+        <% } %>
       </div>
 
       <span
@@ -35,9 +35,8 @@
           text-align: center;
           margin-top: 20px;
         "
+        >Hi, <%= user_name %> </span
       >
-        Hello, <%= user_name %>
-      </span>
 
       <p
         style="
@@ -48,9 +47,9 @@
           margin-top: 20px;
         "
       >
-        You've requested to reset your password.
-        <br />
-        Here is your 4-digit OTP: <%= otp %>
+      Here is your 4 digits  Code 
+      
+      <%= otp %>
       </p>
 
       <p
@@ -61,14 +60,12 @@
           margin-top: 20px;
         "
       >
-        Please use this OTP to reset your password.
-        <br /><br />
-      </p>
+      Please use this code for Authorization:<br /><br />
 
-      <p>
-        Regards,
+
+    </small></label><br /><br /><label>Thanks & Regards</label><br /><label><%= project_name %> Community</label>
+
         <br />
-        <%= project_name %> Community
       </p>
     </div>
   </body>

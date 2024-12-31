@@ -61,9 +61,9 @@ export const insertMany = (Model: Model<any>, dataArray: any[]): Promise<ApiResp
 
 
 
-export const findOneAndUpdate = (Model: Model<any>, matchObj: any, updateObject: any): Promise<ApiResponse> => {
+export const findOneAndUpdate = (Model: Model<any>, matchObj: any, updateObject: any, upsert: boolean = false): Promise<ApiResponse> => {
     return new Promise((resolve) => {
-        Model.findOneAndUpdate(matchObj, { $set: updateObject }, { new: true })
+        Model.findOneAndUpdate(matchObj, { $set: updateObject }, { new: true, upsert: upsert })
             .then(updatedData => {
                 if (updatedData) {
                     const doc = updatedData?.toObject();

@@ -9,7 +9,7 @@ import { APP } from "../constants/app.constant";
 import axios from 'axios';
 import { Readable } from 'stream';
 import ffmpeg from 'fluent-ffmpeg'
-import responseMessage from "../constants/ResponseMessage";
+import responseMessage from "../constants/responseMessages";
 import * as commonHelper from '../helpers/common.helper'
 
 

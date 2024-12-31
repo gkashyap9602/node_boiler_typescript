@@ -13,7 +13,8 @@ const UserSchema = new Schema(
         phone_number: { type: String, default: null },
         country_code: { type: String, default: null },
         is_verified: { type: Boolean, default: false },
-        //***Use When Social Login Used*/
+
+        //******Use When Social Login Used******/
         // social_account: [{
         //     source: {
         //         type: String,
@@ -39,7 +40,7 @@ const UserSchema = new Schema(
         //     Comment: "email for normal created google with google apple with apple "
         // },
 
-        //***Use When InApp Purchase Used */
+        //*****Use When InApp Purchase Used *****/
         // subscription_details: {
         //     product_id: {
         //         type: String,
@@ -74,10 +75,9 @@ const UserSchema = new Schema(
         //         default: 0,
         //         Comment: "moment unix "
         //     },
-
-
         // },
-        //***Use When Stripe Subscription Used */
+
+        //*****Use When Stripe Subscription Used ******/
         // subscription_details: {
         //     is_subscribed: {
         //         type: Boolean,
@@ -109,12 +109,7 @@ const UserSchema = new Schema(
         //         default: null
         //     },
         // },
-
-        os_type: {
-            type: String,
-            default: ''
-        },
-
+        deactivate_by: { type: String },
         status: { type: Number, default: USER_STATUS.ACTIVE },
     },
     {

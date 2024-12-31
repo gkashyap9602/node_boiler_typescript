@@ -72,3 +72,14 @@ export interface RoleType {
     USER: number;
 }
 
+// Define an enum for the email send types
+export enum EmailSendType {
+    REGISTER_EMAIL = 'register',
+    FORGOT_PASSWORD_EMAIL = 'forgot_password',
+    SEND_OTP_EMAIL = 'resend_otp',
+}
+
+
+export interface IRecordOfAny {
+    [key: string]: any; // Allows any type but still provides an index signature
+}

@@ -1,7 +1,7 @@
 import services from "../services";
 import dotenv from "dotenv";
 import path from "path";
-import { AwsCredential, RoleType, AppConstant, DbConstant, EmailConstant, SMSConstant, StripeCredential } from "../utils/interfaces.util";
+import { AwsCredential, RoleType, AppConstant, DbConstant, EmailConstant, SMSConstant, StripeCredential, EmailSendType } from "../utils/interfaces.util";
 import { getEnvironmentParams } from "../utils/config.util";
 const envConfig = dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
@@ -26,13 +26,13 @@ const APP: AppConstant = {
   PORT: process.env.PORT || 8000,
   API_PREFIX: process.env.API_PREFIX || "/api/v1",
   FRONTEND_URL: process.env.FRONTEND_URL || '',
-  BITBUCKET_URL: process.env.BITBUCKET_URL || '',
+  BITBUCKET_URL: process.env.BITBUCKET_URL || 'https://d3es0oifverjtu.cloudfront.net',
   OUTPUT_BITBUCKET_URL: process.env.OUTPUT_BITBUCKET_URL || '',
   JWT_SECRET: process.env.SECRET || "secret",
   ADMIN_CRED_EMAIL: ADMIN_EMAIL,
   FILE_SIZE: 100, //SPECIFY IN MB
   PROJECT_NAME: 'Boilerplate',
-  PROJECT_LOGO: ''
+  PROJECT_LOGO: 'file/file-1735634891680.webp'
 };
 
 const DB: DbConstant = {
@@ -73,6 +73,13 @@ const REDIS_CREDENTIAL = {
   PORT: 6379,
 };
 
+const DEACTIVATE_BY = {
+  USER: 'user',
+  ADMIN: 'admin',
+};
+
+const EMAIL_SEND_TYPE = EmailSendType
+
 //***** MAKE SURE FOR  DEV, PROD, AND STAGE ENVIOREMENENT USER ENV_PARMAS THAT ABOVE SHOWS AND SAVE IT IN AWS WITH SAME NAME  ******/
 const initializeAwsCredential = async () => {
   //call this function when paramters are stored to aws 
@@ -89,7 +96,7 @@ const initializeAwsCredential = async () => {
   AWS_CREDENTIAL = {
     ACCESSID: services.awsService.getParameterFromAWS({ name: ACCESSID }),
     REGION: services.awsService.getParameterFromAWS({ name: REGION }),
-    AWS_SECRET: services.awsService.getSecretFromAWS("digismart"),
+    AWS_SECRET: services.awsService.getSecretFromAWS("digismart_secret"),
     BUCKET_NAME: services.awsService.getParameterFromAWS({ name: BUCKET }),
     COLLECTION_ID_AWS_REKOGNITION: process.env.COLLECTION_ID_AWS_REKOGNITION, //use it if want to use image search in project
   };
@@ -102,4 +109,4 @@ const initializeAwsCredential = async () => {
 
 }
 
-export { STRIPE_CREDENTIAL, DB, APP, ROLE, REDIS_CREDENTIAL, LOGS, USER_STATUS, AWS_CREDENTIAL, EMAIL_CREDENTIAL, SMS_CREDENTIAL, initializeAwsCredential };
+export { STRIPE_CREDENTIAL, DB, APP, ROLE, REDIS_CREDENTIAL, LOGS, USER_STATUS, AWS_CREDENTIAL, EMAIL_CREDENTIAL, SMS_CREDENTIAL, EMAIL_SEND_TYPE, DEACTIVATE_BY, initializeAwsCredential };

@@ -1,7 +1,7 @@
 import { ApiResponse } from "../../utils/interfaces.util";
 import { showResponse } from "../../utils/response.util";
 import { createOne, } from "../../helpers/db.helpers";
-import responseMessage from '../../constants/ResponseMessage'
+import responseMessage from '../../constants/responseMessages'
 import statusCodes from '../../constants/statusCodes'
 import adminContactusModel from '../../models/Admin/admin.contactus.model';
 

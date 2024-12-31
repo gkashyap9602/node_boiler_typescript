@@ -1,7 +1,7 @@
 import { ApiResponse } from "../../utils/interfaces.util";
 import { showResponse } from "../../utils/response.util";
 import { findOne, findAll } from "../../helpers/db.helpers";
-import responseMessage from '../../constants/ResponseMessage'
+import responseMessage from '../../constants/responseMessages'
 import commonContentModel from "../../models/Admin/commonContent.model";
 import faqModel from "../../models/Admin/faq.model";
 import services from "../../services";

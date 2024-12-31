@@ -2,7 +2,7 @@ import { ApiResponse } from "../../utils/interfaces.util";
 import { showResponse } from "../../utils/response.util";
 import { findOne, createOne, findByIdAndUpdate, findOneAndUpdate, findByIdAndRemove } from "../../helpers/db.helpers";
 import commonContentModel from "../../models/Admin/commonContent.model";
-import responseMessage from '../../constants/ResponseMessage'
+import responseMessage from '../../constants/responseMessages'
 import faqModel from '../../models/Admin/faq.model';
 import statusCodes from '../../constants/statusCodes'
 

@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import { Route, Controller, Tags, Post, Body, Get, Security, UploadedFile, FormField, Put, Delete } from 'tsoa'
 import { ApiResponse } from '../../utils/interfaces.util';
-import { validateChangePassword, validateForgotPassword, validateRefreshToken, validateDeleteOrDeactivation, validateUpdateProfile, validateRegister, validateResetPassword, validateUser, validateResendOtp, validateVerifyOtp } from '../../validations/User/user.auth.validator';
+import { validateChangePassword, validateForgotPassword, validateRefreshToken, validateDeleteOrDeactivation, validateUpdateProfile, validateRegister, validateResetPassword, validateUser, validateResendOtp, validateVerifyOtp, validateSocialLogin } from '../../validations/User/user.auth.validator';
 import handler from '../../handlers/User/user.auth.handler'
 import { showResponse } from '../../utils/response.util';
 import statusCodes from '../../constants/statusCodes'
@@ -25,7 +25,7 @@ export default class UserAuthController extends Controller {
      * Get User login
      */
     @Post("/login")
-    public async login(@Body() request: { email: string, password: string, os_type: string }): Promise<ApiResponse> {
+    public async login(@Body() request: { email: string, password: string }): Promise<ApiResponse> {
 
         const validate = validateUser(request);
         if (validate.error) {
@@ -43,16 +43,15 @@ export default class UserAuthController extends Controller {
     //   */
     //     @Post("/social_login")
     //     public async socialLogin(@FormField() login_source: string, @FormField() social_auth: string, @FormField() email: string, @FormField() user_type: number, @FormField() name?: string, @FormField() os_type?: string): Promise<ApiResponse> {
+    //         const request = { login_source, social_auth, email, name, user_type, os_type }
 
-    //         let body = { login_source, social_auth, email, name, user_type, os_type }
-
-    //         const validate = validateSocialLogin(body);
+    //         const validate = validateSocialLogin(request);
     //         if (validate.error) {
     //             return showResponse(false, validate.error.message, null, statusCodes.API_ERROR)
     //         }
 
     //         const wrappedFunc = tryCatchWrapper(handler.social_login);
-    //         return wrappedFunc(body); // Invoking the wrapped function 
+    //         return wrappedFunc(request); // Invoking the wrapped function 
     //     }
     //     //ends
 
@@ -60,8 +59,8 @@ export default class UserAuthController extends Controller {
     * Save a User
     */
     @Post("/register")
-    public async register(@FormField() first_name: string, @FormField() last_name: string, @FormField() email: string, @FormField() password: string, @FormField() os_type: string, @FormField() phone_number?: string, @FormField() country_code?: string, @UploadedFile() profile_pic?: Express.Multer.File): Promise<ApiResponse> {
-        const body = { first_name, last_name, email, password, phone_number, country_code, os_type }
+    public async register(@FormField() first_name: string, @FormField() last_name: string, @FormField() email: string, @FormField() password: string, @FormField() phone_number?: string, @FormField() country_code?: string, @UploadedFile() profile_pic?: Express.Multer.File): Promise<ApiResponse> {
+        const body = { first_name, last_name, email, password, phone_number, country_code }
 
         const validate = validateRegister(body);
         if (validate.error) {
@@ -71,15 +70,6 @@ export default class UserAuthController extends Controller {
         const wrappedFunc = tryCatchWrapper(handler.register);
         return wrappedFunc(body, profile_pic); // Invoking the wrapped function 
 
-    }
-    //ends
-
-    /**
-    * Upload a file
-    */
-    @Post("/upload_file")
-    public async uploadFile(@UploadedFile() file: Express.Multer.File): Promise<ApiResponse> {
-        return handler.uploadFile({ file })
     }
     //ends
 
@@ -103,7 +93,7 @@ export default class UserAuthController extends Controller {
 * Reset password api endpoint
 */
     @Post("/reset_password")
-    public async resetPassword(@Body() request: { email: string, new_password: string }): Promise<ApiResponse> {
+    public async resetPassword(@Body() request: { email: string, new_password: string, otp: string }): Promise<ApiResponse> {
 
         const validate = validateResetPassword(request);
         if (validate.error) {
@@ -196,6 +186,22 @@ export default class UserAuthController extends Controller {
     //ends
 
     /**
+* delete or deactivate user account
+*/
+    @Security('Bearer')
+    @Delete("/delete/deactivate/account")
+    public async deleteOrDeactivateAccount(@Body() request: { status: number }): Promise<ApiResponse> {
+
+        const validate = validateDeleteOrDeactivation(request);
+        if (validate.error) {
+            return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
+        }
+
+        const wrappedFunc = tryCatchWrapper(handler.deleteOrDeactivateAccount);
+        return wrappedFunc(request, this.userId); // Invoking the wrapped function 
+    } //ends
+
+    /**
 *  Refresh tokne api
 * provide refresh token in this api and get new access token 
 */
@@ -223,21 +229,15 @@ export default class UserAuthController extends Controller {
     }
     //ends
 
+
     /**
-* delete user account
-*/
-    @Security('Bearer')
-    @Delete("/delete_account")
-    public async deleteAccount(@Body() request: { user_id: string }): Promise<ApiResponse> {
-
-        const validate = validateDeleteOrDeactivation(request);
-        if (validate.error) {
-            return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
-        }
-
-        const wrappedFunc = tryCatchWrapper(handler.deleteAccount);
-        return wrappedFunc(request); // Invoking the wrapped function 
-    } //ends
+ * Upload a file
+ */
+    @Post("/upload_file")
+    public async uploadFile(@UploadedFile() file: Express.Multer.File): Promise<ApiResponse> {
+        return handler.uploadFile({ file })
+    }
+    //ends
 }
 
 

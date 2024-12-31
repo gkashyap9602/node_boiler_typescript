@@ -1,12 +1,11 @@
 import NodeCache from "node-cache";
-import AWS from 'aws-sdk'
 // import * as fsHelper from '../helpers/fs.helper'
 // AWS.config.update({
 //     region: "us-east-1",
 //     credentials: new AWS.SharedIniFileCredentials({ profile: "digismart" }),
 // });
 import path from 'path'
-import responseMessage from "../constants/ResponseMessage";
+import responseMessage from "../constants/responseMessages";
 import * as mediaHelper from "../helpers/media.helper";
 import fs from 'fs'
 import { showResponse } from "../utils/response.util";
@@ -14,6 +13,7 @@ import { APP, AWS_CREDENTIAL } from "../constants/app.constant";
 import { postParameter, getParameter, ApiResponse } from "../utils/interfaces.util";
 import statusCodes from "../constants/statusCodes";
 
+import AWS from 'aws-sdk'
 const cache = new NodeCache()
 const ssm = new AWS.SSM()
 

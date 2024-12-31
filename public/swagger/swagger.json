@@ -126,9 +126,6 @@
 						"application/json": {
 							"schema": {
 								"properties": {
-									"os_type": {
-										"type": "string"
-									},
 									"password": {
 										"type": "string"
 									},
@@ -137,7 +134,6 @@
 									}
 								},
 								"required": [
-									"os_type",
 									"password",
 									"email"
 								],
@@ -188,9 +184,6 @@
 									"password": {
 										"type": "string"
 									},
-									"os_type": {
-										"type": "string"
-									},
 									"phone_number": {
 										"type": "string"
 									},
@@ -206,50 +199,7 @@
 									"first_name",
 									"last_name",
 									"email",
-									"password",
-									"os_type"
-								]
-							}
-						}
-					}
-				}
-			}
-		},
-		"/user/auth/upload_file": {
-			"post": {
-				"operationId": "UploadFile",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ApiResponse"
-								}
-							}
-						}
-					}
-				},
-				"description": "Upload a file",
-				"tags": [
-					"User Auth Routes"
-				],
-				"security": [],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"multipart/form-data": {
-							"schema": {
-								"type": "object",
-								"properties": {
-									"file": {
-										"type": "string",
-										"format": "binary"
-									}
-								},
-								"required": [
-									"file"
+									"password"
 								]
 							}
 						}
@@ -325,6 +275,9 @@
 						"application/json": {
 							"schema": {
 								"properties": {
+									"otp": {
+										"type": "string"
+									},
 									"new_password": {
 										"type": "string"
 									},
@@ -333,6 +286,7 @@
 									}
 								},
 								"required": [
+									"otp",
 									"new_password",
 									"email"
 								],
@@ -560,6 +514,52 @@
 				}
 			}
 		},
+		"/user/auth/delete/deactivate/account": {
+			"delete": {
+				"operationId": "DeleteOrDeactivateAccount",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "delete or deactivate user account",
+				"tags": [
+					"User Auth Routes"
+				],
+				"security": [
+					{
+						"Bearer": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"status": {
+										"type": "number",
+										"format": "double"
+									}
+								},
+								"required": [
+									"status"
+								],
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
 		"/user/auth/refresh_token": {
 			"post": {
 				"operationId": "RefreshToken",
@@ -624,9 +624,9 @@
 				"parameters": []
 			}
 		},
-		"/user/auth/delete_account": {
-			"delete": {
-				"operationId": "DeleteAccount",
+		"/user/auth/upload_file": {
+			"post": {
+				"operationId": "UploadFile",
 				"responses": {
 					"200": {
 						"description": "Ok",
@@ -639,30 +639,27 @@
 						}
 					}
 				},
-				"description": "delete user account",
+				"description": "Upload a file",
 				"tags": [
 					"User Auth Routes"
 				],
-				"security": [
-					{
-						"Bearer": []
-					}
-				],
+				"security": [],
 				"parameters": [],
 				"requestBody": {
 					"required": true,
 					"content": {
-						"application/json": {
+						"multipart/form-data": {
 							"schema": {
+								"type": "object",
 								"properties": {
-									"user_id": {
-										"type": "string"
+									"file": {
+										"type": "string",
+										"format": "binary"
 									}
 								},
 								"required": [
-									"user_id"
-								],
-								"type": "object"
+									"file"
+								]
 							}
 						}
 					}

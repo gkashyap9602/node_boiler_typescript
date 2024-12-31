@@ -21,7 +21,11 @@
     "
   >
     <div style="text-align: center; padding: 10px">
-      <img src="<%= project_logo %>" alt="logo" style="max-height: 75px; max-width: 75px;" />
+      <% if (project_logo) { %>
+        <img src="<%= project_logo %>" alt="logo" style="max-height: 75px; max-width: 75px;" />
+        <% } else { %>
+          <img src="cid:<%= cidLogo %>" alt="logo" style="max-height: 75px; max-width: 75px;" />
+    <% } %>
     </div>
 
     <span 

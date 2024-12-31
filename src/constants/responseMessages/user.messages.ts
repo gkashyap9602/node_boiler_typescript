@@ -12,7 +12,7 @@ const user_messages = {
     forgot_password_email_sent: "Forgot Password Email has been sent to your registered email address",
     forgot_password_email_error: "Error Occured while sending forgot password email",
     user_account_error: "Something wrong happens to user account",
-    invalid_email: "Mentioned email is not registered with us",
+    invalid_email: "invalid email",
     not_registered: "Mentioned email is not registered with us",
     invalid_phone: "Mentioned phone is not registered with us",
     verification_email_sent: "Email Verification Link has been sent to your email address",
@@ -32,6 +32,7 @@ const user_messages = {
     logout_success: "Logout Success",
     user_detail: "Here is a user details",
     user_account_updated: "User account updated",
+    user_account_has_been: "User account has been",
     user_account_update_error: "Error while updating user account",
     users_list: "Here is a list of users",
     no_users: "No users available so far",
@@ -58,6 +59,7 @@ const user_messages = {
     account_not_active: "your account Is not active Cannot add products to the cart.",
     otp_send: "Otp Send to your email successfully",
     otp_resend: "Otp resend to your email successfully",
+    otp_send_error: "Error While Sending otp to your email",
 
 }
 

@@ -1,9 +1,9 @@
 import joi from '@hapi/joi';
+import { USER_STATUS } from '../../constants/app.constant';
 
 const loginSchema = joi.object({
     email: joi.string().trim().email().min(4).max(35).required(),
     password: joi.string().min(4).max(20).required(),
-    os_type: joi.string().optional(),
 })
 
 const registerSchema = joi.object({
@@ -13,7 +13,6 @@ const registerSchema = joi.object({
     password: joi.string().min(4).max(20).required(),
     phone_number: joi.string().optional().allow(''),
     country_code: joi.string().optional().allow(''),
-    os_type: joi.string().optional(),
 })
 
 
@@ -24,6 +23,7 @@ const forgotPasswordSchema = joi.object({
 const resetPasswordSchema = joi.object({
     email: joi.string().trim().email().min(4).max(35).required(),
     new_password: joi.string().min(4).max(20).required(),
+    otp: joi.string().required(),
 })
 
 const changePasswordSchema = joi.object({
@@ -106,8 +106,8 @@ export const validateRefreshToken = (common: any) => {
 }
 
 const deleteOrDeactivate = joi.object({
-    user_id: joi.string().required(),
-    // status: joi.number().valid(2, 3).error(new Error('only use 2 for delete 3 for deactivate')).required(),
+    // user_id: joi.string().required(),
+    status: joi.number().valid(USER_STATUS.DEACTIVATED, USER_STATUS.DELETED).error(new Error('only use 2 for delete 3 for deactivate')).required(),
 })
 
 export const validateDeleteOrDeactivation = (user: any) => {

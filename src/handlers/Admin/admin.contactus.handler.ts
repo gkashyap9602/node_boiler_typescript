@@ -3,7 +3,7 @@ import ejs from 'ejs'
 import { showResponse } from "../../utils/response.util";
 import { findOne, findByIdAndUpdate, findOneAndDelete } from "../../helpers/db.helpers";
 import adminContactUsModel from "../../models/Admin/admin.contactus.model";
-import responseMessage from '../../constants/ResponseMessage'
+import responseMessage from '../../constants/responseMessages'
 import statusCodes from '../../constants/statusCodes'
 import { APP, USER_STATUS } from "../../constants/app.constant";
 import { getCountAndPagination } from "../../helpers/common.helper";
