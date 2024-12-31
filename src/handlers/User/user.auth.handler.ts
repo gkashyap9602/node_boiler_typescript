@@ -43,7 +43,7 @@ const UserAuthHandler = {
             }
 
         } catch (error) {
-            console.log(error, "error update_device_id")
+            console.log(error, "error update_device_idd")
             return { status: false }
         }
 
