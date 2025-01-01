@@ -28,6 +28,7 @@ const common_messages = {
     already_existed: "Data already existed",
     not_exist: "Data not existed or invalid id",
     invalid_id: "invalid id",
+    invalid_type: "invalid type",
     created_successfully: "created Successfully",
     update_sucess: "Updated Successfully",
     update_failed: "Error occured while updating",

@@ -1,7 +1,7 @@
 import services from "../services";
 import dotenv from "dotenv";
 import path from "path";
-import { AwsCredential, RoleType, AppConstant, DbConstant, EmailConstant, SMSConstant, StripeCredential, EmailSendType } from "../utils/interfaces.util";
+import { AwsCredential, AppConstant, DbConstant, EmailConstant, SMSConstant, StripeCredential } from "../utils/interfaces.util";
 import { getEnvironmentParams } from "../utils/config.util";
 const envConfig = dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
@@ -13,9 +13,9 @@ if (envConfig.error) {
 //2nd parm is project name 
 //3rd parm is project Initial 
 const ENV_PARMAS = getEnvironmentParams(process.env.ENV_MODE, 'BOILERPLATE', 'BP')
-console.log(ENV_PARMAS, "Parms For Aws_Parameter_store")
+console.log(ENV_PARMAS, "Parms_For_Aws_Parameter_store")
 
-const { ADMIN_EMAIL, ACCESSID, REGION, DB_URI, BUCKET, SMTP_APP_PASSWORD, STMP_EMAIL } = ENV_PARMAS
+const { ADMIN_EMAIL, ACCESSID, REGION, DB_URI, BUCKET, SMTP_API_KEY, STMP_EMAIL } = ENV_PARMAS
 
 let AWS_CREDENTIAL: AwsCredential
 let STRIPE_CREDENTIAL: StripeCredential
@@ -28,7 +28,7 @@ const APP: AppConstant = {
   FRONTEND_URL: process.env.FRONTEND_URL || '',
   BITBUCKET_URL: process.env.BITBUCKET_URL || 'https://d3es0oifverjtu.cloudfront.net',
   OUTPUT_BITBUCKET_URL: process.env.OUTPUT_BITBUCKET_URL || '',
-  JWT_SECRET: process.env.SECRET || "secret",
+  JWT_SECRET: process.env.SECRET || "secretOrangeLionShadowPaperFrostWindowGloveSkyrocket",
   ADMIN_CRED_EMAIL: ADMIN_EMAIL,
   FILE_SIZE: 100, //SPECIFY IN MB
   PROJECT_NAME: 'Boilerplate',
@@ -41,8 +41,8 @@ const DB: DbConstant = {
 };
 
 const EMAIL_CREDENTIAL: EmailConstant = {
-  SENDGRID_API: process.env.SENDGRID_API,
-  SENDGRID_API_KEY: process.env.SENDGRID_API_KEY,
+  SMTP_EMAIL: process.env.SMTP_EMAIL,
+  SMTP_API_KEY: process.env.SMTP_API_KEY,
   EMAIL_HOST: process.env.EMAIL_HOST
 }
 
@@ -51,18 +51,6 @@ const SMS_CREDENTIAL: SMSConstant = {
   TWILIO_AUTH_TOKEN: process.env.TWILIO_AUTH_TOKEN,
   SEND_FROM_HOST: process.env.SEND_FROM_HOST,
 }
-
-const ROLE: RoleType = {
-  ADMIN: 1,
-  SUB_ADMIN: 2,
-  USER: 3,
-};
-
-const USER_STATUS = {
-  ACTIVE: 1,
-  DELETED: 2,
-  DEACTIVATED: 3,
-};
 
 const LOGS = {
   morgan: process.env.MORGAN,
@@ -73,26 +61,13 @@ const REDIS_CREDENTIAL = {
   PORT: 6379,
 };
 
-const DEACTIVATE_BY = {
-  USER: 'user',
-  ADMIN: 'admin',
-};
-
-const EMAIL_SEND_TYPE = EmailSendType
-
 //***** MAKE SURE FOR  DEV, PROD, AND STAGE ENVIOREMENENT USER ENV_PARMAS THAT ABOVE SHOWS AND SAVE IT IN AWS WITH SAME NAME  ******/
 const initializeAwsCredential = async () => {
   //call this function when paramters are stored to aws 
-
   DB.MONGODB_URI = services.awsService.getParameterFromAWS({ name: DB_URI })
-
   APP.JWT_SECRET = services.awsService.getParameterFromAWS({ name: "API_SECRET" })
-  EMAIL_CREDENTIAL.SENDGRID_API = services.awsService.getParameterFromAWS({ name: STMP_EMAIL })
-  EMAIL_CREDENTIAL.SENDGRID_API_KEY = services.awsService.getParameterFromAWS({ name: SMTP_APP_PASSWORD })
-
-  // SMS_CREDENTIAL.TWILIO_AUTH_TOKEN = services.awsService.getParameterFromAWS({ name: 'TWILIO_AUTH_TOKEN' })
-  // SMS_CREDENTIAL.TWILIO_AUTH_TOKEN = services.awsService.getParameterFromAWS({ name: 'TWILIO_AUTH_TOKEN' })
-
+  EMAIL_CREDENTIAL.SMTP_EMAIL = services.awsService.getParameterFromAWS({ name: STMP_EMAIL })
+  EMAIL_CREDENTIAL.SMTP_API_KEY = services.awsService.getParameterFromAWS({ name: SMTP_API_KEY })
   AWS_CREDENTIAL = {
     ACCESSID: services.awsService.getParameterFromAWS({ name: ACCESSID }),
     REGION: services.awsService.getParameterFromAWS({ name: REGION }),
@@ -101,6 +76,12 @@ const initializeAwsCredential = async () => {
     COLLECTION_ID_AWS_REKOGNITION: process.env.COLLECTION_ID_AWS_REKOGNITION, //use it if want to use image search in project
   };
 
+
+  //************If Twilio Used In Project**************** */
+  // SMS_CREDENTIAL.TWILIO_AUTH_TOKEN = services.awsService.getParameterFromAWS({ name: 'TWILIO_AUTH_TOKEN' })
+  // SMS_CREDENTIAL.TWILIO_AUTH_TOKEN = services.awsService.getParameterFromAWS({ name: 'TWILIO_AUTH_TOKEN' })
+
+  //************If Stripe Used In Project**************** */
   // STRIPE_CREDENTIAL = {
   //   STRIPE_PB_KEY: services.awsService.getParameterFromAWS({ name: ENV_PARMAS.STRIPE_PB_KEY }),
   //   STRIPE_SEC_KEY: services.awsService.getParameterFromAWS({ name: ENV_PARMAS.STRIPE_SEC_KEY }),
@@ -109,4 +90,14 @@ const initializeAwsCredential = async () => {
 
 }
 
-export { STRIPE_CREDENTIAL, DB, APP, ROLE, REDIS_CREDENTIAL, LOGS, USER_STATUS, AWS_CREDENTIAL, EMAIL_CREDENTIAL, SMS_CREDENTIAL, EMAIL_SEND_TYPE, DEACTIVATE_BY, initializeAwsCredential };
+export {
+  STRIPE_CREDENTIAL,
+  DB,
+  APP,
+  REDIS_CREDENTIAL,
+  LOGS,
+  AWS_CREDENTIAL,
+  EMAIL_CREDENTIAL,
+  SMS_CREDENTIAL,
+  initializeAwsCredential
+};

@@ -47,7 +47,7 @@ export default class CommonController extends Controller {
     /**
 * Post parameter to aws 
 */
-    @Post("/store_paramter_to_aws")
+    @Post("/store_parameter_to_aws")
     public async storeParameterToAws(@FormField() name: string, @FormField() value: string): Promise<ApiResponse> {
 
         const validate = validateStoreParmeterToAws({ name, value });

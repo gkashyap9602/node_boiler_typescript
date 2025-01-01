@@ -29,7 +29,7 @@ const user_messages = {
     login_error: "Unable to login to your account",
     unauthorised_user: "Unauthorised user",
     invalid_user: "Invalid user",
-    logout_success: "Logout Success",
+    logout_success: "Logout Successfully",
     user_detail: "Here is a user details",
     user_account_updated: "User account updated",
     user_account_has_been: "User account has been",

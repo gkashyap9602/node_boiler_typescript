@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import { Route, Controller, Tags, Post, Body, Get, Security, UploadedFile, FormField, Put, Delete } from 'tsoa'
 import { ApiResponse } from '../../utils/interfaces.util';
-import { validateChangePassword, validateForgotPassword, validateRefreshToken, validateDeleteOrDeactivation, validateUpdateProfile, validateRegister, validateResetPassword, validateUser, validateResendOtp, validateVerifyOtp, validateSocialLogin } from '../../validations/User/user.auth.validator';
+import { validateChangePassword, validateForgotPassword, validateRefreshToken, validateDeleteOrDeactivation, validateUpdateProfile, validateRegister, validateResetPassword, validateResendOtp, validateVerifyOtp, validateSocialLogin, validateLoginUser } from '../../validations/User/user.auth.validator';
 import handler from '../../handlers/User/user.auth.handler'
 import { showResponse } from '../../utils/response.util';
 import statusCodes from '../../constants/statusCodes'
@@ -27,7 +27,7 @@ export default class UserAuthController extends Controller {
     @Post("/login")
     public async login(@Body() request: { email: string, password: string }): Promise<ApiResponse> {
 
-        const validate = validateUser(request);
+        const validate = validateLoginUser(request);
         if (validate.error) {
             return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
         }
@@ -187,9 +187,10 @@ export default class UserAuthController extends Controller {
 
     /**
 * delete or deactivate user account
+* 2 for delete 3 for deactivate
 */
     @Security('Bearer')
-    @Delete("/delete/deactivate/account")
+    @Delete("/delete_deactivate")
     public async deleteOrDeactivateAccount(@Body() request: { status: number }): Promise<ApiResponse> {
 
         const validate = validateDeleteOrDeactivation(request);

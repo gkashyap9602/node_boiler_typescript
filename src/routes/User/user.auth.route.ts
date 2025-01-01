@@ -79,7 +79,7 @@ router.put('/profile', multer.addToMulter.single('profile_pic'), verifyTokenUser
 })
 
 
-router.delete('/delete/deactivate/account', verifyTokenUser, async (req: Request | any, res: Response) => {
+router.delete('/delete_deactivate', verifyTokenUser, async (req: Request | any, res: Response) => {
     const { status } = req.body
     const controller = new UserAuthController(req, res)
     const result: ApiResponse = await controller.deleteOrDeactivateAccount({ status });

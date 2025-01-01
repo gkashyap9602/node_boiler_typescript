@@ -1,115 +1,90 @@
-import joi from '@hapi/joi';
-import { USER_STATUS } from '../../constants/app.constant';
+import joi from 'joi';
+import { USER_STATUS } from '../../constants/workflow.constant';
 
-const loginSchema = joi.object({
-    email: joi.string().trim().email().min(4).max(35).required(),
-    password: joi.string().min(4).max(20).required(),
-})
-
-const registerSchema = joi.object({
-    first_name: joi.string().trim().min(2).max(20).required(),
-    last_name: joi.string().required(),
-    email: joi.string().trim().email().min(4).max(35).required(),
-    password: joi.string().min(4).max(20).required(),
-    phone_number: joi.string().optional().allow(''),
-    country_code: joi.string().optional().allow(''),
-})
-
-
-const forgotPasswordSchema = joi.object({
-    email: joi.string().trim().email().min(4).max(35).required()
-})
-
-const resetPasswordSchema = joi.object({
-    email: joi.string().trim().email().min(4).max(35).required(),
-    new_password: joi.string().min(4).max(20).required(),
-    otp: joi.string().required(),
-})
-
-const changePasswordSchema = joi.object({
-    old_password: joi.string().min(4).max(20).required(),
-    new_password: joi.string().min(4).max(20).required(),
-})
-
-
-const verifyOtpSchema = joi.object({
-    email: joi.string().trim().email().min(4).max(35).required(),
-    otp: joi.string().min(4).max(20).required(),
-})
-
-
-const resendOtpSchema = joi.object({
-    email: joi.string().trim().email().min(4).max(35).required(),
-})
-
-const updateProfileSchema = joi.object({
-    first_name: joi.string().optional().allow(''),
-    last_name: joi.string().optional().allow(''),
-    phone_number: joi.string().optional().allow(''),
-    country_code: joi.string().optional().allow(''),
-})
-
-
-const socialLoginSchema = joi.object({
-    login_source: joi.string().valid('google', 'apple', 'insta', 'facebook').required(),
-    email: joi.string().email().required().messages({ 'string.email': 'Invalid email format or domain is not allowed' }),
-    social_auth: joi.string().required(),
-    name: joi.string().optional().allow(''),
-    os_type: joi.string().optional().allow(''),
-    user_type: joi.number().valid(2, 3).error(new Error("2 for trainer 3 for user")).required(),
-})
-
-export const validateVerifyOtp = (user: any) => {
-    return verifyOtpSchema.validate(user)
-}
-export const validateResendOtp = (user: any) => {
-    return resendOtpSchema.validate(user)
-}
-
-export const validateUser = (user: any) => {
-    return loginSchema.validate(user)
+export const validateLoginUser = (user: any) => {
+    return joi.object({
+        email: joi.string().trim().email().min(4).max(35).required(),
+        password: joi.string().min(4).max(20).required(),
+    }).validate(user)
 }
 
 export const validateRegister = (user: any) => {
-    return registerSchema.validate(user)
+    return joi.object({
+        first_name: joi.string().trim().min(2).max(20).required(),
+        last_name: joi.string().required(),
+        email: joi.string().trim().email().min(4).max(35).required(),
+        password: joi.string().min(4).max(20).required(),
+        phone_number: joi.string().optional().allow(''),
+        country_code: joi.string().optional().allow(''),
+    }).validate(user)
+}
+
+export const validateVerifyOtp = (user: any) => {
+    return joi.object({
+        email: joi.string().trim().email().min(4).max(35).required(),
+        otp: joi.string().min(4).max(20).required(),
+    }).validate(user)
+}
+
+export const validateResendOtp = (user: any) => {
+    return joi.object({
+        email: joi.string().trim().email().min(4).max(35).required(),
+    }).validate(user)
 }
 
 export const validateForgotPassword = (user: any) => {
-    return forgotPasswordSchema.validate(user)
+    return joi.object({
+        email: joi.string().trim().email().min(4).max(35).required()
+    }).validate(user)
 }
 
 export const validateResetPassword = (user: any) => {
-    return resetPasswordSchema.validate(user)
+    return joi.object({
+        email: joi.string().trim().email().min(4).max(35).required(),
+        new_password: joi.string().min(4).max(20).required(),
+        otp: joi.string().required(),
+    }).validate(user)
 }
 
 export const validateChangePassword = (user: any) => {
-    return changePasswordSchema.validate(user)
+    return joi.object({
+        old_password: joi.string().min(4).max(20).required(),
+        new_password: joi.string().min(4).max(20).required(),
+    }).validate(user)
 }
 
 export const validateUpdateProfile = (user: any) => {
-    return updateProfileSchema.validate(user)
+    return joi.object({
+        first_name: joi.string().optional().allow(''),
+        last_name: joi.string().optional().allow(''),
+        phone_number: joi.string().optional().allow(''),
+        country_code: joi.string().optional().allow(''),
+    }).validate(user)
 }
 
 
 export const validateSocialLogin = (user: any) => {
-    return socialLoginSchema.validate(user)
+    return joi.object({
+        login_source: joi.string().valid('google', 'apple', 'insta', 'facebook').required(),
+        email: joi.string().email().required().messages({ 'string.email': 'Invalid email format or domain is not allowed' }),
+        social_auth: joi.string().required(),
+        name: joi.string().optional().allow(''),
+        os_type: joi.string().optional().allow(''),
+        user_type: joi.number().valid(2, 3).error(new Error("2 for trainer 3 for user")).required(),
+    }).validate(user)
 }
-
-
-const refreshToken = joi.object({
-    refresh_token: joi.string().trim().required(),
-})
 
 
 export const validateRefreshToken = (common: any) => {
-    return refreshToken.validate(common)
+    return joi.object({
+        refresh_token: joi.string().trim().required(),
+    }).validate(common)
 }
 
-const deleteOrDeactivate = joi.object({
-    // user_id: joi.string().required(),
-    status: joi.number().valid(USER_STATUS.DEACTIVATED, USER_STATUS.DELETED).error(new Error('only use 2 for delete 3 for deactivate')).required(),
-})
 
 export const validateDeleteOrDeactivation = (user: any) => {
-    return deleteOrDeactivate.validate(user)
+    return joi.object({
+        // user_id: joi.string().required(),
+        status: joi.number().valid(USER_STATUS.DEACTIVATED, USER_STATUS.DELETED).error(new Error('only use 2 for delete 3 for deactivate')).required(),
+    }).validate(user)
 }

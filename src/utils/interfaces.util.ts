@@ -45,8 +45,8 @@ export interface DbConstant {
 }
 
 export interface EmailConstant {
-    SENDGRID_API: any;
-    SENDGRID_API_KEY: any;
+    SMTP_EMAIL: any;
+    SMTP_API_KEY: any;
     EMAIL_HOST: any;
 }
 
@@ -77,9 +77,21 @@ export enum EmailSendType {
     REGISTER_EMAIL = 'register',
     FORGOT_PASSWORD_EMAIL = 'forgot_password',
     SEND_OTP_EMAIL = 'resend_otp',
+    REPLY_CONTACTUS_EMAIL = 'reply_contactus',
 }
 
 
-export interface IRecordOfAny {
+export interface IRecordOfAny { //object type interface
     [key: string]: any; // Allows any type but still provides an index signature
+}
+
+
+export interface fromNotification {
+    user_id: string,
+    user_type: number
+}
+
+export interface toNotification {
+    user_id: string,
+    user_type: number
 }

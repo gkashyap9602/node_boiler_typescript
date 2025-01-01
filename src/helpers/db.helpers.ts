@@ -1,10 +1,11 @@
 import { Model } from 'mongoose'
 import { showResponse } from '../utils/response.util';
-import { ApiResponse } from '../utils/interfaces.util';
+import { ApiResponse, fromNotification, IRecordOfAny, toNotification } from '../utils/interfaces.util';
+import statusCodes from '../constants/statusCodes';
 
-export const findOne = (Model: Model<any>, query: object, fields: object = {}, populate?: string | null): Promise<ApiResponse> => {
+export const findOne = (Model: Model<any>, queryObject: IRecordOfAny, fields: IRecordOfAny = {}, populate?: string | null): Promise<ApiResponse> => {
     return new Promise((resolve) => {
-        let queryBuilder = Model.findOne(query, fields)
+        let queryBuilder = Model.findOne(queryObject, fields)
 
         if (populate) {
             queryBuilder = queryBuilder.populate(populate);
@@ -61,9 +62,9 @@ export const insertMany = (Model: Model<any>, dataArray: any[]): Promise<ApiResp
 
 
 
-export const findOneAndUpdate = (Model: Model<any>, matchObj: any, updateObject: any, upsert: boolean = false): Promise<ApiResponse> => {
+export const findOneAndUpdate = (Model: Model<any>, queryObject: IRecordOfAny, updateObj: IRecordOfAny, upsert: boolean = false): Promise<ApiResponse> => {
     return new Promise((resolve) => {
-        Model.findOneAndUpdate(matchObj, { $set: updateObject }, { new: true, upsert: upsert })
+        Model.findOneAndUpdate(queryObject, { $set: updateObj }, { new: true, upsert: upsert })
             .then(updatedData => {
                 if (updatedData) {
                     const doc = updatedData?.toObject();
@@ -82,9 +83,9 @@ export const findOneAndUpdate = (Model: Model<any>, matchObj: any, updateObject:
 };
 
 
-export const findByIdAndUpdate = (Model: Model<any>, DataObject: any, _id: string): Promise<ApiResponse> => {
+export const findByIdAndUpdate = (Model: Model<any>, _id: string, updateObj: IRecordOfAny): Promise<ApiResponse> => {
     return new Promise((resolve) => {
-        Model.findByIdAndUpdate(_id, { $set: DataObject }, { new: true })
+        Model.findByIdAndUpdate(_id, { $set: updateObj }, { new: true })
             .then(updatedData => {
                 const doc = updatedData?.toObject();
                 const response = showResponse(true, 'Success', doc);
@@ -98,9 +99,9 @@ export const findByIdAndUpdate = (Model: Model<any>, DataObject: any, _id: strin
 };
 
 
-export const updateMany = (Model: Model<any>, DataObject: any, filter: any): Promise<ApiResponse> => {
+export const updateMany = (Model: Model<any>, queryObject: IRecordOfAny, updateObj: any): Promise<ApiResponse> => {
     return new Promise((resolve) => {
-        Model.updateMany(filter, { $set: DataObject }, { multi: true, new: true }).lean()
+        Model.updateMany(queryObject, { $set: updateObj }, { multi: true, new: true }).lean()
             .exec()
             .then((updatedData: any) => {
                 const response = showResponse(true, 'Success', updatedData);
@@ -114,9 +115,9 @@ export const updateMany = (Model: Model<any>, DataObject: any, filter: any): Pro
 };
 
 
-export const deleteMany = (Model: Model<any>, query: any): Promise<ApiResponse> => {
+export const deleteMany = (Model: Model<any>, queryObject: IRecordOfAny): Promise<ApiResponse> => {
     return new Promise((resolve) => {
-        Model.deleteMany(query)
+        Model.deleteMany(queryObject)
             .then(() => {
                 const response = showResponse(true, 'Success');
                 resolve(response);
@@ -128,9 +129,9 @@ export const deleteMany = (Model: Model<any>, query: any): Promise<ApiResponse> 
     });
 };
 
-export const findOneAndDelete = (Model: Model<any>, match_obj: object): Promise<ApiResponse> => {
+export const findOneAndDelete = (Model: Model<any>, queryObject: IRecordOfAny): Promise<ApiResponse> => {
     return new Promise((resolve) => {
-        Model.findOneAndDelete(match_obj)
+        Model.findOneAndDelete(queryObject)
             .lean()
             .then(result => {
                 if (!result) {
@@ -148,9 +149,9 @@ export const findOneAndDelete = (Model: Model<any>, match_obj: object): Promise<
     });
 };
 
-export const findByIdAndRemove = (Model: Model<any>, id: string): Promise<ApiResponse> => {
+export const findByIdAndRemove = (Model: Model<any>, _id: string): Promise<ApiResponse> => {
     return new Promise((resolve) => {
-        Model.findOneAndDelete({ _id: id })
+        Model.findOneAndDelete({ _id: _id })
             .lean()
             .then(result => {
                 if (!result) {
@@ -234,9 +235,9 @@ export const addItemInArray = (Model: Model<any>, mainIdObj: any, arrayKey: stri
         });
 };
 
-export const findAll = (Model: Model<any>, query: object, project_field?: string, pagination?: number | null, sort?: any | null, populate?: string | null): Promise<ApiResponse> => {
+export const findAll = (Model: Model<any>, queryObject: IRecordOfAny, project_field?: string, pagination?: number | null, sort?: any | null, populate?: string | null): Promise<ApiResponse> => {
     return new Promise((resolve) => {
-        let queryBuilder = Model.find(query, project_field);
+        let queryBuilder = Model.find(queryObject, project_field);
 
         if (pagination) {
             queryBuilder = queryBuilder.limit(pagination);
@@ -271,9 +272,9 @@ export const findAll = (Model: Model<any>, query: object, project_field?: string
 };
 
 
-export const getCount = (Model: Model<any>, query: any): Promise<ApiResponse> => {
+export const getCount = (Model: Model<any>, queryObject: IRecordOfAny): Promise<ApiResponse> => {
     return new Promise((resolve) => {
-        Model.countDocuments(query).then((result: any) => {
+        Model.countDocuments(queryObject).then((result: any) => {
             const response = showResponse(true, 'Success', result, 200);
             resolve(response);
         }).catch((err: any) => {
@@ -286,8 +287,8 @@ export const getCount = (Model: Model<any>, query: any): Promise<ApiResponse> =>
 
 //examp edit obj -- >> { $push: { tax_filing: { $each: tax_filing } } }
 //let response = await findAndUpdatePushOrSet(model, { _id: findUser.data._id }, editObj); //edit obj is object that you want to push in array 
-export const findAndUpdatePushOrSet = (Model: Model<any>, matchObj: any, updateMethodWithObject: any): Promise<ApiResponse> => {
-    return Model.findOneAndUpdate(matchObj, updateMethodWithObject, { new: true })
+export const findAndUpdatePushOrSet = (Model: Model<any>, queryObject: IRecordOfAny, updateMethodWithObject: any): Promise<ApiResponse> => {
+    return Model.findOneAndUpdate(queryObject, updateMethodWithObject, { new: true })
         .lean() // return plain object
         .then((updatedData: any) => {
             if (updatedData) {
@@ -302,9 +303,9 @@ export const findAndUpdatePushOrSet = (Model: Model<any>, matchObj: any, updateM
 };
 
 // { fieldNameToIncrement: 1 },  1 for increment -1 for decrement
-export const findValueAndIncrement = (Model: Model<any>, matchObj: any, incObjectWithValue: any): Promise<ApiResponse> => {
+export const findValueAndIncrement = (Model: Model<any>, queryObject: IRecordOfAny, incObjectWithValue: any): Promise<ApiResponse> => {
     return new Promise((resolve) => {
-        Model.findOneAndUpdate(matchObj, { $inc: incObjectWithValue }, { returnOriginal: true }) //Return the updated document
+        Model.findOneAndUpdate(queryObject, { $inc: incObjectWithValue }, { returnOriginal: true }) //Return the updated document
             .then(updatedData => {
                 if (updatedData) {
                     const doc = updatedData?.toObject();
@@ -322,45 +323,22 @@ export const findValueAndIncrement = (Model: Model<any>, matchObj: any, incObjec
     });
 };
 
-
-// interface from {
-//     user_id: string,
-//     user_type: number
-// }
-// interface to {
-//     user_id: string,
-//     user_type: number
-// }
-
-// export const saveNotification = async (from: from, to: to, title: string, message: string): Promise<ApiResponse> => {
+// export const saveNotification = async (from: fromNotification, to: toNotification, title: string, message: string): Promise<ApiResponse> => {
 //     try {
+//         const obj: any = { title, message, from, to }
 
-//         let obj = {
-//             title,
-//             message,
-//             from,
-//             to,
-
-//         }
-
-//         let ref = new adminNotificationModel(obj)
-
-//         let result = await createOne(ref)
-//         console.log(result, "notification saved")
-
+//         const ref = new adminNotificationModel(obj)
+//         const result = await createOne(ref)
 //         if (result.status) {
-//             return showResponse(true, 'Notification Saved Successfully', result?.data, null, 200);
+//             return showResponse(true, 'Notification Saved Successfully', result?.data, statusCodes.SUCCESS);
 //         }
 
-//         return showResponse(false, 'Notification Failed tO saved', null, null, 400);
-
+//         return showResponse(false, 'Notification Failed to saved', null, statusCodes.API_ERROR);
 
 //     } catch (error: any) {
-//         return showResponse(false, error?.message ?? error, null, null, 400);
-
+//         return showResponse(false, error?.message ?? error, null, statusCodes.API_ERROR);
 //     }
-
-// };
+// }//ends
 
 
 

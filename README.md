@@ -37,7 +37,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-`1`.Node.js (^v18.17.0)and npm installed on your machine
+`1`.Node.js (^v18.17.0 or greater ) and npm installed on your machine
 
 `2`. Install AWS-CLI in Your System
 
@@ -219,21 +219,21 @@ npm run dev
 
    `1`. [**ts-node**](https://www.npmjs.com/package/ts-node) (^10.9.2) **:** TypeScript execution environment for running TypeScript code directly without transpiling to JavaScript.
 
-   `2`. [**tsoa**](https://www.npmjs.com/package/tsoa) (^6.1.4) **:** TypeScript OpenAPI (Swagger) toolchain for generating Swagger documentation and API client code from TypeScript controllers and models.
+   `2`. [**tsoa**](https://www.npmjs.com/package/tsoa) (^6.6.0) **:** TypeScript OpenAPI (Swagger) toolchain for generating Swagger documentation and API client code from TypeScript controllers and models.
 
-   `3`. [**swagger-ui-express**](https://www.npmjs.com/package/swagger-ui-express) (^5.0.0) **:** Express middleware for serving Swagger UI, which provides an interactive API documentation interface based on Swagger/OpenAPI specifications.
+   `3`. [**swagger-ui-express**](https://www.npmjs.com/package/swagger-ui-express) (^5.0.1) **:** Express middleware for serving Swagger UI, which provides an interactive API documentation interface based on Swagger/OpenAPI specifications.
 
-   `4`. [**aws-sdk**](https://www.npmjs.com/package/aws-sdk) (^2.1577.0) **:** Official AWS SDK for JavaScript, providing APIs for interacting with various AWS services such as S3, DynamoDB, and more.
+   `4`. [**aws-sdk**](https://www.npmjs.com/package/aws-sdk) (^2.1692.0) **:** Official AWS SDK for JavaScript, providing APIs for interacting with various AWS services such as S3, DynamoDB, and more.
 
-   `5`. [**@hapi/joi**](https://www.npmjs.com/package/@hapi/joi) (^1.10.0) **:** Powerful schema description language and data validator for JavaScript and Node.js, used for validating and sanitizing input data.
+   `5`. [**@joi**](https://www.npmjs.com/package/joi) (^17.13.3) **:** Powerful schema description language and data validator for JavaScript and Node.js, used for validating and sanitizing input data.
 
    `6`. [**bcryptjs**](https://www.npmjs.com/package/bcryptjs) (^2.4.3) **:** Library for hashing passwords securely, commonly used for user authentication and password management.
 
-   `7`. [**ejs**](https://www.npmjs.com/package/ejs) (^3.1.9) **:** Embedded JavaScript templating engine for generating dynamic HTML content based on template files, often used for server-side rendering in Node.js applications.
+   `7`. [**ejs**](https://www.npmjs.com/package/ejs) (^3.1.10) **:** Embedded JavaScript templating engine for generating dynamic HTML content based on template files, often used for server-side rendering in Node.js applications.
 
-   `8`. [**bull**](https://www.npmjs.com/package/bull) (^4.12.2) **:** Node.js library for handling distributed background jobs and message queues, providing robust queue management and processing capabilities.
+   `8`. [**bull**](https://www.npmjs.com/package/bull) (^4.16.5) **:** Node.js library for handling distributed background jobs and message queues, providing robust queue management and processing capabilities.
 
-   `9`. [**winston**](https://www.npmjs.com/package/winston) (^3.12.0) **:** Versatile logging library for Node.js, offering multiple transports (e.g., console, file, database) and customizable logging levels for efficient log management and debugging.
+   `9`. [**winston**](https://www.npmjs.com/package/winston) (^3.17.0) **:** Versatile logging library for Node.js, offering multiple transports (e.g., console, file, database) and customizable logging levels for efficient log management and debugging.
 
    `10`. [**morgan**](https://www.npmjs.com/package/morgan) (^1.10.0) **:** HTTP request logger middleware for Express.js, used for logging HTTP request details such as method, URL, status code, and response time for debugging and monitoring purposes.
 

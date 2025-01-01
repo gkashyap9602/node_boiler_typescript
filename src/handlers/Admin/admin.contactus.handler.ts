@@ -5,7 +5,8 @@ import { findOne, findByIdAndUpdate, findOneAndDelete } from "../../helpers/db.h
 import adminContactUsModel from "../../models/Admin/admin.contactus.model";
 import responseMessage from '../../constants/responseMessages'
 import statusCodes from '../../constants/statusCodes'
-import { APP, USER_STATUS } from "../../constants/app.constant";
+import { APP } from "../../constants/app.constant";
+import { EMAIL_SEND_TYPE, USER_STATUS } from "../../constants/workflow.constant";
 import { getCountAndPagination } from "../../helpers/common.helper";
 import path from 'path';
 import services from "../../services";
@@ -44,7 +45,7 @@ const AdminContactUsHandler = {
 
     async getContactDetail(data: any): Promise<ApiResponse> {
         const { contact_id } = data;
-        
+
         const response = await findOne(adminContactUsModel, { _id: contact_id, status: { $ne: USER_STATUS.DELETED } }, {});
         if (!response.status) {
             return showResponse(false, responseMessage?.common?.contactUs_not_found, null, statusCodes.API_ERROR);
@@ -73,24 +74,18 @@ const AdminContactUsHandler = {
         if (!exists.status) {
             return showResponse(false, responseMessage.common.not_exist, null, statusCodes.API_ERROR)
         }
+        const userData = exists?.data
 
-        const logo = `${APP.BITBUCKET_URL}/${APP.PROJECT_LOGO}`;
-        const email_payload = { project_name: APP.PROJECT_NAME, user_name: exists?.data?.name, exists, project_logo: logo, reply: html }
-        const template = await ejs.renderFile(path.join(process.cwd(), './src/templates', 'contactUs.ejs'), email_payload);
-        //send email of attachment to admin
-        const to = `${exists?.data?.email}`
-        const subject = `Reply To Your Query `
-
-        const sendReply = await services.emailService.nodemail(to, subject, template)
-
-        if (sendReply.status) {
-            const userObj = { is_reply: true }
-
-            await findByIdAndUpdate(adminContactUsModel, userObj, (exists?.data?._id));
-            return showResponse(true, 'reply sent successfully', null, statusCodes.SUCCESS);
+        const to = userData?.email
+        const user_name = `${userData?.first_name} ${userData?.last_name}`
+        const payload = { user_name, html }
+        const emailSend = await services.emailService.sendEmailViaNodemail(EMAIL_SEND_TYPE.REPLY_CONTACTUS_EMAIL, to, payload)
+        if (!emailSend.status) {
+            return showResponse(false, responseMessage.common.email_sent_error, null, statusCodes.API_ERROR)
         }
 
-        return showResponse(false, 'error while sending reply', null, statusCodes.API_ERROR)
+        await findByIdAndUpdate(adminContactUsModel, userData?._id, { is_reply: true });
+        return showResponse(true, responseMessage.common.email_sent_success, null, statusCodes.SUCCESS);
 
     },
 }

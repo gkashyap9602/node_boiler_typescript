@@ -26,7 +26,7 @@ export default class AdminAuthController extends Controller {
      * Get Admin login
      */
     @Post("/login")
-    public async login(@Body() request: { email: string, password: string, os_type: string }): Promise<ApiResponse> {
+    public async login(@Body() request: { email: string, password: string }): Promise<ApiResponse> {
 
         const validate = validateAdminLogin(request);
         if (validate.error) {
@@ -58,7 +58,7 @@ export default class AdminAuthController extends Controller {
 * Reset password api endpoint
 */
     @Post("/reset_password")
-    public async resetPassword(@Body() request: { email: string, new_password: string }): Promise<ApiResponse> {
+    public async resetPassword(@Body() request: { email: string, new_password: string, otp: string }): Promise<ApiResponse> {
 
         const validate = validateResetPassword(request);
         if (validate.error) {

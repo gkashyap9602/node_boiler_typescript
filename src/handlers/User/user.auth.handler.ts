@@ -1,10 +1,11 @@
 import { ApiResponse } from "../../utils/interfaces.util";
 import { showResponse } from "../../utils/response.util";
-import { findOne, createOne, findByIdAndUpdate, findOneAndUpdate, findAndUpdatePushOrSet, findOneAndDelete } from "../../helpers/db.helpers";
+import { findOne, findByIdAndUpdate, findOneAndUpdate, findAndUpdatePushOrSet, findOneAndDelete } from "../../helpers/db.helpers";
 import { decodeToken, generateJwtToken } from "../../utils/auth.util";
 import * as commonHelper from "../../helpers/common.helper";
 import userAuthModel from "../../models/User/user.auth.model";
-import { APP, DEACTIVATE_BY, EMAIL_SEND_TYPE, ROLE, USER_STATUS } from '../../constants/app.constant';
+import { APP } from '../../constants/app.constant';
+import { DEACTIVATE_BY, EMAIL_SEND_TYPE, ROLE, USER_STATUS } from '../../constants/workflow.constant';
 import services from '../../services';
 import responseMessage from '../../constants/responseMessages'
 import statusCodes from '../../constants/statusCodes'
@@ -46,17 +47,16 @@ const UserAuthHandler = {
             console.log(error, "error update_device_idd")
             return { status: false }
         }
-
-    },
+    },//ends
 
     login: async (data: any): Promise<ApiResponse> => {
         const { email, password } = data;
 
-        const query = { email, status: { $ne: USER_STATUS.DELETED } }
+        const queryObject = { email, status: { $ne: USER_STATUS.DELETED } }
         //****if social login is used in project then user this query**** 
-        // const query = { email, account_source: 'email', status: { $ne: USER_STATUS.DELETED } }
+        // const queryObject = { email, account_source: 'email', status: { $ne: USER_STATUS.DELETED } }
 
-        const findUser = await findOne(userAuthModel, query);
+        const findUser = await findOne(userAuthModel, queryObject);
         if (!findUser.status) {
             return showResponse(false, responseMessage.users.not_registered, null, statusCodes.API_ERROR)
         }
@@ -82,13 +82,12 @@ const UserAuthHandler = {
         }
 
         return showResponse(true, responseMessage.users.login_success, { ...userData, token, refresh_token }, statusCodes.SUCCESS)
-
-    },
+    },//ends
 
     // social_login: async (data: any) => {
     //     const { login_source, social_auth, email, name = undefined, user_type, profile_pic } = data;
 
-    //     const query = {
+    //     const queryObject = {
     //         status: { $ne: USER_STATUS.DELETED }, //user not deleted
     //         $or: [
     //             {
@@ -111,7 +110,7 @@ const UserAuthHandler = {
     //     } //match condition ends 
 
     //     //check user exist or not 
-    //     const findUser = await findOne(userAuthModel, query);
+    //     const findUser = await findOne(userAuthModel, queryObject);
     //     //if account already existed then update details and return token with login success
     //     if (findUser.status) {
     //         //if account deactivate by admin throw error 
@@ -178,9 +177,9 @@ const UserAuthHandler = {
     register: async (data: any, profile_pic: any): Promise<ApiResponse> => {
         const { email, password } = data;
 
-        const matchObj = { email, status: { $ne: USER_STATUS.DELETED } }
+        const queryObject = { email, status: { $ne: USER_STATUS.DELETED } }
         // check if user exists && if email is verified 
-        const exists = await findOne(userAuthModel, matchObj);
+        const exists = await findOne(userAuthModel, queryObject);
         if (exists.status && exists.data?.is_verified) {
             return showResponse(false, responseMessage.common.email_already, null, statusCodes.API_ERROR)
         }
@@ -200,7 +199,7 @@ const UserAuthHandler = {
             data.profile_pic = s3Upload?.data[0]
         }
 
-        const result = await findOneAndUpdate(userAuthModel, matchObj, data, true) //upsert true
+        const result = await findOneAndUpdate(userAuthModel, queryObject, data, true) //upsert true
         if (!result.status) {
             return showResponse(false, responseMessage.common.error_while_create_acc, null, statusCodes.API_ERROR)
         }
@@ -225,7 +224,7 @@ const UserAuthHandler = {
     //     const { email, password } = data;
 
     //     //check if match or not by email
-    //     const query = {
+    //     const queryObject = {
     //         status: { $ne: USER_STATUS.DELETED },
     //         $or: [
     //             { email },//if account email find then throw error already existed 
@@ -253,14 +252,14 @@ const UserAuthHandler = {
     //     }
 
     //     // check if user exists
-    //     const findUser = await findOne(userAuthModel, query);
+    //     const findUser = await findOne(userAuthModel, queryObject);
     //     //if user exist with same account source then throw error
     //     if (findUser.status && findUser?.data?.account_source == 'email') {
     //         return showResponse(false, responseMessage.users.email_already, null, statusCodes.API_ERROR);
     //     }
 
     //     //if exist with different source (through google apple login) then update details and account source else insert new account entry
-    //     const result = await findOneAndUpdate(userAuthModel, query, payload, true);//upsert true
+    //     const result = await findOneAndUpdate(userAuthModel, queryObject, payload, true);//upsert true
     //     if (!result.status) {
     //         return showResponse(false, responseMessage.users.register_error, null, statusCodes.API_ERROR);
     //     }
@@ -277,9 +276,9 @@ const UserAuthHandler = {
     forgotPassword: async (data: any): Promise<ApiResponse> => {
         const { email } = data;
 
-        const query = { email, status: { $ne: USER_STATUS.DELETED } }
+        const queryObject = { email, status: { $ne: USER_STATUS.DELETED } }
         // check if user exists
-        const exists = await findOne(userAuthModel, query);
+        const exists = await findOne(userAuthModel, queryObject);
         if (!exists.status) {
             return showResponse(false, responseMessage.users.not_registered, null, statusCodes.API_ERROR)
         }
@@ -296,10 +295,10 @@ const UserAuthHandler = {
             return showResponse(false, responseMessage.users.forgot_password_email_error, null, statusCodes.API_ERROR)
         }
 
-        await findByIdAndUpdate(userAuthModel, { otp }, userData?._id);  //update otp in database
+        await findByIdAndUpdate(userAuthModel, userData?._id, { otp });  //update otp in database
         return showResponse(true, responseMessage.users.otp_send, null, statusCodes.SUCCESS);
 
-    },
+    },//ends
 
     resetPassword: async (data: any): Promise<ApiResponse> => {
         const { email, new_password, otp } = data;
@@ -318,29 +317,26 @@ const UserAuthHandler = {
         const hashed = await commonHelper.bycrptPasswordHash(new_password)
         const updateObj = { otp: '', password: hashed }
 
-        const updated = await findByIdAndUpdate(userAuthModel, updateObj, result?.data?._id)
+        const updated = await findByIdAndUpdate(userAuthModel, result?.data?._id, updateObj)
         if (!updated.status) {
             return showResponse(false, responseMessage.users.password_reset_error, null, statusCodes.API_ERROR)
         }
         return showResponse(true, responseMessage.users.password_reset_success, null, statusCodes.SUCCESS)
-
-    },
+    },//ends
 
     verifyOtp: async (data: any): Promise<ApiResponse> => {
         const { email, otp } = data;
 
         const queryObject = { email, otp, status: { $ne: USER_STATUS.DELETED } }
 
-        const findUser = await findOne(userAuthModel, queryObject)
-        if (!findUser.status) {
+        const exists = await findOne(userAuthModel, queryObject)
+        if (!exists.status) {
             return showResponse(false, responseMessage.users.invalid_otp, null, statusCodes.API_ERROR);
         }
 
         await findOneAndUpdate(userAuthModel, queryObject, { is_verified: true })
         return showResponse(true, responseMessage.users.otp_verify_success, null, statusCodes.SUCCESS);
-
-    },
-    //ques
+    },//ends
     resendOtp: async (data: any): Promise<ApiResponse> => {
         const { email } = data;
         const queryObject = { email, status: { $ne: USER_STATUS.DELETED } }
@@ -356,15 +352,14 @@ const UserAuthHandler = {
         const user_name = `${userData?.first_name} ${userData?.last_name}`
         const payload = { user_name, otp }
 
-        const emailSend = await services.emailService.sendEmailViaNodemail(EMAIL_SEND_TYPE.FORGOT_PASSWORD_EMAIL, to, payload)
+        const emailSend = await services.emailService.sendEmailViaNodemail(EMAIL_SEND_TYPE.SEND_OTP_EMAIL, to, payload)
         if (!emailSend.status) {
             return showResponse(false, responseMessage.users.otp_send_error, null, statusCodes.API_ERROR)
         }
 
         await findOneAndUpdate(userAuthModel, queryObject, { otp })
         return showResponse(true, responseMessage.users.otp_resend, null, statusCodes.SUCCESS);
-
-    },
+    },//ends
 
     changePassword: async (data: any, userId: string): Promise<ApiResponse> => {
         const { old_password, new_password } = data;
@@ -380,24 +375,22 @@ const UserAuthHandler = {
         }
 
         const hashed = await commonHelper.bycrptPasswordHash(new_password)
-        const result = await findByIdAndUpdate(userAuthModel, { password: hashed }, userId)
+        const result = await findByIdAndUpdate(userAuthModel, userId, { password: hashed })
         if (!result.status) {
             return showResponse(false, responseMessage.users.password_change_failed, null, statusCodes.API_ERROR)
         }
         return showResponse(true, responseMessage.users.password_change_successfull, null, statusCodes.SUCCESS)
-
-    },
+    },//ends
 
     getUserDetails: async (userId: string): Promise<ApiResponse> => {
 
-        const result = await findOne(userAuthModel, { _id: userId }, { password: 0 });
+        const result = await findOne(userAuthModel, { _id: userId }, { password: 0, createdAt: 0, updatedAt: 0, social_account: 0, otp: 0 });
         if (!result.status) {
             return showResponse(false, responseMessage.users.invalid_user, null, statusCodes.API_ERROR)
         }
 
         return showResponse(true, responseMessage.users.user_detail, result.data, statusCodes.SUCCESS)
-
-    },
+    },//ends
 
     updateUserProfile: async (data: any, user_id: string, profile_pic: any): Promise<ApiResponse> => {
         const { first_name, last_name, phone_number, country_code } = data
@@ -419,28 +412,26 @@ const UserAuthHandler = {
             updateObj.profile_pic = s3Upload?.data[0]
         }
 
-        const result = await findByIdAndUpdate(userAuthModel, updateObj, user_id);
+        const result = await findByIdAndUpdate(userAuthModel, user_id, updateObj);
         if (!result.status) {
             return showResponse(false, responseMessage.users.user_account_update_error, null, statusCodes.API_ERROR);
         }
 
         commonHelper.keysDeleteFromObject(result?.data)
         return showResponse(true, responseMessage.users.user_account_updated, result.data, statusCodes.SUCCESS);
-
-    },
+    },//ends
 
     async deleteOrDeactivateAccount(data: any, user_id: string): Promise<ApiResponse> {
         const { status } = data
 
-        const result = await findByIdAndUpdate(userAuthModel, { status }, user_id);
+        const result = await findByIdAndUpdate(userAuthModel, user_id, { status });
         if (!result.status) {
             return showResponse(false, responseMessage.users.user_account_update_error, null, statusCodes.API_ERROR);
         }
 
         const msg = status == USER_STATUS.DELETED ? 'deleted' : 'deactivated'
         return showResponse(true, `${responseMessage.users.user_account_has_been} ${msg} `, null, statusCodes.SUCCESS);
-
-    },
+    },//ends
 
     async refreshToken(data: any): Promise<ApiResponse> {
         const { refresh_token } = data
@@ -465,16 +456,15 @@ const UserAuthHandler = {
             return showResponse(false, responseMessage.middleware.deleted_account, null, statusCodes.ACCOUNT_DELETED);
         }
 
-        const accessToken = await generateJwtToken(findUser.data._id, { user_type: 'user', type: "access", role: findUser?.data?.user_type }, APP.ACCESS_EXPIRY)
-        const refreshToken = await generateJwtToken(findUser.data._id, { user_type: 'user', type: "access", role: findUser?.data?.user_type }, APP.REFRESH_EXPIRY)
+        const accessToken = await generateJwtToken(findUser.data?._id, { user_type: 'user', type: "access", role: findUser?.data?.user_type }, APP.ACCESS_EXPIRY)
+        const refreshToken = await generateJwtToken(findUser.data?._id, { user_type: 'user', type: "access", role: findUser?.data?.user_type }, APP.REFRESH_EXPIRY)
 
         return showResponse(true, 'Tokens Generated Successfully', { token: accessToken, refresh_token: refreshToken }, statusCodes.SUCCESS)
-
-    },
+    },//ends
 
     async logoutUser(): Promise<ApiResponse> {
         return showResponse(true, responseMessage.users.logout_success, null, statusCodes.SUCCESS)
-    },
+    },//ends
 
     uploadFile: async (data: any): Promise<ApiResponse> => {
         const { file } = data;
@@ -486,7 +476,6 @@ const UserAuthHandler = {
 
         return showResponse(true, responseMessage.common.file_upload_success, s3Upload?.data, statusCodes.SUCCESS)
     },
-
-}
+}//ends
 
 export default UserAuthHandler 

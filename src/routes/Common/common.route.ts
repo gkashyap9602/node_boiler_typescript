@@ -8,7 +8,7 @@ const { addToMulter } = middlewares.fileUpload.multer
 
 const router = express.Router()
 
-router.post('/store_paramter_to_aws', addToMulter.none(), async (req: Request | any, res: Response) => {
+router.post('/store_parameter_to_aws', addToMulter.none(), async (req: Request | any, res: Response) => {
     const { name, value } = req.body
     const controller = new CommonController(req, res)
     const result: ApiResponse = await controller.storeParameterToAws(name, value);

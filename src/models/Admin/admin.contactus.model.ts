@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { USER_STATUS } from '../../constants/app.constant';
+import { USER_STATUS } from '../../constants/workflow.constant';
 
 const ContactUsSchema = new Schema({
     name: {

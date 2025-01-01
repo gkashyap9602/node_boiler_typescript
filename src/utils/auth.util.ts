@@ -5,7 +5,8 @@ import Users from '../models/User/user.auth.model'
 import adminModel from '../models/Admin/admin.auth.model'
 import { showResponse } from './response.util';
 import responseMessage from '../constants/responseMessages';
-import { APP, USER_STATUS } from '../constants/app.constant';
+import { APP } from '../constants/app.constant';
+import { USER_STATUS } from '../constants/workflow.constant';
 import statusCodes from '../constants/statusCodes';
 
 //
@@ -31,7 +32,7 @@ export const verifyToken = async (req: Request) => {
         let token: any = req.headers['access_token'] || req.headers['authorization'] || req.headers['Authorization'];
 
         if (!token) {
-            return showResponse(false, "Token not provided ", {}, statusCodes.AUTH_TOKEN_ERROR);
+            return showResponse(false, "Token not present in headers ", {}, statusCodes.AUTH_TOKEN_ERROR);
         }
 
         if (token.startsWith('Bearer ')) {
@@ -77,7 +78,7 @@ export const verifyToken = async (req: Request) => {
 
             const response = await findOne(adminModel, { _id: decoded_data._id ?? decoded_data.id });
             if (!response.status) {
-                return showResponse(false, responseMessage?.admin?.invalid_admin_msg, {}, statusCodes.AUTH_TOKEN_ERROR);
+                return showResponse(false, responseMessage?.admin?.admin_not_exist, {}, statusCodes.AUTH_TOKEN_ERROR);
             }
             const adminData = response.data;
             if (adminData.status === USER_STATUS.DELETED) {
@@ -93,9 +94,9 @@ export const verifyToken = async (req: Request) => {
 
             return showResponse(false, responseMessage?.users?.invalid_user, {}, statusCodes.AUTH_TOKEN_ERROR);
         }
-    } catch (err) {
-        console.error(err);
-        return showResponse(false, "Authentication error", {}, statusCodes.AUTH_TOKEN_ERROR);
+    } catch (err: any) {
+        const errorMsg = err?.message ? err.message : err
+        return showResponse(false, errorMsg, {}, statusCodes.AUTH_TOKEN_ERROR);
     }
 }
 

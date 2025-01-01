@@ -514,7 +514,7 @@
 				}
 			}
 		},
-		"/user/auth/delete/deactivate/account": {
+		"/user/auth/delete_deactivate": {
 			"delete": {
 				"operationId": "DeleteOrDeactivateAccount",
 				"responses": {
@@ -529,7 +529,7 @@
 						}
 					}
 				},
-				"description": "delete or deactivate user account",
+				"description": "delete or deactivate user account\n2 for delete 3 for deactivate",
 				"tags": [
 					"User Auth Routes"
 				],
@@ -720,7 +720,7 @@
 				"parameters": []
 			}
 		},
-		"/common/store_paramter_to_aws": {
+		"/common/store_parameter_to_aws": {
 			"post": {
 				"operationId": "StoreParameterToAws",
 				"responses": {
@@ -1389,9 +1389,6 @@
 						"application/json": {
 							"schema": {
 								"properties": {
-									"os_type": {
-										"type": "string"
-									},
 									"password": {
 										"type": "string"
 									},
@@ -1400,7 +1397,6 @@
 									}
 								},
 								"required": [
-									"os_type",
 									"password",
 									"email"
 								],
@@ -1479,6 +1475,9 @@
 						"application/json": {
 							"schema": {
 								"properties": {
+									"otp": {
+										"type": "string"
+									},
 									"new_password": {
 										"type": "string"
 									},
@@ -1487,6 +1486,7 @@
 									}
 								},
 								"required": [
+									"otp",
 									"new_password",
 									"email"
 								],

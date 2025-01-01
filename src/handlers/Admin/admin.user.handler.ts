@@ -5,7 +5,7 @@ import { findOne, findOneAndUpdate, getCount } from "../../helpers/db.helpers";
 import * as commonHelper from "../../helpers/common.helper";
 import responseMessage from '../../constants/responseMessages'
 import userModel from '../../models/User/user.auth.model';
-import { ROLE, USER_STATUS } from '../../constants/app.constant'
+import { ROLE, USER_STATUS } from '../../constants/workflow.constant'
 import statusCodes from '../../constants/statusCodes'
 
 const AdminUserHandler = {
