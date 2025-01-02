@@ -75,7 +75,7 @@ const UserAuthHandler = {
         commonHelper.keysDeleteFromObject(userData) //delete password & other keys from response
         const token = await generateJwtToken(userData?._id, { user_type: 'user', type: "access", role: userData?.user_type }, APP.ACCESS_EXPIRY)
         const refresh_token = await generateJwtToken(userData?._id, { user_type: 'user', type: "access", role: userData?.user_type }, APP.REFRESH_EXPIRY)
-
+         
         //if account deactivated by user then reactivate account
         if (userData?.status == USER_STATUS.DEACTIVATED && userData?.deactivate_by === DEACTIVATE_BY.USER) {
             await findOneAndUpdate(userAuthModel, { _id: userData?._id }, { status: USER_STATUS.ACTIVE, deactivate_by: '' })   //activate user again
@@ -422,15 +422,21 @@ const UserAuthHandler = {
     },//ends
 
     async deleteOrDeactivateAccount(data: any, user_id: string): Promise<ApiResponse> {
-        const { status } = data
+        const { status, reason } = data
 
-        const result = await findByIdAndUpdate(userAuthModel, user_id, { status });
+        const updateObj = {
+            status,
+            deactivate_by: DEACTIVATE_BY.USER,
+            ...(reason && { reason }),
+        }
+
+        const result = await findByIdAndUpdate(userAuthModel, user_id, updateObj);
         if (!result.status) {
             return showResponse(false, responseMessage.users.user_account_update_error, null, statusCodes.API_ERROR);
         }
 
         const msg = status == USER_STATUS.DELETED ? 'deleted' : 'deactivated'
-        return showResponse(true, `${responseMessage.users.user_account_has_been} ${msg} `, null, statusCodes.SUCCESS);
+        return showResponse(true, `${responseMessage.users.user_account_has_been} ${msg}`, null, statusCodes.SUCCESS);
     },//ends
 
     async refreshToken(data: any): Promise<ApiResponse> {

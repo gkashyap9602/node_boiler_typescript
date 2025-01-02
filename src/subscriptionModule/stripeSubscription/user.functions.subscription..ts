@@ -286,14 +286,14 @@
 
 //             console.log(updateObj, "updateObjWebhhok")
 //             console.log(subscription_id, "subscription_id")
-//             const matchObj = {
+//             const queryObject = {
 //                 $or: [
 //                     { 'subscription_details.subscription_id': subscription_id },
 //                     { _id: sponser_id }  // Assuming 'sponser_id' is in the 'metadata' field
 //                 ]
 //             };
 
-//             let updateSponser = await findOneAndUpdate(sponserAuthModel, matchObj, updateObj);
+//             let updateSponser = await findOneAndUpdate(sponserAuthModel, queryObject, updateObj);
 //             if (!updateSponser.status) {
 //                 console.log("update failed", updateSponser)
 //                 return showResponse(false, responseMessage?.common.save_failed, null, statusCodes.API_ERROR);

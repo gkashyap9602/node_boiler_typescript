@@ -2,6 +2,7 @@ import Stripe from 'stripe';
 import { STRIPE_CREDENTIAL } from "../constants/app.constant";
 import { showResponse } from "../utils/response.util";
 import { generateTenDigitNumber } from './common.helper';
+import statusCodes from '../constants/statusCodes';
 
 
 const initialiseStripe = async () => {
@@ -34,10 +35,10 @@ const createPaymentIntent = async (user_data: any, metadata: any, amount: number
 
     const stripePiResponse = await stripe.paymentIntents.create(paymentIntent);
     if (stripePiResponse) {
-        return showResponse(true, 'Request success', stripePiResponse, 200);
+        return showResponse(true, 'Request success', stripePiResponse, statusCodes.SUCCESS);
     }
 
-    return showResponse(false, 'Request failed!!', null, 400);
+    return showResponse(false, 'Request failed!!', null, statusCodes.API_ERROR);
 
 
 }
@@ -47,10 +48,10 @@ const createCustomerId = async (email: string) => {
 
     const customer = await stripe.customers.create({ email: email }); //first tym acc create
     if (customer) {
-        return showResponse(true, 'Request success', customer, 200);
+        return showResponse(true, 'Request success', customer, statusCodes.SUCCESS);
     }
 
-    return showResponse(false, 'Request failed!!', null, 400);
+    return showResponse(false, 'Request failed!!', null, statusCodes.API_ERROR);
 
 }
 
@@ -70,15 +71,15 @@ const getCustomerDetails = async (data: any) => {
                 }
             }
 
-            return showResponse(true, 'Customer Details is', customer, 200);
+            return showResponse(true, 'Customer Details is', customer, statusCodes.SUCCESS);
 
         }
-        return showResponse(false, 'stripe customer get Request failed!!', null, 400);
+        return showResponse(false, 'stripe customer get Request failed!!', null, statusCodes.API_ERROR);
 
     } catch (error: any) {
         // Handle errors
         const errorMessage = error.raw ? error.raw.message : error.message;
-        return showResponse(false, errorMessage, null, 400);
+        return showResponse(false, errorMessage, null, statusCodes.API_ERROR);
 
     }
 }
@@ -88,15 +89,15 @@ const getPaymentIntent = async (paymentIntentId: string) => {
         const stripe: any = await initialiseStripe()
         const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
         if (paymentIntent) {
-            return showResponse(true, 'Intent Status Is', paymentIntent, 200);
+            return showResponse(true, 'Intent Status Is', paymentIntent, statusCodes.SUCCESS);
 
         }
-        return showResponse(false, 'Request failed!!', null, 400);
+        return showResponse(false, 'Request failed!!', null, statusCodes.API_ERROR);
 
     } catch (error: any) {
         // Handle errors
         const errorMessage = error.raw ? error.raw.message : error.message;
-        return showResponse(false, errorMessage, null, 400);
+        return showResponse(false, errorMessage, null, statusCodes.API_ERROR);
 
     }
 }
@@ -135,15 +136,15 @@ const getSubscriptionList = async () => {
         });
 
         if (subscriptionList) {
-            return showResponse(true, 'Subscription List  is', subscriptionList, 200);
+            return showResponse(true, 'Subscription List  is', subscriptionList, statusCodes.SUCCESS);
 
         }
-        return showResponse(false, 'Request failed!!', null, 400);
+        return showResponse(false, 'Request failed!!', null, statusCodes.API_ERROR);
 
     } catch (error: any) {
         // Handle errors
         const errorMessage = error.raw ? error.raw.message : error.message;
-        return showResponse(false, errorMessage, null, 400);
+        return showResponse(false, errorMessage, null, statusCodes.API_ERROR);
 
     }
 }
@@ -171,15 +172,15 @@ const getProductList = async (limit = 10) => {
             });
 
 
-            return showResponse(true, 'Subscription List is Status Is', sortedSubscriptionList, 200);
+            return showResponse(true, 'Subscription List is Status Is', sortedSubscriptionList, statusCodes.SUCCESS);
 
         }
-        return showResponse(false, 'Request failed!!', null, 400);
+        return showResponse(false, 'Request failed!!', null, statusCodes.API_ERROR);
 
     } catch (error: any) {
         // Handle errors
         const errorMessage = error.raw ? error.raw.message : error.message;
-        return showResponse(false, errorMessage, null, 400);
+        return showResponse(false, errorMessage, null, statusCodes.API_ERROR);
 
     }
 }
@@ -195,15 +196,15 @@ const getSubscriptionProductDetails = async (product_id: string) => {
             const priceValueData = await getPriceValue(subscriptionProduct?.default_price);
             const productData = { ...subscriptionProduct, price_value: priceValueData?.data }
 
-            return showResponse(true, 'Product Details Found ', productData, 200);
+            return showResponse(true, 'Product Details Found ', productData, statusCodes.SUCCESS);
 
         }
-        return showResponse(false, 'Request failed!!', null, 400);
+        return showResponse(false, 'Request failed!!', null, statusCodes.API_ERROR);
 
     } catch (error: any) {
         // Handle errors
         const errorMessage = error.raw ? error.raw.message : error.message;
-        return showResponse(false, errorMessage, 'Product DetailsRequest failed!!', 400);
+        return showResponse(false, errorMessage, 'Product DetailsRequest failed!!', statusCodes.API_ERROR);
 
     }
 }
@@ -242,9 +243,9 @@ const purchaseSubscriptionStripe = async (stripe_customer_id: string, price_id: 
 
         const subscription = await stripe.subscriptions.create(subscription_options);
         if (subscription) {
-            return showResponse(true, 'Subscription Created Successfully', subscription, 200);
+            return showResponse(true, 'Subscription Created Successfully', subscription, statusCodes.SUCCESS);
         }
-        return showResponse(false, 'Subscription Creation Request failed!!', null, 400);
+        return showResponse(false, 'Subscription Creation Request failed!!', null, statusCodes.API_ERROR);
 
     } catch (error: any) {
         // Handle errors
@@ -262,15 +263,15 @@ const getPriceValue = async (price_id: string) => {
         if (getPrice) {
             // Extract the numeric value
             const amount = getPrice.unit_amount_decimal / 100  // Divide by 100 to convert from cents to dollars
-            return showResponse(true, 'Price is', amount, 200);
+            return showResponse(true, 'Price is', amount, statusCodes.SUCCESS);
 
         }
-        return showResponse(false, 'Request failed!!', null, 400);
+        return showResponse(false, 'Request failed!!', null, statusCodes.API_ERROR);
 
     } catch (error: any) {
         // Handle errors
         const errorMessage = error.raw ? error.raw.message : error.message;
-        return showResponse(false, errorMessage, null, 400);
+        return showResponse(false, errorMessage, null, statusCodes.API_ERROR);
 
     }
 }
@@ -281,15 +282,15 @@ const saveCardStripe = async (customer_id: string, token_id: string) => {
 
         const savecard = await stripe.customers.createSource(customer_id, { source: token_id });
         if (savecard) {
-            return showResponse(true, 'Card Saved Successfully', savecard, 200);
+            return showResponse(true, 'Card Saved Successfully', savecard, statusCodes.SUCCESS);
         }
-        return showResponse(false, 'Card Saved Request failed!!', null, 400);
+        return showResponse(false, 'Card Saved Request failed!!', null, statusCodes.API_ERROR);
 
     } catch (error: any) {
         // Handle errors
         // console.error('Error Card Saved :', error);
         const errorMessage = error.raw ? error.raw.message : error.message;
-        return showResponse(false, errorMessage, 'Card Saved Request failed!!', 400);
+        return showResponse(false, errorMessage, 'Card Saved Request failed!!', statusCodes.API_ERROR);
 
     }
 }
@@ -301,15 +302,15 @@ const getSavedResourceList = async (customer_id: string) => {
 
         const cardList = await stripe.customers.listSources(customer_id, { object: 'card' });
         if (cardList) {
-            return showResponse(true, 'Card List Fetched Successfully', cardList?.data, 200);
+            return showResponse(true, 'Card List Fetched Successfully', cardList?.data, statusCodes.SUCCESS);
         }
-        return showResponse(false, 'get Resource List Request failed!!', null, 400);
+        return showResponse(false, 'get Resource List Request failed!!', null, statusCodes.API_ERROR);
 
     } catch (error: any) {
         // Handle errors
         console.error('Resource List Request failed :', error);
         const errorMessage = error.raw ? error.raw.message : error.message;
-        return showResponse(false, errorMessage, null, 400);
+        return showResponse(false, errorMessage, null, statusCodes.API_ERROR);
 
     }
 }
@@ -320,9 +321,9 @@ const cancelUserSubscription = async (subscription_id: string) => {
 
         const subscriptionCancel = await stripe.subscriptions.cancel(subscription_id);
         if (subscriptionCancel) {
-            return showResponse(true, 'Subscription Cancel Successfully', subscriptionCancel, 200);
+            return showResponse(true, 'Subscription Cancel Successfully', subscriptionCancel, statusCodes.SUCCESS);
         }
-        return showResponse(false, 'Error While Subscription Cancel ', null, 400);
+        return showResponse(false, 'Error While Subscription Cancel ', null, statusCodes.API_ERROR);
 
     } catch (error: any) {
         // Handle errors
@@ -339,15 +340,15 @@ const deleteCardStripe = async (customer_id: string, card_id: string) => {
 
         const deleteCard = await stripe.customers.deleteSource(customer_id, card_id);
         if (deleteCard) {
-            return showResponse(true, 'Card Deleted Successfully', deleteCard, 200);
+            return showResponse(true, 'Card Deleted Successfully', deleteCard, statusCodes.SUCCESS);
         }
-        return showResponse(false, 'Card Deleted Request failed!!', null, 400);
+        return showResponse(false, 'Card Deleted Request failed!!', null, statusCodes.API_ERROR);
 
     } catch (error: any) {
         // Handle errors
         console.error('Error Card Deleted :', error);
         const errorMessage = error.raw ? error.raw.message : error.message;
-        return showResponse(false, errorMessage, 'Card Deleted Request failed!!', 400);
+        return showResponse(false, errorMessage, 'Card Deleted Request failed!!', statusCodes.API_ERROR);
 
     }
 }
@@ -358,15 +359,15 @@ const getCardTokenDetails = async (token_id: string) => {
 
         const getToken = await stripe.tokens.retrieve(token_id);
         if (getToken) {
-            return showResponse(true, 'Token Details fetch Successfully', getToken, 200);
+            return showResponse(true, 'Token Details fetch Successfully', getToken, statusCodes.SUCCESS);
         }
-        return showResponse(false, 'token Details Request failed!!', null, 400);
+        return showResponse(false, 'token Details Request failed!!', null, statusCodes.API_ERROR);
 
     } catch (error: any) {
         // Handle errors
         console.error('token Details Request failed :', error);
         const errorMessage = error.raw ? error.raw.message : error.message;
-        return showResponse(false, errorMessage, 'token Details Request failed!!', 400);
+        return showResponse(false, errorMessage, 'token Details Request failed!!', statusCodes.API_ERROR);
 
     }
 }
@@ -378,15 +379,15 @@ const getCustomerCardDetails = async (customer_id: string, token_id: string) => 
         // const getCard = await stripe.customers.retrieveSource(customer_id, token_id);
         const getCard = await stripe.customers.retrieveSource(customer_id, token_id);
         if (getCard) {
-            return showResponse(true, 'Card Details fetch Successfully', getCard, 200);
+            return showResponse(true, 'Card Details fetch Successfully', getCard, statusCodes.SUCCESS);
         }
-        return showResponse(false, 'Card Details Request failed!!', null, 400);
+        return showResponse(false, 'Card Details Request failed!!', null, statusCodes.API_ERROR);
 
     } catch (error: any) {
         // Handle errors
         console.error('Card Details Request failed :', error);
         const errorMessage = error.raw ? error.raw.message : error.message;
-        return showResponse(false, errorMessage, 'Card Details Request failed!!', 400);
+        return showResponse(false, errorMessage, 'Card Details Request failed!!', statusCodes.API_ERROR);
 
     }
 }
@@ -402,15 +403,15 @@ const checkDuplicateCardStripe = async (customer_id: string, token_id: string) =
             const cardsDataList = cardList?.data
             const isDuplicate = cardsDataList.some((card: any) => card.fingerprint === cardFingerPrint)
             if (isDuplicate) {
-                return showResponse(true, 'Card is already added', null, 200);
+                return showResponse(true, 'Card is already added', null, statusCodes.SUCCESS);
             }
         }
-        return showResponse(false, 'Failed To Check Card Details', null, 400);
+        return showResponse(false, 'Failed To Check Card Details', null, statusCodes.API_ERROR);
 
     } catch (error: any) {
         console.error('Failed Check Card Details :', error);
         const errorMessage = error.raw ? error.raw.message : error.message;
-        return showResponse(false, errorMessage, null, 400);
+        return showResponse(false, errorMessage, null, statusCodes.API_ERROR);
 
     }
 } //ends
@@ -438,16 +439,16 @@ const createProductPackage = async (payload: any) => { //interval is like month 
 
         const product = await stripe.products.create(productPayload);
         if (product) {
-            return showResponse(true, 'Product and Price Created Successfully', product, 200);
+            return showResponse(true, 'Product and Price Created Successfully', product, statusCodes.SUCCESS);
         }
 
-        return showResponse(false, 'Product creation failed!', null, 400);
+        return showResponse(false, 'Product creation failed!', null, statusCodes.API_ERROR);
 
     } catch (error: any) {
         // Handle errors
         console.error('Error creating product and price:', error);
         const errorMessage = error.raw ? error.raw.message : error.message;
-        return showResponse(false, errorMessage, null, 400);
+        return showResponse(false, errorMessage, null, statusCodes.API_ERROR);
     }
 };
 
@@ -502,16 +503,16 @@ const updateProductPackage = async (payload: any) => { //interval is like month 
 
         const productUpdate = await stripe.products.update(product_id, productUpdatePayload);
         if (productUpdate) {
-            return showResponse(true, 'Product Updated Successfully', productUpdate, 200);
+            return showResponse(true, 'Product Updated Successfully', productUpdate, statusCodes.SUCCESS);
         }
 
-        return showResponse(false, 'Product Updation failed!', null, 400);
+        return showResponse(false, 'Product Updation failed!', null, statusCodes.API_ERROR);
 
     } catch (error: any) {
         // Handle errors
         console.error('Error updating product and price:', error);
         const errorMessage = error.raw ? error.raw.message : error.message;
-        return showResponse(false, errorMessage, null, 400);
+        return showResponse(false, errorMessage, null, statusCodes.API_ERROR);
     }
 };
 
@@ -521,16 +522,16 @@ const deleteProductPackage = async (product_id: string) => { //interval is like 
 
         const productDelete = await stripe.products.del(product_id);
         if (productDelete && productDelete?.deleted) {
-            return showResponse(true, 'Product Deleted Successfully', productDelete, 200);
+            return showResponse(true, 'Product Deleted Successfully', productDelete, statusCodes.SUCCESS);
         }
 
-        return showResponse(false, 'Product Deleted failed!', null, 400);
+        return showResponse(false, 'Product Deleted failed!', null, statusCodes.API_ERROR);
 
     } catch (error: any) {
         // Handle errors
         console.error('Error Deleted product and price:', error);
         const errorMessage = error.raw ? error.raw.message : error.message;
-        return showResponse(false, errorMessage, null, 400);
+        return showResponse(false, errorMessage, null, statusCodes.API_ERROR);
     }
 };
 
@@ -541,16 +542,16 @@ const activeOrInactiveProductPrice = async (price_id: string, price_status: bool
 
         const priceUpdate = await stripe.prices.update(price_id, { lookup_key: 'MY_LOOKUP_KEY', active: price_status, });
         if (priceUpdate) {
-            return showResponse(true, 'Product Price Update Successfully', priceUpdate, 200);
+            return showResponse(true, 'Product Price Update Successfully', priceUpdate, statusCodes.SUCCESS);
         }
 
-        return showResponse(false, 'Product Price Update failed!', null, 400);
+        return showResponse(false, 'Product Price Update failed!', null, statusCodes.API_ERROR);
 
     } catch (error: any) {
         // Handle errors
         console.error('Error Update product and price:', error);
         const errorMessage = error.raw ? error.raw.message : error.message;
-        return showResponse(false, errorMessage, null, 400);
+        return showResponse(false, errorMessage, null, statusCodes.API_ERROR);
     }
 };
 
@@ -566,11 +567,11 @@ const createPayout = async (data: any, currency = 'usd') => {
             destination: cardId,
         });
         // return payout;
-        return showResponse(true, 'payout create Successfully', payout, 200);
+        return showResponse(true, 'payout create Successfully', payout, statusCodes.SUCCESS);
     } catch (error: any) {
         console.error('Error creating payout:', error);
         const errorMessage = error.raw ? error.raw.message : error.message;
-        return showResponse(false, errorMessage, null, 400);
+        return showResponse(false, errorMessage, null, statusCodes.API_ERROR);
     }
 }
 
@@ -580,13 +581,13 @@ const getCustomer = async (customerId: string) => {
         const stripe: any = await initialiseStripe()
         const customer = await stripe.customers.retrieve(customerId);
 
-        return showResponse(true, 'customer Details Fetch Successfully', customer, 200);
+        return showResponse(true, 'customer Details Fetch Successfully', customer, statusCodes.SUCCESS);
 
         // return customer;
     } catch (error: any) {
         console.error('Error retrieving customer:', error);
         const errorMessage = error.raw ? error.raw.message : error.message;
-        return showResponse(false, errorMessage, null, 400);
+        return showResponse(false, errorMessage, null, statusCodes.API_ERROR);
     }
 }
 const createStripeConnectedAccount = async (email: string) => {
@@ -616,15 +617,15 @@ const createStripeConnectedAccount = async (email: string) => {
         });
         // Return the created account object
         if (!account) {
-            return showResponse(false, 'account Creation failed', null, 400);
+            return showResponse(false, 'account Creation failed', null, statusCodes.API_ERROR);
         }
-        return showResponse(true, 'account Created Successfully', { account, accountLink }, 200);
+        return showResponse(true, 'account Created Successfully', { account, accountLink }, statusCodes.SUCCESS);
 
 
     } catch (error: any) {
         console.error('Error creating Stripe account:', error);
         const errorMessage = error.raw ? error.raw.message : error.message;
-        return showResponse(false, errorMessage, null, 400);
+        return showResponse(false, errorMessage, null, statusCodes.API_ERROR);
     }
 };
 
@@ -634,13 +635,13 @@ const reteriveStripeConnectedAccount = async (account_id: string) => {
         const stripe: any = await initialiseStripe()
         const account = await stripe.accounts.retrieve(account_id);
         if (account) {
-            return showResponse(true, 'account Details Fetch Successfully', account, 200);
+            return showResponse(true, 'account Details Fetch Successfully', account, statusCodes.SUCCESS);
         }
-        return showResponse(false, 'account Details Fetch failed', null, 400);
+        return showResponse(false, 'account Details Fetch failed', null, statusCodes.API_ERROR);
     } catch (error: any) {
         console.error('Error creating Stripe account:', error);
         const errorMessage = error.raw ? error.raw.message : error.message;
-        return showResponse(false, errorMessage, null, 400);
+        return showResponse(false, errorMessage, null, statusCodes.API_ERROR);
     }
 }
 
@@ -657,13 +658,13 @@ const transferMoney = async (amount: number, account_id: string,) => {
         const stripe: any = await initialiseStripe(); // Initialise Stripe instance
         const transferData = await stripe.transfers.create(transferObj);
         if (transferData?.transfer_group === transfer_id) {
-            return showResponse(true, 'Transfer Successful', transferData, 200);
+            return showResponse(true, 'Transfer Successful', transferData, statusCodes.SUCCESS);
         }
-        return showResponse(false, 'Transfer failed', null, 400);
+        return showResponse(false, 'Transfer failed', null, statusCodes.API_ERROR);
     } catch (error: any) {
         console.error('Error transferring money:', error);
         const errorMessage = error.raw ? error.raw.message : error.message;
-        return showResponse(false, errorMessage, null, 400);
+        return showResponse(false, errorMessage, null, statusCodes.API_ERROR);
 
     }
 }
@@ -675,13 +676,13 @@ const tranferList = async (limit: number = 10) => {
             limit: limit
         });
         if (trnasferList) {
-            return showResponse(true, 'Tranfer List  is', trnasferList, 200);
+            return showResponse(true, 'Tranfer List  is', trnasferList, statusCodes.SUCCESS);
         }
-        return showResponse(false, 'Request failed!!', null, 400);
+        return showResponse(false, 'Request failed!!', null, statusCodes.API_ERROR);
     } catch (error: any) {
         console.error('Error Listsing tranfered money:', error);
         const errorMessage = error.raw ? error.raw.message : error.message;
-        return showResponse(false, errorMessage, null, 400);
+        return showResponse(false, errorMessage, null, statusCodes.API_ERROR);
 
     }
 }
@@ -691,9 +692,9 @@ const connectExternalAccount = async (account_id: string, token_id: string) => {
 
     const externalAccountData = await stripe.accounts.createExternalAccount(account_id, { external_account: token_id });
     if (externalAccountData) {
-        return showResponse(true, 'External Account Connected Successfully', externalAccountData, 200); // return account id starts with 'ba_
+        return showResponse(true, 'External Account Connected Successfully', externalAccountData, statusCodes.SUCCESS); // return account id starts with 'ba_
     }
-    return showResponse(false, 'External Account Connection failed', null, 400);
+    return showResponse(false, 'External Account Connection failed', null, statusCodes.API_ERROR);
 }
 
 const reteriveExternalAccount = async (account_id: string, external_account_id: string) => {
@@ -701,9 +702,9 @@ const reteriveExternalAccount = async (account_id: string, external_account_id: 
 
     const externalAccountData = await stripe.accounts.retrieveExternalAccount(account_id, external_account_id);
     if (externalAccountData) {
-        return showResponse(true, 'External Account Details Fetched Successfully', externalAccountData, 200);
+        return showResponse(true, 'External Account Details Fetched Successfully', externalAccountData, statusCodes.SUCCESS);
     }
-    return showResponse(false, 'External Account Details Fetch failed', null, 400);
+    return showResponse(false, 'External Account Details Fetch failed', null, statusCodes.API_ERROR);
 }
 
 const deleteExternalAccount = async (account_id: string, external_account_id: string) => {
@@ -711,9 +712,9 @@ const deleteExternalAccount = async (account_id: string, external_account_id: st
     const stripe: any = await initialiseStripe()
     const deleteAcc = await stripe.accounts.deleteExternalAccount(account_id, external_account_id);
     if (deleteAcc?.deleted) {
-        return showResponse(true, 'External Account Deleted Successfully', null, 200);
+        return showResponse(true, 'External Account Deleted Successfully', null, statusCodes.SUCCESS);
     }
-    return showResponse(false, 'External Account Deletion failed', null, 400);
+    return showResponse(false, 'External Account Deletion failed', null, statusCodes.API_ERROR);
 }
 
 

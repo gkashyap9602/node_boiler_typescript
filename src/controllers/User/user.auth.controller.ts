@@ -191,7 +191,7 @@ export default class UserAuthController extends Controller {
 */
     @Security('Bearer')
     @Delete("/delete_deactivate")
-    public async deleteOrDeactivateAccount(@Body() request: { status: number }): Promise<ApiResponse> {
+    public async deleteOrDeactivateAccount(@Body() request: { status: number, reason?: string }): Promise<ApiResponse> {
 
         const validate = validateDeleteOrDeactivation(request);
         if (validate.error) {

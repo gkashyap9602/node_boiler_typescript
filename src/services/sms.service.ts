@@ -4,6 +4,7 @@ import { SMS_CREDENTIAL } from '../constants/app.constant';
 import { showResponse } from '../utils/response.util';
 import responseMessage from '../constants/responseMessages'
 import AWS from 'aws-sdk'
+import statusCodes from '../constants/statusCodes';
 
 const sendSMSWithTwillio = async (to: string, body: string) => {
     try {
@@ -42,7 +43,7 @@ const sendSMSWithAwsSNS = (to: number, Message: string) => {
                             false,
                             responseMessage?.common?.sms_sent_error,
                             err,
-                            200
+                            statusCodes.API_ERROR
                         )
                     );
                 } else {
@@ -51,7 +52,7 @@ const sendSMSWithAwsSNS = (to: number, Message: string) => {
                             true,
                             responseMessage?.common?.sms_sent_success,
                             data,
-                            200
+                            statusCodes.SUCCESS
                         )
                     );
                 }
@@ -59,7 +60,7 @@ const sendSMSWithAwsSNS = (to: number, Message: string) => {
         } catch (err) {
             console.log("in catch err", err);
             return resolve(
-                showResponse(false, responseMessage?.common?.aws_error, err, 200)
+                showResponse(false, responseMessage?.common?.aws_error, err, statusCodes.API_ERROR)
             );
         }
     });

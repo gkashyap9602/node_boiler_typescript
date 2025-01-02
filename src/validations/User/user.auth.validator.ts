@@ -84,7 +84,7 @@ export const validateRefreshToken = (common: any) => {
 
 export const validateDeleteOrDeactivation = (user: any) => {
     return joi.object({
-        // user_id: joi.string().required(),
+        reason: joi.string().optional().allow(''),
         status: joi.number().valid(USER_STATUS.DEACTIVATED, USER_STATUS.DELETED).error(new Error('only use 2 for delete 3 for deactivate')).required(),
     }).validate(user)
 }

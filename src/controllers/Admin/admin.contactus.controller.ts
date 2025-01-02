@@ -35,7 +35,7 @@ export default class AdminController extends Controller {
         }
 
         const wrappedFunc = tryCatchWrapper(handlers.listContactDetails);
-        return wrappedFunc(sort_column, sort_direction, page, limit, search_key);
+        return wrappedFunc(request);
     }
 
     /**
@@ -75,10 +75,10 @@ export default class AdminController extends Controller {
     /**
      * Reply TO Contact
      */
-    @Security('Bearer') 
+    @Security('Bearer')
     @Post("/reply")
     public async replyContactus(@Body() request: { contact_id: string, html: string }): Promise<ApiResponse> {
-        
+
         const validate = validateReplyContactUs(request);
         if (validate.error) {
             return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR);

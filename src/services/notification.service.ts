@@ -1,4 +1,5 @@
 import firebaseAdmin from "../configs/firebase.config";
+import statusCodes from "../constants/statusCodes";
 import { showResponse } from "../utils/response.util";
 
 const sendTopicNotification = (topic: string, title: string, message: string, data: any) => {
@@ -29,16 +30,16 @@ const sendTopicNotification = (topic: string, title: string, message: string, da
             firebaseAdmin.messaging().send(messageData)
                 .then((response) => {
                     console.log(response);
-                    return resolve(showResponse(true, "Notification sent successfully", response, 200));
+                    return resolve(showResponse(true, "Notification sent successfully", response, statusCodes.SUCCESS));
                 })
                 .catch((error) => {
                     console.log(error);
-                    return resolve(showResponse(false, "Failed to send notification", error, 500));
+                    return resolve(showResponse(false, "Failed to send notification", error, statusCodes.API_ERROR));
                 });
 
         } catch (err: any) {
             console.log(err);
-            return resolve(showResponse(true, "Unable to send notification", err.message, 200));
+            return resolve(showResponse(true, "Unable to send notification", err.message, statusCodes.API_ERROR));
         }
     });
 }

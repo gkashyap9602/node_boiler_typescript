@@ -5,14 +5,15 @@ import { findOne, findOneAndUpdate, getCount } from "../../helpers/db.helpers";
 import * as commonHelper from "../../helpers/common.helper";
 import responseMessage from '../../constants/responseMessages'
 import userModel from '../../models/User/user.auth.model';
-import { ROLE, USER_STATUS } from '../../constants/workflow.constant'
+import { DEACTIVATE_BY, ROLE, USER_STATUS } from '../../constants/workflow.constant'
 import statusCodes from '../../constants/statusCodes'
 
 const AdminUserHandler = {
 
-    getUsersList: async (sort_column: string = 'createdAt', sort_direction: string = 'desc', page = null, limit = null, search_key: string = '', status?: number): Promise<ApiResponse> => {
+    getUsersList: async (data: any): Promise<ApiResponse> => {
+        const { sort_column = 'createdAt', sort_direction = 'desc', page, limit, search_key = '', status } = data
 
-        const matchObj: any = {
+        const queryObject: any = {
             user_type: ROLE.USER, // 3 for users
             status: { $ne: USER_STATUS.DELETED },
             $or: [
@@ -22,13 +23,13 @@ const AdminUserHandler = {
         }
 
         if (status) {
-            matchObj.status = status
+            queryObject.status = status
         }
 
         const aggregate = [
             {
                 $match: {
-                    ...matchObj
+                    ...queryObject
                 }
             },
             {
@@ -80,15 +81,19 @@ const AdminUserHandler = {
             return showResponse(false, responseMessage.users.invalid_user, null, statusCodes.API_ERROR);
         }
 
-        const editObj = { status: parsedStatus }
+        const editObj = { status: parsedStatus, deactivate_by: '' }
+
+        if (parsedStatus === USER_STATUS.DEACTIVATED) {
+            editObj.deactivate_by = DEACTIVATE_BY.ADMIN
+        }//ends
 
         const response = await findOneAndUpdate(userModel, queryObject, editObj);
         if (!response.status) {
-            return showResponse(false, "Error While Updating User Status", null, statusCodes.API_ERROR);
+            return showResponse(false, responseMessage.users.user_account_update_error, null, statusCodes.API_ERROR);
         }
 
         const msg = parsedStatus == 2 ? "Deleted" : parsedStatus == 1 ? "Activated" : "Deactivated"
-        return showResponse(true, `User Account Has Been ${msg}`, {}, statusCodes.SUCCESS);
+        return showResponse(true, `${responseMessage.users.user_account_has_been} ${msg}`, {}, statusCodes.SUCCESS);
 
     },
 

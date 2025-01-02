@@ -545,6 +545,9 @@
 						"application/json": {
 							"schema": {
 								"properties": {
+									"reason": {
+										"type": "string"
+									},
 									"status": {
 										"type": "number",
 										"format": "double"
@@ -895,7 +898,7 @@
 						}
 					}
 				},
-				"description": "Update User Status",
+				"description": "Update User Status\n1 for active 2 for delete 3 for deactivate",
 				"tags": [
 					"Admin User Routes"
 				],

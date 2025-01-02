@@ -1,7 +1,8 @@
 import NodeCache from "node-cache";
+import { APP, AWS_CREDENTIAL } from "../constants/app.constant";
 // import * as fsHelper from '../helpers/fs.helper'
 // AWS.config.update({
-//     region: "us-east-1",
+//     region: APP.AWS_REGION,
 //     credentials: new AWS.SharedIniFileCredentials({ profile: "digismart" }),
 // });
 import path from 'path'
@@ -9,7 +10,6 @@ import responseMessage from "../constants/responseMessages";
 import * as mediaHelper from "../helpers/media.helper";
 import fs from 'fs'
 import { showResponse } from "../utils/response.util";
-import { APP, AWS_CREDENTIAL } from "../constants/app.constant";
 import { postParameter, getParameter, ApiResponse } from "../utils/interfaces.util";
 import statusCodes from "../constants/statusCodes";
 
@@ -68,7 +68,7 @@ const getSecretFromAWS = async (secret_key_param: string) => {
     return new Promise((resolve) => {
         try {
             const client = new AWS.SecretsManager({
-                region: 'us-east-1',
+                region: APP.AWS_REGION,
             });
 
             client.getSecretValue({ SecretId: secret_key_param }, (err: any, data: any) => {
@@ -90,7 +90,6 @@ const getSecretFromAWS = async (secret_key_param: string) => {
     });
 };
 
-
 const sendSMSService = async (to: number, Message: string) => {
     return new Promise((resolve) => {
         try {
@@ -107,7 +106,7 @@ const sendSMSService = async (to: number, Message: string) => {
                             false,
                             responseMessage?.common?.sms_sent_error,
                             err,
-                            200
+                            statusCodes.API_ERROR
                         )
                     );
                 } else {
@@ -116,7 +115,7 @@ const sendSMSService = async (to: number, Message: string) => {
                             true,
                             responseMessage?.common?.sms_sent_success,
                             data,
-                            200
+                            statusCodes.SUCCESS
                         )
                     );
                 }
@@ -124,14 +123,13 @@ const sendSMSService = async (to: number, Message: string) => {
         } catch (err) {
             console.log("in catch err", err);
             return resolve(
-                showResponse(false, responseMessage?.common?.aws_error, err, 200)
+                showResponse(false, responseMessage?.common?.aws_error, err, statusCodes.API_ERROR)
             );
         }
     });
 };
 
 const uploadFileToS3 = async (files: [any]): Promise<ApiResponse> => {
-    console.log(files, "filess>>>")
     Array.isArray(files) ? files : [files];
     return new Promise((resolve) => {
         try {
@@ -139,9 +137,7 @@ const uploadFileToS3 = async (files: [any]): Promise<ApiResponse> => {
 
             const promises = files.map(file => {
                 const mime_type = file?.mimetype.split("/")[0];
-                console.log(mime_type, "mimeTypess");
                 if (mime_type == "image" && !file.originalname.endsWith(".psd")) {
-                    console.log("under webp");
                     return mediaHelper.convertImageToWebp(file?.buffer).then(imageNewBuffer => {
                         if (imageNewBuffer) {
                             webpFilesArray.push({
@@ -163,21 +159,21 @@ const uploadFileToS3 = async (files: [any]): Promise<ApiResponse> => {
             Promise.all(promises).then(() => {
                 if (webpFilesArray.length > 0) {
                     uploadToS3(webpFilesArray).then(filesResponse => {
-                        resolve(showResponse(true, responseMessage?.common?.file_upload_success, filesResponse, 200));
+                        resolve(showResponse(true, responseMessage?.common?.file_upload_success, filesResponse, statusCodes.SUCCESS));
                     }).catch(error => {
                         console.log(`Error uploading files to S3`, error);
-                        resolve(showResponse(false, responseMessage?.common?.file_upload_error, error, 200));
+                        resolve(showResponse(false, responseMessage?.common?.file_upload_error, error, statusCodes.API_ERROR));
                     });
                 } else {
-                    resolve(showResponse(false, responseMessage?.common?.file_upload_error, null, 200));
+                    resolve(showResponse(false, responseMessage?.common?.file_upload_error, null, statusCodes.API_ERROR));
                 }
             }).catch(error => {
                 console.log(`Error converting images to webp`, error);
-                resolve(showResponse(false, responseMessage?.common?.file_upload_error, error, 200));
+                resolve(showResponse(false, responseMessage?.common?.file_upload_error, error, statusCodes.API_ERROR));
             });
         } catch (err) {
             console.log(`in catch error 472`, err);
-            resolve(showResponse(false, responseMessage?.common?.file_upload_error, err, 200));
+            resolve(showResponse(false, responseMessage?.common?.file_upload_error, err, statusCodes.API_ERROR));
         }
     });
 
@@ -325,7 +321,7 @@ const uploadToS3ExcelSheet = async (excelBuffer: any, fileName: any) => {
                 }
             });
         } catch (err: any) {
-            resolve({ status: false, message: 'Error Occured!!', data: err.message, code: 200 });
+            resolve({ status: false, message: 'Error Occured!!', data: err.message, code: statusCodes.API_ERROR });
         }
     });
 }
@@ -422,7 +418,7 @@ const unlinkFromS3Bucket = async (fileUrls: any) => { //fileUrls should be array
                                         false,
                                         'Error deleting object on s3 bucket',
                                         err,
-                                        400
+                                        statusCodes.API_ERROR
                                     ));
                             } else {
                                 console.log('Object deleted successfully:', data);
@@ -431,7 +427,7 @@ const unlinkFromS3Bucket = async (fileUrls: any) => { //fileUrls should be array
                                         true,
                                         'Object deleted successfully from s3 bucket',
                                         data,
-                                        200
+                                        statusCodes.SUCCESS
                                     ));
                             }
                         });
@@ -443,7 +439,7 @@ const unlinkFromS3Bucket = async (fileUrls: any) => { //fileUrls should be array
                                 false,
                                 'item not found on s3 bucket While unlinking from s3 bucket',
                                 err,
-                                400
+                                statusCodes.API_ERROR
                             ));
                     })
 
@@ -618,13 +614,13 @@ const uploadVideoAndTranscode = async (files: any, media_type = 'videos') => {
         });
 
         if (transcode_result?.video_url) {
-            return showResponse(true, responseMessage?.common?.file_upload_success, transcode_result, 200);
+            return showResponse(true, responseMessage?.common?.file_upload_success, transcode_result, statusCodes.SUCCESS);
         }
 
-        return showResponse(false, responseMessage?.common?.file_upload_error, null, 200);
+        return showResponse(false, responseMessage?.common?.file_upload_error, null, statusCodes.API_ERROR);
     } catch (err) {
         console.log(`Error creating transcoding job`, err);
-        return showResponse(false, responseMessage?.common?.file_upload_error, err, 200);
+        return showResponse(false, responseMessage?.common?.file_upload_error, err, statusCodes.API_ERROR);
     }
 };
 
@@ -810,13 +806,13 @@ const uploadVideoAndTranscode = async (files: any, media_type = 'videos') => {
 //         })
 
 //         if (trancode_result?.video_url) {
-//             return showResponse(true, responseMessage?.common?.file_upload_success, trancode_result, 200)
+// return showResponse(true, responseMessage?.common?.file_upload_success, trancode_result, statusCodes.SUCCESS)
 //         }
 
-//         return showResponse(false, responseMessage?.common?.file_upload_error, null, 200)
+// return showResponse(false, responseMessage?.common?.file_upload_error, null, statusCodes.API_ERROR)
 //     } catch (err) {
 //         console.log(`Error creating transcoding job`, err);
-//         return showResponse(false, responseMessage?.common?.file_upload_error, err, 200)
+// return showResponse(false, responseMessage?.common?.file_upload_error, err, statusCodes.API_ERROR)
 //     }
 // } //ends
 
@@ -950,10 +946,10 @@ const uploadThumbnail = async (thumbnailUploadParams: any, thumbnail_file_path: 
 
                 if (err) {
                     console.error('Thumbnail upload error:', err);
-                    resolve(showResponse(false, responseMessage?.common?.thumbnail_error, err, 200));
+                    resolve(showResponse(false, responseMessage?.common?.thumbnail_error, err, statusCodes.API_ERROR));
                     return;
                 }
-                resolve(showResponse(true, responseMessage?.common?.thumbnail_generated, data?.Key || data?.key, 200));
+                resolve(showResponse(true, responseMessage?.common?.thumbnail_generated, data?.Key || data?.key, statusCodes.SUCCESS));
             });
         });
     });

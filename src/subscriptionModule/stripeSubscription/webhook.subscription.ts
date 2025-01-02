@@ -71,9 +71,9 @@
 //             console.log('invoice.paid')
 //             invoice = event.data.object;
 //             let subscription_id = invoice?.subscription
-//             const matchObj = { 'subscription_details.subscription_id': subscription_id }
+//             const queryObject = { 'subscription_details.subscription_id': subscription_id }
 
-//             let findSponser = await findOne(sponserAuthModel, matchObj);
+//             let findSponser = await findOne(sponserAuthModel, queryObject);
 //             if (findSponser.status) {
 //                 // console.log("underif")
 //                 let billing_reason = invoice?.billing_reason

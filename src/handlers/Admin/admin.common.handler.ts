@@ -16,28 +16,26 @@ const AdminCommonHandler = {
             return showResponse(false, responseMessage.common.already_existed, null, statusCodes.API_ERROR)
         }
 
-        const newObj = { question, answer, status: 1 }
+        const newObj = { question, answer }
         const quesRef = new faqModel(newObj)
         const response = await createOne(quesRef);
 
         if (response.status) {
             return showResponse(true, responseMessage.admin.question_added, null, statusCodes.SUCCESS);
         }
+
         return showResponse(false, responseMessage.admin.failed_question_add, response, statusCodes.API_ERROR);
     },
 
     updateQuestion: async (data: any): Promise<ApiResponse> => {
         const { answer, question, question_id } = data;
 
-        const updateObj: any = {}
-        if (answer) {
-            updateObj.answer = answer
-        }
-        if (question) {
-            updateObj.question = question
-        }
+        const updateObj = {
+            ...(answer && { answer }),
+            ...(question && { question }),
+        };
 
-        const response = await findByIdAndUpdate(faqModel, updateObj, question_id);
+        const response = await findByIdAndUpdate(faqModel, question_id, updateObj);
         if (response.status) {
             return showResponse(true, responseMessage.common.update_sucess, null, statusCodes.SUCCESS);
         }
@@ -64,7 +62,6 @@ const AdminCommonHandler = {
         if (response.status) {
             return showResponse(true, responseMessage.admin.common_content_updated, response?.data, statusCodes.SUCCESS);
         }
-
         return showResponse(false, responseMessage.common.update_failed, {}, statusCodes.API_ERROR)
     },
 }

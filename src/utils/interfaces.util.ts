@@ -36,6 +36,7 @@ export interface AppConstant {
     FILE_SIZE: number,
     PROJECT_NAME: string
     PROJECT_LOGO: string
+    AWS_REGION: string
 }
 
 export interface DbConstant {

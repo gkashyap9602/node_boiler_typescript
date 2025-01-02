@@ -110,6 +110,7 @@ const UserSchema = new Schema(
         //     },
         // },
         deactivate_by: { type: String },
+        reason: { type: String },
         status: { type: Number, default: USER_STATUS.ACTIVE },
     },
     {

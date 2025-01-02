@@ -28,8 +28,9 @@ export default class AdminUserController extends Controller {
     @Security('Bearer')
     @Get("/list")
     public async getUsersList(@Query() sort_column?: string, @Query() sort_direction?: string, @Query() page?: number, @Query() limit?: number, @Query() search_key?: string, @Query() status?: number): Promise<ApiResponse> {
+        const request = { sort_column, sort_direction, page, limit, search_key, status }
         const wrappedFunc = tryCatchWrapper(handler.getUsersList);
-        return wrappedFunc(sort_column, sort_direction, page, limit, search_key, status); // Invoking the wrapped function 
+        return wrappedFunc(request); // Invoking the wrapped function 
 
     }
     //ends
@@ -53,6 +54,7 @@ export default class AdminUserController extends Controller {
 
     /**
 * Update User Status
+* 1 for active 2 for delete 3 for deactivate
 */
     @Security('Bearer')
     @Put("/status")

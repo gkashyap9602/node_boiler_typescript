@@ -11,6 +11,7 @@ import { Readable } from 'stream';
 import ffmpeg from 'fluent-ffmpeg'
 import responseMessage from "../constants/responseMessages";
 import * as commonHelper from '../helpers/common.helper'
+import statusCodes from '../constants/statusCodes';
 
 
 const convertImageToWebp = async (imageInBuffer: any) => {
@@ -119,15 +120,15 @@ const exportJsonToExcel = (filteredData: any) => {
             // Handling asynchronous operation directly inside Promise constructor
             services.awsService.uploadToS3ExcelSheet(buffer, filePath)
                 .then(excelLink => {
-                    resolve({ status: true, message: "Excel for members created Successfully!", data: excelLink, code: 200 });
+                    resolve({ status: true, message: "Excel for members created Successfully!", data: excelLink, code: statusCodes.SUCCESS });
                 })
                 .catch(err => {
-                    resolve({ status: false, message: "Error Occurred while uploading to S3", data: err.message, code: 200 });
+                    resolve({ status: false, message: "Error Occurred while uploading to S3", data: err.message, code: statusCodes.API_ERROR });
                 });
 
         } catch (err: any) {
             console.log(err);
-            resolve({ status: false, message: "Error Occurred, please try again", data: err.message, code: 200 });
+            resolve({ status: false, message: "Error Occurred, please try again", data: err.message, code: statusCodes.API_ERROR });
         }
     });
 }
@@ -147,12 +148,12 @@ const getAudioMetadata = (mediaBuffer: any, mediaFileObj: any) => {
 
                 const musicMetadata = { duration: formattedDuration, title: song_title }
 
-                resolve(showResponse(true, `Duration: ${durationInSeconds} seconds`, musicMetadata, 200));
+                resolve(showResponse(true, `Duration: ${durationInSeconds} seconds`, musicMetadata, statusCodes.SUCCESS));
 
             })
             .catch(error => {
                 console.error('Error while getting metadata:', error);
-                resolve(showResponse(false, 'Error while getting metadata', error, 400));
+                resolve(showResponse(false, 'Error while getting metadata', error, statusCodes.API_ERROR));
 
             });
     });
@@ -210,12 +211,12 @@ const createVideoThumbnail = async (video_file_name: string, file_url: string) =
                 })
                 .on('error', (err) => {
                     console.error('FFmpeg thumbanil error:', err);
-                    return resolve(showResponse(false, responseMessage?.common?.thumbnail_error, err, 200));
+                    return resolve(showResponse(false, responseMessage?.common?.thumbnail_error, err, statusCodes.API_ERROR));
                 })
                 .run();
 
         } catch (err) {
-            return resolve(showResponse(false, responseMessage?.common?.thumbnail_error, err, 200));
+            return resolve(showResponse(false, responseMessage?.common?.thumbnail_error, err, statusCodes.API_ERROR));
         }
     });
 };//ends

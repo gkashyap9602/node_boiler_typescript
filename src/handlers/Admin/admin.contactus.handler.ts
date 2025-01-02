@@ -1,20 +1,19 @@
 import { ApiResponse } from "../../utils/interfaces.util";
-import ejs from 'ejs'
 import { showResponse } from "../../utils/response.util";
 import { findOne, findByIdAndUpdate, findOneAndDelete } from "../../helpers/db.helpers";
 import adminContactUsModel from "../../models/Admin/admin.contactus.model";
 import responseMessage from '../../constants/responseMessages'
 import statusCodes from '../../constants/statusCodes'
-import { APP } from "../../constants/app.constant";
 import { EMAIL_SEND_TYPE, USER_STATUS } from "../../constants/workflow.constant";
 import { getCountAndPagination } from "../../helpers/common.helper";
-import path from 'path';
 import services from "../../services";
+import responseMessages from "../../constants/responseMessages";
 
 const AdminContactUsHandler = {
-    async listContactDetails(sort_column: string = 'createdAt', sort_direction: string = 'desc', page = null, limit = null, search_key: string = ''): Promise<ApiResponse> {
+    async listContactDetails(data: any): Promise<ApiResponse> {
+        const { sort_column = 'createdAt', sort_direction = 'desc', page, limit, search_key = '' } = data
 
-        const matchObj: any = {
+        const queryObject: any = {
             status: { $ne: USER_STATUS.DELETED },
             name: { $regex: search_key, $options: 'i' }
         }
@@ -22,7 +21,7 @@ const AdminContactUsHandler = {
         const aggregate = [
             {
                 $match: {
-                    ...matchObj
+                    ...queryObject
                 }
             },
             {
@@ -60,7 +59,7 @@ const AdminContactUsHandler = {
 
         const response = await findOneAndDelete(adminContactUsModel, { _id: contact_id });
         if (!response.status) {
-            return showResponse(false, 'error while deleting', null, statusCodes.API_ERROR);
+            return showResponse(false, responseMessages.common.delete_failed, null, statusCodes.API_ERROR);
         }
 
         return showResponse(true, responseMessage?.common?.contactUs_deleted, null, statusCodes.SUCCESS);

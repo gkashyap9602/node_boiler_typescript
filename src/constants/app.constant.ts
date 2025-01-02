@@ -32,7 +32,8 @@ const APP: AppConstant = {
   ADMIN_CRED_EMAIL: ADMIN_EMAIL,
   FILE_SIZE: 100, //SPECIFY IN MB
   PROJECT_NAME: 'Boilerplate',
-  PROJECT_LOGO: 'file/file-1735634891680.webp'
+  PROJECT_LOGO: 'file/file-1735634891680.webp',
+  AWS_REGION: 'us-east-1'
 };
 
 const DB: DbConstant = {

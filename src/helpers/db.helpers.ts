@@ -275,10 +275,10 @@ export const findAll = (Model: Model<any>, queryObject: IRecordOfAny, project_fi
 export const getCount = (Model: Model<any>, queryObject: IRecordOfAny): Promise<ApiResponse> => {
     return new Promise((resolve) => {
         Model.countDocuments(queryObject).then((result: any) => {
-            const response = showResponse(true, 'Success', result, 200);
+            const response = showResponse(true, 'Success', result, statusCodes.SUCCESS);
             resolve(response);
         }).catch((err: any) => {
-            const response = showResponse(false, 'Failed', err, 404);
+            const response = showResponse(false, 'Failed', err, statusCodes.API_ERROR);
             resolve(response);
         });
     });

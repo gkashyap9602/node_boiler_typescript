@@ -80,13 +80,11 @@ router.put('/profile', multer.addToMulter.single('profile_pic'), verifyTokenUser
 
 
 router.delete('/delete_deactivate', verifyTokenUser, async (req: Request | any, res: Response) => {
-    const { status } = req.body
+    const { status, reason } = req.body
     const controller = new UserAuthController(req, res)
-    const result: ApiResponse = await controller.deleteOrDeactivateAccount({ status });
+    const result: ApiResponse = await controller.deleteOrDeactivateAccount({ status, reason });
     return showOutput(res, result, result.code)
-
 })
-
 
 router.post('/refresh_token', multer.addToMulter.none(), async (req: Request | any, res: Response) => {
     const { refresh_token } = req.body

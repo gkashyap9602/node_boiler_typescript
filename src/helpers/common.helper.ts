@@ -401,7 +401,7 @@ function getFirstNameFromEmail(email: string): string {
 }
 
 
-function keysDeleteFromObject(userData: IRecordOfAny, keys: string[] = ['password', 'otp', 'social_account', 'is_verified', 'status']): void {
+function keysDeleteFromObject(userData: IRecordOfAny, keys: string[] = ['password', 'otp', 'social_account', 'is_verified']): void {
     keys.forEach((key) => {
         if (key in userData) {
             delete userData[key];
