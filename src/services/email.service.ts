@@ -139,7 +139,7 @@ const sendEmail = async (emailType: EmailSendType, recipientEmail: string, body:
     } catch (error: any) {
         return showResponse(false, responseMessages.common.email_sent_error, null, statusCodes.API_ERROR);
     }
-};
+};//
 
 
 
