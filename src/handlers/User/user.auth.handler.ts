@@ -1,7 +1,7 @@
-import { ApiResponse } from "../../utils/interfaces.util";
+import { ApiResponse, tokenUserTypeInterface } from "../../utils/interfaces.util";
 import { showResponse } from "../../utils/response.util";
 import { findOne, findByIdAndUpdate, findOneAndUpdate, findAndUpdatePushOrSet, findOneAndDelete } from "../../helpers/db.helpers";
-import { decodeToken, generateJwtToken } from "../../utils/auth.util";
+import { decodeToken, generateAccessRefreshToken, generateJwtToken } from "../../utils/auth.util";
 import * as commonHelper from "../../helpers/common.helper";
 import userAuthModel from "../../models/User/user.auth.model";
 import { APP } from '../../constants/app.constant';
@@ -52,7 +52,7 @@ const UserAuthHandler = {
     login: async (data: any): Promise<ApiResponse> => {
         const { email, password } = data;
 
-        const queryObject = { email, status: { $ne: USER_STATUS.DELETED } }
+        const queryObject = { email, is_verified: true, status: { $ne: USER_STATUS.DELETED } }
         //****if social login is used in project then user this query**** 
         // const queryObject = { email, account_source: 'email', status: { $ne: USER_STATUS.DELETED } }
 
@@ -73,15 +73,14 @@ const UserAuthHandler = {
         }
 
         commonHelper.keysDeleteFromObject(userData) //delete password & other keys from response
-        const token = await generateJwtToken(userData?._id, { user_type: 'user', type: "access", role: userData?.user_type }, APP.ACCESS_EXPIRY)
-        const refresh_token = await generateJwtToken(userData?._id, { user_type: 'user', type: "access", role: userData?.user_type }, APP.REFRESH_EXPIRY)
-         
+        const { access_token, refresh_token } = await generateAccessRefreshToken(userData?._id, userData?.user_type, tokenUserTypeInterface.USER)
+
         //if account deactivated by user then reactivate account
         if (userData?.status == USER_STATUS.DEACTIVATED && userData?.deactivate_by === DEACTIVATE_BY.USER) {
             await findOneAndUpdate(userAuthModel, { _id: userData?._id }, { status: USER_STATUS.ACTIVE, deactivate_by: '' })   //activate user again
         }
 
-        return showResponse(true, responseMessage.users.login_success, { ...userData, token, refresh_token }, statusCodes.SUCCESS)
+        return showResponse(true, responseMessage.users.login_success, { ...userData, access_token, refresh_token }, statusCodes.SUCCESS)
     },//ends
 
     // social_login: async (data: any) => {
@@ -125,10 +124,9 @@ const UserAuthHandler = {
     //         }
 
     //         commonHelper.keysDeleteFromObject(findUser?.data)
-    //         const token_payload = { user_type: 'user', type: "access", role: findUser?.data?.user_type }
-    //         const access_token = await generateJwtToken(findUser.data?._id, token_payload, APP.ACCESS_EXPIRY)
-    //         const refresh_token = await generateJwtToken(findUser.data?._id, token_payload, APP.REFRESH_EXPIRY)
-    //         const userData = { ...findUser?.data, token: access_token, refresh_token }
+    //         const { access_token, refresh_token } = await generateAccessRefreshToken(findUser.data?._id, findUser.data?.user_type, tokenUserTypeInterface.USER)
+
+    //         const userData = { ...findUser?.data, access_token, refresh_token }
 
     //         //if account deactivated by user then activate it again 
     //         if (findUser?.data?.status == USER_STATUS.DEACTIVATED && findUser.data?.deactivate_by === DEACTIVATE_BY.USER) {
@@ -163,10 +161,9 @@ const UserAuthHandler = {
     //         }
 
     //         commonHelper.keysDeleteFromObject(result?.data)
-    //         const token_payload = { user_type: 'user', type: "access", role: result?.data?.user_type }
-    //         const access_token = await generateJwtToken(result.data._id, token_payload, APP.ACCESS_EXPIRY)
-    //         const refresh_token = await generateJwtToken(result.data._id, token_payload, APP.REFRESH_EXPIRY)
-    //         const userData = { ...result?.data, token: access_token, refresh_token }
+    //         const { access_token, refresh_token } = await generateAccessRefreshToken(result.data?._id, result.data?.user_type, tokenUserTypeInterface.USER)
+
+    //         const userData = { ...result?.data, access_token, refresh_token }
 
     //         return showResponse(true, responseMessage.users.login_success, userData, statusCodes.SUCCESS);
     //     }
@@ -395,8 +392,7 @@ const UserAuthHandler = {
     updateUserProfile: async (data: any, user_id: string, profile_pic: any): Promise<ApiResponse> => {
         const { first_name, last_name, phone_number, country_code } = data
 
-        const updateObj = {
-            profile_pic: '',
+        const updateObj: any = {
             ...(first_name && { first_name }),
             ...(last_name && { last_name }),
             ...(phone_number && { phone_number }),
@@ -462,10 +458,9 @@ const UserAuthHandler = {
             return showResponse(false, responseMessage.middleware.deleted_account, null, statusCodes.ACCOUNT_DELETED);
         }
 
-        const accessToken = await generateJwtToken(findUser.data?._id, { user_type: 'user', type: "access", role: findUser?.data?.user_type }, APP.ACCESS_EXPIRY)
-        const refreshToken = await generateJwtToken(findUser.data?._id, { user_type: 'user', type: "access", role: findUser?.data?.user_type }, APP.REFRESH_EXPIRY)
+        const tokens = await generateAccessRefreshToken(findUser.data?._id, findUser.data?.user_type, tokenUserTypeInterface.USER)
 
-        return showResponse(true, 'Tokens Generated Successfully', { token: accessToken, refresh_token: refreshToken }, statusCodes.SUCCESS)
+        return showResponse(true, 'Tokens Generated Successfully', { access_token: tokens.access_token, refresh_token: tokens.refresh_token }, statusCodes.SUCCESS)
     },//ends
 
     async logoutUser(): Promise<ApiResponse> {

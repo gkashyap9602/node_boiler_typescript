@@ -1,7 +1,7 @@
-import { ApiResponse } from "../../utils/interfaces.util";
+import { ApiResponse, tokenUserTypeInterface } from "../../utils/interfaces.util";
 import { showResponse } from "../../utils/response.util";
 import { findOne, findByIdAndUpdate, findOneAndUpdate } from "../../helpers/db.helpers";
-import { decodeToken, generateJwtToken } from "../../utils/auth.util";
+import { decodeToken, generateAccessRefreshToken, generateJwtToken } from "../../utils/auth.util";
 import * as commonHelper from "../../helpers/common.helper";
 import adminAuthModel from "../../models/Admin/admin.auth.model";
 import services from '../../services';
@@ -28,11 +28,10 @@ const AdminAuthHandler = {
 
         const adminData = exists?.data
 
-        const token = await generateJwtToken(adminData?._id, { user_type: 'admin', type: "access" }, APP.ACCESS_EXPIRY)
-        const refresh_token = await generateJwtToken(adminData?._id, { user_type: 'admin', type: "access" }, APP.REFRESH_EXPIRY)
+        const { access_token, refresh_token } = await generateAccessRefreshToken(adminData?._id, adminData?.user_type, tokenUserTypeInterface.ADMIN)
 
         commonHelper.keysDeleteFromObject(adminData) //delete password & other keys from response
-        return showResponse(true, responseMessage.admin.login_success, { ...adminData, token, refresh_token }, statusCodes.SUCCESS)
+        return showResponse(true, responseMessage.admin.login_success, { ...adminData, access_token, refresh_token }, statusCodes.SUCCESS)
     },//ends
 
     forgotPassword: async (data: any): Promise<ApiResponse> => {
@@ -201,10 +200,9 @@ const AdminAuthHandler = {
             return showResponse(false, responseMessage.admin.admin_not_exist, null, statusCodes.API_ERROR)
         }
 
-        const accessToken = await generateJwtToken(findAdmin.data?._id, { user_type: 'admin', type: "access" }, APP.ACCESS_EXPIRY)
-        const refreshToken = await generateJwtToken(findAdmin.data?._id, { user_type: 'admin', type: "access" }, APP.REFRESH_EXPIRY)
+        const tokens = await generateAccessRefreshToken(findAdmin.data?._id, findAdmin.data?.user_type, tokenUserTypeInterface.ADMIN)
 
-        return showResponse(true, 'Token Generated Successfully', { ...findAdmin?.data, token: accessToken, refresh_token: refreshToken }, statusCodes.SUCCESS)
+        return showResponse(true, 'Token Generated Successfully', { ...findAdmin?.data, access_token: tokens.access_token, refresh_token: tokens.refresh_token }, statusCodes.SUCCESS)
     },//ends
 
     async logoutUser(): Promise<ApiResponse> {

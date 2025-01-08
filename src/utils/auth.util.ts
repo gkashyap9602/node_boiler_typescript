@@ -8,6 +8,7 @@ import responseMessage from '../constants/responseMessages';
 import { APP } from '../constants/app.constant';
 import { USER_STATUS } from '../constants/workflow.constant';
 import statusCodes from '../constants/statusCodes';
+import { tokenUserTypeInterface } from './interfaces.util';
 
 //
 export const generateJwtToken = async (id: string, extras = {}, expiresIn = '24h') => {
@@ -24,6 +25,14 @@ export const generateJwtToken = async (id: string, extras = {}, expiresIn = '24h
         })
     })
 }
+
+export const generateAccessRefreshToken = async (user_id: string, role: number, user_type: tokenUserTypeInterface) => {
+    const access_token = await generateJwtToken(user_id, { user_type, type: "access", role }, APP.ACCESS_EXPIRY);
+    const refresh_token = await generateJwtToken(user_id, { user_type, type: "refresh", role }, APP.REFRESH_EXPIRY);
+    return { access_token, refresh_token }
+};
+
+
 
 
 export const verifyToken = async (req: Request) => {

@@ -96,3 +96,8 @@ export interface toNotification {
     user_id: string,
     user_type: number
 }
+
+export enum tokenUserTypeInterface {
+    USER = 'user',
+    ADMIN = 'admin',
+}
