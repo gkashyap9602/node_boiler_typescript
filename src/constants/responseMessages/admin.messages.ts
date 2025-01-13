@@ -9,7 +9,7 @@ const admin_messages = {
     login_error: "Unable to login at the moment",
     invalid_login: "Invalid credentials",
     forgot_password_email_sent: "Forgot Password Email has been sent to your registered email address",
-    forgot_password_email_error: "Error Occured while sending forgot password email",
+    forgot_password_email_error: "Error Occurred while sending forgot password email",
     otp_resend: "Otp resend to your email successfully",
     otp_send_error: "Error While Sending otp to your email",
     otp_send: "Otp Send to your email successfully",

@@ -157,8 +157,7 @@ const AdminAuthHandler = {
     updateAdminProfile: async (data: any, admin_id: string, profile_pic: any): Promise<ApiResponse> => {
         const { first_name, last_name, phone_number, country_code, greet_msg } = data
 
-        const updateObj = {
-            profile_pic: '',
+        const updateObj :any= {
             ...(first_name && { first_name }),
             ...(last_name && { last_name }),
             ...(phone_number && { phone_number }),
