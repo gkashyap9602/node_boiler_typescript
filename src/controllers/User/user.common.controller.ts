@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { Route, Controller, Tags, Post, Body, } from 'tsoa'
+import { Route, Controller, Tags, Post, Body, Get, Query, } from 'tsoa'
 import { ApiResponse } from '../../utils/interfaces.util';
 import handler from '../../handlers/User/user.common.handler'
 import { showResponse } from '../../utils/response.util';
@@ -35,6 +35,24 @@ export default class UserCommonController extends Controller {
 
         const wrappedFunc = tryCatchWrapper(handler.contactUs);
         return wrappedFunc(request); // Invoking the wrapped function 
+    }
+
+    /**
+    * Search Product
+    */
+    @Get("/product/search")
+    public async searchProduct(@Query() product_name: string, @Query() country?: string, @Query() result_per_page?: number): Promise<ApiResponse> {
+        const wrappedFunc = tryCatchWrapper(handler.searchProduct);
+        return wrappedFunc({ product_name, country, result_per_page }); // Invoking the wrapped function 
+    }
+
+    /**
+     * Get Product Details
+     */
+    @Get("/product/details")
+    public async getProductDetails(@Query() product_link: string): Promise<ApiResponse> {
+        const wrappedFunc = tryCatchWrapper(handler.getProductDetails);
+        return wrappedFunc({ product_link }); // Invoking the wrapped function 
     }
 }
 

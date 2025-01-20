@@ -99,6 +99,87 @@
 				}
 			}
 		},
+		"/user/common/product/search": {
+			"get": {
+				"operationId": "SearchProduct",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Search Product",
+				"tags": [
+					"User Common Routes"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "product_name",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "country",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "result_per_page",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/user/common/product/details": {
+			"get": {
+				"operationId": "GetProductDetails",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get Product Details",
+				"tags": [
+					"User Common Routes"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "product_link",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
 		"/user/auth/login": {
 			"post": {
 				"operationId": "Login",

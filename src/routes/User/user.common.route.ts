@@ -12,4 +12,19 @@ router.post('/contactus/fill', async (req: Request | any, res: Response) => {
     return showOutput(res, result, result.code)
 })
 
+router.get('/product/search', async (req: Request | any, res: Response) => {
+    const { product_name, country, result_per_page } = req.query;
+    const controller = new UserCommonController(req, res)
+    const result: ApiResponse = await controller.searchProduct(product_name, country, result_per_page);
+    return showOutput(res, result, result.code)
+})
+
+router.get('/product/details', async (req: Request | any, res: Response) => {
+    const { product_link } = req.query;
+    const controller = new UserCommonController(req, res)
+    const result: ApiResponse = await controller.getProductDetails(product_link);
+    return showOutput(res, result, result.code)
+})
+
+
 export default router
