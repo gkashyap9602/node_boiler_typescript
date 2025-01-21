@@ -78,8 +78,8 @@ const UserCommonHandler = {
 
                 // If link exists, fetch product details
                 let productDetails: any;
-                // productDetails = await UserCommonHandler.getProductDetails({ product_link: item.link });
-
+                productDetails = await UserCommonHandler.getProductDetails({ product_link: item.link });
+                console.log(productDetails.data)
                 // Check if product details were successfully fetched
                 if (!productDetails?.status) {
                     return {
@@ -135,7 +135,7 @@ const UserCommonHandler = {
             //     average_rating: response?.data?.average_rating,
             // }
 
-            return showResponse(true, 'here is product details', { result: response?.data }, statusCodes.SUCCESS)
+            return showResponse(true, 'here is product details', response?.data, statusCodes.SUCCESS)
 
         } catch (err: any) {
             console.log(err, "ercatch")
