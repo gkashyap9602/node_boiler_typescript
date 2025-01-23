@@ -5,9 +5,9 @@ import responseMessage from '../../constants/responseMessages'
 import statusCodes from '../../constants/statusCodes'
 import adminContactusModel from '../../models/Admin/admin.contactus.model';
 import axios from "axios";
-
 const GOOGLE_SERP_API_KEY = 'XILMOLm6s8z6ykOh90VlwsKv1KCfhB3g'
 const WEB_SCRAPER_API_KEY = 'eeba97490fa099fb3ac08e5b6c183dbb'
+import * as cheerio from 'cheerio';
 const GOOGLE_SERP_API = (api_key: string, query: string, options: any = {}) => {
     // Base URL with mandatory parameters
     let url = `https://serpapi.webscrapingapi.com/v2?engine=google&api_key=${api_key}&q=${query}`;
@@ -45,7 +45,7 @@ const UserCommonHandler = {
         try {
             const { product_name, country, result_per_page = 5 } = data
             const itemSize = Number(result_per_page)
-
+            console.log(data, "paylaod")
             const options = {
                 country,
                 result_per_page: itemSize,
@@ -72,7 +72,8 @@ const UserCommonHandler = {
                         display_link: item.display_link,
                         title: item.title,
                         description: item.description,
-                        images: []
+                        images: [],
+                        product_details: {} // Ensure empty object
                     };
                 }
 
@@ -87,7 +88,8 @@ const UserCommonHandler = {
                         display_link: item.display_link,
                         title: item.title,
                         description: item.description,
-                        images: [] // Return empty images array if product details fetch failed
+                        images: [], // Return empty images array if product details fetch failed
+                        product_details: {} // Ensure empty object
                     };
                 }
 
@@ -97,7 +99,8 @@ const UserCommonHandler = {
                     display_link: item.display_link,
                     title: item.title,
                     description: item.description,
-                    images: productDetails?.data?.images || [] // Ensure empty array if no images
+                    images: productDetails?.data?.images || [], // Ensure empty array if no images
+                    product_details: productDetails?.data || {} // Ensure empty object
                 };
             }));
 
@@ -118,6 +121,7 @@ const UserCommonHandler = {
             const { product_link } = data
 
             const apiUrl = WEB_SCRAPER_API(WEB_SCRAPER_API_KEY, product_link, true)
+
             const response = await axios.get(apiUrl)
             if (!response.data) {
                 return showResponse(false, 'failed to get product details', null, statusCodes.API_ERROR)
@@ -135,10 +139,39 @@ const UserCommonHandler = {
             //     average_rating: response?.data?.average_rating,
             // }
 
+
+            // // Load the HTML data into Cheerio
+            // const $ = cheerio.load(response.data);
+
+            // // Parse the product details using appropriate selectors
+            // const product_name = $('selector-for-product-name').text().trim();
+            // const product_short_description = $('selector-for-short-description').text().trim();
+            // const product_url = product_link;
+            // const images :any= [];
+            // $('selector-for-images').each((index, element) => {
+            //     images.push($(element).attr('src'));
+            // });
+            // const price = $('selector-for-price').text().trim();
+            // const price_currency = $('selector-for-price-currency').text().trim();
+            // const average_rating = $('selector-for-average-rating').text().trim();
+
+            // // Format the extracted data
+            // const result = {
+            //     product_name,
+            //     product_short_description,
+            //     product_url,
+            //     images,
+            //     price,
+            //     price_currency,
+            //     average_rating,
+            // };
+
+            // return showResponse(true, 'here is product details', result, statusCodes.SUCCESS)
             return showResponse(true, 'here is product details', response?.data, statusCodes.SUCCESS)
 
         } catch (err: any) {
             console.log(err, "ercatch")
+            console.log(err?.response?.data?.Message, "MessageMessage")
             const error = err?.response?.data?.error ? err?.response?.data?.error : err?.message
             return showResponse(false, error, null, statusCodes.API_ERROR)
         }
