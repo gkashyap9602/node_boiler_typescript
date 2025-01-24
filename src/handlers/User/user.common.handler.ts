@@ -140,31 +140,8 @@ const UserCommonHandler = {
             // }
 
 
-            // // Load the HTML data into Cheerio
-            // const $ = cheerio.load(response.data);
-
-            // // Parse the product details using appropriate selectors
-            // const product_name = $('selector-for-product-name').text().trim();
-            // const product_short_description = $('selector-for-short-description').text().trim();
-            // const product_url = product_link;
-            // const images :any= [];
-            // $('selector-for-images').each((index, element) => {
-            //     images.push($(element).attr('src'));
-            // });
-            // const price = $('selector-for-price').text().trim();
-            // const price_currency = $('selector-for-price-currency').text().trim();
-            // const average_rating = $('selector-for-average-rating').text().trim();
-
-            // // Format the extracted data
-            // const result = {
-            //     product_name,
-            //     product_short_description,
-            //     product_url,
-            //     images,
-            //     price,
-            //     price_currency,
-            //     average_rating,
-            // };
+            // // L
+            
 
             // return showResponse(true, 'here is product details', result, statusCodes.SUCCESS)
             return showResponse(true, 'here is product details', response?.data, statusCodes.SUCCESS)
