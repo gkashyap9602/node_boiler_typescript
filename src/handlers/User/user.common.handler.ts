@@ -6,7 +6,7 @@ import statusCodes from '../../constants/statusCodes'
 import adminContactusModel from '../../models/Admin/admin.contactus.model';
 import axios from "axios";
 const GOOGLE_SERP_API_KEY = 'MrUrDBSIaz0SvWvgmQhmZAX4lwQ9aWR9'
-const WEB_SCRAPER_API_KEY = 'eeba97490fa099fb3ac08e5b6c183dbb'
+const WEB_SCRAPER_API_KEY = '4076997fd5412bfeccb441029b4c6426'//9602@
 import * as cheerio from 'cheerio';
 
 
