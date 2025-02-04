@@ -13,16 +13,16 @@ router.post('/contactus/fill', async (req: Request | any, res: Response) => {
 })
 
 router.get('/product/search', async (req: Request | any, res: Response) => {
-    const { product_name, country, result_per_page } = req.query;
+    const { product_name, country, result_per_page, page_number } = req.query;
     const controller = new UserCommonController(req, res)
-    const result: ApiResponse = await controller.searchProduct(product_name, country, result_per_page);
+    const result: ApiResponse = await controller.searchProduct(product_name, country, result_per_page, page_number);
     return showOutput(res, result, result.code)
 })
 
 router.get('/product/details', async (req: Request | any, res: Response) => {
-    const { product_link } = req.query;
+    const { product_id } = req.query;
     const controller = new UserCommonController(req, res)
-    const result: ApiResponse = await controller.getProductDetails(product_link);
+    const result: ApiResponse = await controller.getProductDetails(product_id);
     return showOutput(res, result, result.code)
 })
 

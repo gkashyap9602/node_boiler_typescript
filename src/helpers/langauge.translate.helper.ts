@@ -120,7 +120,7 @@ const translateText = (text: string, targetLanguage: string): Promise<string> =>
             })
             .catch((err: any) => {
                 console.log(err, "translate_err")
-                reject(null);  // Return error if translation fails
+                resolve(err);  // Return error if translation fails
             });
     });
 };

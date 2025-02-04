@@ -41,18 +41,18 @@ export default class UserCommonController extends Controller {
     * Search Product
     */
     @Get("/product/search")
-    public async searchProduct(@Query() product_name: string, @Query() country?: string, @Query() result_per_page?: number): Promise<ApiResponse> {
+    public async searchProduct(@Query() product_name: string, @Query() country?: string, @Query() result_per_page?: number, @Query() page_number?: number): Promise<ApiResponse> {
         const wrappedFunc = tryCatchWrapper(handler.searchProduct);
-        return wrappedFunc({ product_name, country, result_per_page }); // Invoking the wrapped function 
+        return wrappedFunc({ product_name, country, result_per_page, page_number }); // Invoking the wrapped function 
     }
 
     /**
      * Get Product Details
      */
     @Get("/product/details")
-    public async getProductDetails(@Query() product_link: string): Promise<ApiResponse> {
+    public async getProductDetails(@Query() product_id: string): Promise<ApiResponse> {
         const wrappedFunc = tryCatchWrapper(handler.getProductDetails);
-        return wrappedFunc({ product_link }); // Invoking the wrapped function 
+        return wrappedFunc({ product_id }); // Invoking the wrapped function 
     }
 }
 

@@ -144,6 +144,15 @@
 							"format": "double",
 							"type": "number"
 						}
+					},
+					{
+						"in": "query",
+						"name": "page_number",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
 					}
 				]
 			}
@@ -171,7 +180,7 @@
 				"parameters": [
 					{
 						"in": "query",
-						"name": "product_link",
+						"name": "product_id",
 						"required": true,
 						"schema": {
 							"type": "string"

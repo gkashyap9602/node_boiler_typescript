@@ -121,7 +121,11 @@ const GOOGLE_SERP_API = (api_key: string, query: string, options: any = {}) => {
     return url;
 };
 
+//WITH ANY WEBSITE PRODUCT LINK 
 const WEB_SCRAPER_API = (apiKey: string, productUrl: string, parseToJson: boolean = true) => `https://api.scraperapi.com/?api_key=${apiKey}&url=${productUrl}&autoparse=${parseToJson}`
+//AMAZON PRODUCT SCRAPPING APIS 
+const PRODUCT_SEARCH_SCRAPER_API = (apiKey: string, query: string, country_code: string, parseToJson: boolean = true) => `https://api.scraperapi.com/structured/amazon/search?api_key=${apiKey}&query=${query}&autoparse=${parseToJson}&output_format=json&country_code=${country_code}`
+const PRODUCT_DETAILS_SCRAPER_API = (apiKey: string, asin: string, parseToJson: boolean = true) => `https://api.scraperapi.com/structured/amazon/product?api_key=${apiKey}&asin=${asin}&autoparse=${parseToJson}&output_format=json`
 
 const UserCommonHandler = {
 
@@ -136,74 +140,35 @@ const UserCommonHandler = {
         return showResponse(true, responseMessage?.common?.contactUs_success, null, statusCodes.SUCCESS)
     },
 
+    //
     searchProduct: async (data: any): Promise<ApiResponse> => {
         try {
-            const { product_name, country, result_per_page = 5 } = data
+            const { product_name, country, result_per_page = 5, page_number = 1 } = data
             const itemSize = Number(result_per_page)
             console.log(data, "paylaod")
-            const options = {
-                country,
-                result_per_page: itemSize,
-                display_lang: 'en'
-            }
-
-            const apiUrl = GOOGLE_SERP_API(GOOGLE_SERP_API_KEY, product_name, options)
+            const apiUrl = PRODUCT_SEARCH_SCRAPER_API(WEB_SCRAPER_API_KEY, product_name, country, true)
 
             const response = await axios.get(apiUrl)
-            if (!response.data?.organic) {
-                return showResponse(false, 'Failed to search or no products found', null, statusCodes.API_ERROR);
+            console.log(response, "responseapi")
+            if (!response.data?.results || response.data?.results.length === 0) {
+                return showResponse(false, 'No products found', null, statusCodes.API_ERROR);
             }
 
-            const organicItems = response.data.organic;
-            const item_count = organicItems.length;
+            // Sort products by lowest price first
+            const sortedResults = response.data.results.sort((a: any, b: any) => a.price - b.price);
 
-            // Fetch product details for each item concurrently
-            const result = await Promise.all(organicItems.map(async (item: any) => {
-                // Check if the item has a link
-                if (!item.link) {
-                    // Return an object with empty images if link is missing
-                    return {
-                        link: item.link,
-                        display_link: item.display_link,
-                        title: item.title,
-                        description: item.description,
-                        images: [],
-                        product_details: {} // Ensure empty object
-                    };
-                }
+            // Apply pagination
+            const startIndex = (page_number - 1) * itemSize;
+            const endIndex = startIndex + itemSize;
+            const paginatedResults = sortedResults.slice(startIndex, endIndex);
+            const responseResult = {
+                result: paginatedResults,
+                total_items: sortedResults.length,
+                current_page: page_number,
+                total_pages: Math.ceil(sortedResults.length / itemSize)
+            }
 
-                // If link exists, fetch product details
-                let productDetails: any;
-                productDetails = await UserCommonHandler.getProductDetails({ product_link: item.link });
-                console.log(productDetails.data)
-                // Check if product details were successfully fetched
-                if (!productDetails?.status) {
-                    return {
-                        link: item.link,
-                        display_link: item.display_link,
-                        title: item.title,
-                        description: item.description,
-                        images: [], // Return empty images array if product details fetch failed
-                        product_details: {} // Ensure empty object
-                    };
-                }
-
-                // Return the item with product details
-                return {
-                    link: item.link,
-                    display_link: item.display_link,
-                    title: item.title,
-                    description: item.description,
-                    images: productDetails?.data?.images || [], // Ensure empty array if no images
-                    product_details: productDetails?.data || {} // Ensure empty object
-                };
-            }));
-
-
-            // Filter out any null entries in the result
-            const filteredResult = result.filter(item => item !== null);
-
-            return showResponse(true, 'here are list of products', { result: filteredResult, item_count }, statusCodes.SUCCESS)
+            return showResponse(true, 'here are list of products', responseResult, statusCodes.SUCCESS)
         } catch (err: any) {
             console.log(err, "ercatch")
             const error = err?.response?.data?.error ? err?.response?.data?.error : err?.message
@@ -211,67 +176,20 @@ const UserCommonHandler = {
         }
     },
     //end
+    //
     getProductDetails: async (data: any): Promise<ApiResponse> => {
         try {
-            const { product_link } = data
-            const apiUrl = WEB_SCRAPER_API(WEB_SCRAPER_API_KEY, product_link, true)
+            const { product_id } = data
+
+            const apiUrl = PRODUCT_DETAILS_SCRAPER_API(WEB_SCRAPER_API_KEY, product_id, true)
 
             const response = await axios.get(apiUrl)
             if (!response.data) {
                 return showResponse(false, 'failed to get product details', null, statusCodes.API_ERROR)
             }
 
-            //when data already parsed then return json directly
-            if (typeof response.data == 'object') {
-                const responseData = keysDeleteFromObject(response.data, ['feature_bullets', 'customization_options', 'reviews', 'variants'])
-                return showResponse(true, 'here is product details', responseData, statusCodes.SUCCESS)
-            }
-            //************************************ELSE Parse Html To JSON***************************************** */
-            // Determine the website's domain
-            const url = new URL(product_link);
-            const domain: string = url.hostname.replace('www.', '');
-
-            // Load the HTML response using Cheerio
-            const $ = cheerio.load(response.data);
-
-            // Get the selectors for the specific website
-            const selectors = WebsiteSelectors[domain];
-            if (selectors) {
-                const images = selectors.imageFetch($, selectors.imageSelector, selectors.imageAttribute)
-
-                const price = $(selectors.priceSelector).first().text().trim();
-                // const price = $(selectors.priceSelector).text().trim();
-                const description = $(selectors.descriptionSelector)
-                    .map((_, element) => $(element).text().trim())
-                    .get()
-                    .join(' ');
-                const productTitle = $(selectors.titleSelector).text().trim();
-                const rating = $(selectors.ratingSelector).attr('aria-label') || '5.0';
-                const soldBy = $(selectors.sellerMeta).attr('content') || '';
-                const brand = $(selectors.brandSelector).text().trim() || '';
-                // const priceCurrency = $(selectors.currencyMeta).attr('content') || 'USD';
-
-                // Create the product details object
-                const productDetails = {
-                    name: productTitle,
-                    description,
-                    link: product_link,
-                    sold_by: soldBy,
-                    brand,
-                    images,
-                    pricing: price,
-                    // size:'',
-                    // price_currency: priceCurrency,
-                    average_rating: rating
-                };
-
-                return showResponse(true, 'here is product details', productDetails, statusCodes.SUCCESS)
-            } else {
-                //if domain selectors not add in our side 
-                const productDetails = fetchDefaultDetails($, product_link);
-                return showResponse(true, 'Here is product details', productDetails, statusCodes.SUCCESS);
-                // return showResponse(false, `Scraping not supported for ${domain}`, null, statusCodes.API_ERROR);
-            }
+            const responseData = keysDeleteFromObject(response.data, ['feature_bullets', 'customization_options', 'reviews', 'variants', 'shipping_time', 'shipping_condition', 'shipping_details_url', '5_star_percentage', '4_star_percentage', '3_star_percentage', '2_star_percentage', '1_star_percentage', 'ships_from', 'aplus_present', 'total_ratings'])
+            return showResponse(true, 'here is product details', responseData, statusCodes.SUCCESS)
 
         } catch (err: any) {
             console.log(err, "ercatch")
@@ -280,6 +198,85 @@ const UserCommonHandler = {
             return showResponse(false, error, null, statusCodes.API_ERROR)
         }
     },
+
+    //********************************************************************************************************************** */
+    // //google serp api 
+    // searchProduct: async (data: any): Promise<ApiResponse> => {
+    //     try {
+    //         const { product_name, country, result_per_page = 5 } = data
+    //         const itemSize = Number(result_per_page)
+    //         console.log(data, "paylaod")
+    //         const options = {
+    //             country,
+    //             result_per_page: itemSize,
+    //             display_lang: 'en'
+    //         }
+
+    //         const apiUrl = GOOGLE_SERP_API(GOOGLE_SERP_API_KEY, product_name, options)
+
+    //         const response = await axios.get(apiUrl)
+    //         if (!response.data?.organic) {
+    //             return showResponse(false, 'Failed to search or no products found', null, statusCodes.API_ERROR);
+    //         }
+
+    //         const organicItems = response.data.organic;
+    //         const item_count = organicItems.length;
+
+    //         // Fetch product details for each item concurrently
+    //         const result = await Promise.all(organicItems.map(async (item: any) => {
+    //             // Check if the item has a link
+    //             if (!item.link) {
+    //                 // Return an object with empty images if link is missing
+    //                 return {
+    //                     link: item.link,
+    //                     display_link: item.display_link,
+    //                     title: item.title,
+    //                     description: item.description,
+    //                     images: [],
+    //                     product_details: {} // Ensure empty object
+    //                 };
+    //             }
+
+    //             // If link exists, fetch product details
+    //             let productDetails: any;
+    //             productDetails = await UserCommonHandler.getProductDetails({ product_link: item.link });
+    //             console.log(productDetails.data)
+    //             // Check if product details were successfully fetched
+    //             if (!productDetails?.status) {
+    //                 return {
+    //                     link: item.link,
+    //                     display_link: item.display_link,
+    //                     title: item.title,
+    //                     description: item.description,
+    //                     images: [], // Return empty images array if product details fetch failed
+    //                     product_details: {} // Ensure empty object
+    //                 };
+    //             }
+
+    //             // Return the item with product details
+    //             return {
+    //                 link: item.link,
+    //                 display_link: item.display_link,
+    //                 title: item.title,
+    //                 description: item.description,
+    //                 images: productDetails?.data?.images || [], // Ensure empty array if no images
+    //                 product_details: productDetails?.data || {} // Ensure empty object
+    //             };
+    //         }));
+
+
+    //         // Filter out any null entries in the result
+    //         const filteredResult = result.filter(item => item !== null);
+
+    //         return showResponse(true, 'here are list of products', { result: filteredResult, item_count }, statusCodes.SUCCESS)
+    //     } catch (err: any) {
+    //         console.log(err, "ercatch")
+    //         const error = err?.response?.data?.error ? err?.response?.data?.error : err?.message
+    //         return showResponse(false, error, null, statusCodes.API_ERROR)
+    //     }
+    // },
+    // //end
+    // //scraperapi.com link search  
     // getProductDetails: async (data: any): Promise<ApiResponse> => {
     //     try {
     //         const { product_link } = data
@@ -337,23 +334,8 @@ const UserCommonHandler = {
     //             return showResponse(true, 'here is product details', productDetails, statusCodes.SUCCESS)
     //         } else {
     //             //if domain selectors not add in our side 
-    //             // Extract product details
-    //             const productDetails = {
-    //                 name: $('meta[property="og:title"]').attr('content') || $('title').text() || '', // Extract title
-    //                 description: $('meta[name="description"]').attr('content') || '', // Extract meta description
-    //                 link: product_link, // Use the link you passed
-    //                 sold_by: $('meta[name="seller"]').attr('content') || '', // Adjust based on site structure
-    //                 brand: $('[data-brand]').text() || '', // Adjust selector for brand
-    //                 images: $('img') // Extract images
-    //                     .map((_, img) => $(img).attr('src'))
-    //                     .get()
-    //                     .filter((src) => src && src.startsWith('http')), // Filter for valid image URLs
-    //                     pricing: $('[data-price]').text() || '', // Adjust selector for price
-    //                 // price_currency: $('[data-currency]').attr('content') || 'USD', // Adjust selector for currency
-    //                 average_rating: $('[data-rating]').text() || '', // Adjust selector for rating
-    //             };
-
-    //             return showResponse(true, 'here is product details', productDetails, statusCodes.SUCCESS)
+    //             const productDetails = fetchDefaultDetails($, product_link);
+    //             return showResponse(true, 'Here is product details', productDetails, statusCodes.SUCCESS);
     //             // return showResponse(false, `Scraping not supported for ${domain}`, null, statusCodes.API_ERROR);
     //         }
 
