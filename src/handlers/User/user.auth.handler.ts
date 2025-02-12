@@ -251,9 +251,9 @@ const UserAuthHandler = {
     //     // check if user exists
     //     const findUser = await findOne(userAuthModel, queryObject);
     //     //if user exist with same account source then throw error
-    //     if (findUser.status && findUser?.data?.account_source == 'email') {
-    //         return showResponse(false, responseMessage.users.email_already, null, statusCodes.API_ERROR);
-    //     }
+        // if (findUser.status && findUser?.data?.account_source == 'email' && findUser?.data?.is_verified) {
+        //     return showResponse(false, responseMessage.users.email_already, null, statusCodes.API_ERROR);
+        // }
 
     //     //if exist with different source (through google apple login) then update details and account source else insert new account entry
     //     const result = await findOneAndUpdate(userAuthModel, queryObject, payload, true);//upsert true
