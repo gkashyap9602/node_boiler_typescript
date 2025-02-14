@@ -34,6 +34,9 @@ const admin_messages = {
     account_update_success: "Details updated successfully",
     users_list: "Here is a list of users",
     logout_success: "Logout Successfully",
+    about_updated: "About Us Content has been updated",
+    privacy_policy_updated: "Privacy Policy Content has been updated",
+    terms_conditions_updated: "Terms & Conditions Content has been updated",
 }
 export = {
     ...admin_messages

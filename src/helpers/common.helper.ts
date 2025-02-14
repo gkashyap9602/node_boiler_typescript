@@ -196,10 +196,11 @@ function generateRandomNumeric(length: number) {
 }
 
 
-const generateOtp = () => {
-    return crypto.randomInt(1000, 9999);
-}
-
+const generateOtp = (length = 4) => {
+    const min = 10 ** (length - 1); // Minimum number (e.g., 1000 for 4 digits)
+    const max = 10 ** length - 1;   // Maximum number (e.g., 9999 for 4 digits)
+    return crypto.randomInt(min, max + 1);
+};
 
 function generateUniqueCustomerId() {
     // Generate an alphanumeric part (e.g., using random characters)

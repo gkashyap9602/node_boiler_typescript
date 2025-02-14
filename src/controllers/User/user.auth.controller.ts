@@ -26,7 +26,8 @@ export default class UserAuthController extends Controller {
      */
     @Post("/login")
     public async login(@Body() request: { email: string, password: string }): Promise<ApiResponse> {
-
+         
+        request.email = request.email.toLocaleLowerCase()
         const validate = validateLoginUser(request);
         if (validate.error) {
             return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
@@ -40,6 +41,7 @@ export default class UserAuthController extends Controller {
 
     //     /**
     //   * User Social login 
+    //   * login_source can be for google use google & for apple use apple etc
     //   */
     //     @Post("/social_login")
     //     public async socialLogin(@FormField() login_source: string, @FormField() social_auth: string, @FormField() email: string, @FormField() user_type: number, @FormField() name?: string, @FormField() os_type?: string): Promise<ApiResponse> {
@@ -62,6 +64,7 @@ export default class UserAuthController extends Controller {
     public async register(@FormField() first_name: string, @FormField() last_name: string, @FormField() email: string, @FormField() password: string, @FormField() phone_number?: string, @FormField() country_code?: string, @UploadedFile() profile_pic?: Express.Multer.File): Promise<ApiResponse> {
         const body = { first_name, last_name, email, password, phone_number, country_code }
 
+        body.email = email.toLocaleLowerCase()
         const validate = validateRegister(body);
         if (validate.error) {
             return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)

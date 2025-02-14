@@ -58,9 +58,28 @@ const AdminCommonHandler = {
     },
 
     updateCommonContent: async (data: any): Promise<ApiResponse> => {
-        const response = await findOneAndUpdate(commonContentModel, {}, data);
+        const { about, privacy_policy, terms_conditions } = data
+
+        const updateObj: any = {
+            ...(about && { about }),
+            ...(privacy_policy && { privacy_policy }),
+            ...(terms_conditions && { terms_conditions })
+        };
+
+        let message = '';
+        if (about) {
+            message = responseMessage.admin.about_updated;
+        }
+        if (privacy_policy) {
+            message = responseMessage.admin.privacy_policy_updated;
+        }
+        if (terms_conditions) {
+            message = responseMessage.admin.terms_conditions_updated;
+        }
+
+        const response = await findOneAndUpdate(commonContentModel, {}, updateObj);
         if (response.status) {
-            return showResponse(true, responseMessage.admin.common_content_updated, response?.data, statusCodes.SUCCESS);
+            return showResponse(true, message, response?.data, statusCodes.SUCCESS);
         }
         return showResponse(false, responseMessage.common.update_failed, {}, statusCodes.API_ERROR)
     },

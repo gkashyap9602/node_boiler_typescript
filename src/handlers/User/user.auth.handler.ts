@@ -54,7 +54,7 @@ const UserAuthHandler = {
 
         const queryObject = { email, is_verified: true, status: { $ne: USER_STATUS.DELETED } }
         //****if social login is used in project then user this query**** 
-        // const queryObject = { email, account_source: 'email', status: { $ne: USER_STATUS.DELETED } }
+        //   const queryObject = { email, is_verified: true, account_source: 'email', status: { $ne: USER_STATUS.DELETED } }
 
         const findUser = await findOne(userAuthModel, queryObject);
         if (!findUser.status) {
@@ -132,7 +132,8 @@ const UserAuthHandler = {
     //         if (findUser?.data?.status == USER_STATUS.DEACTIVATED && findUser.data?.deactivate_by === DEACTIVATE_BY.USER) {
     //             await findOneAndUpdate(userAuthModel, { _id: findUser.data?._id }, { status: USER_STATUS.ACTIVE, deactivate_by: '' })
     //         }
-
+    //         //update main email and name everytime user login through social login and user exists
+    //         await findOneAndUpdate(userAuthModel, { _id: findUser?.data?._id }, { first_name: name, email })
     //         return showResponse(true, responseMessage.users.login_success, userData, statusCodes.SUCCESS);
 
     //     } else {
@@ -212,7 +213,7 @@ const UserAuthHandler = {
             return showResponse(false, responseMessage.common.error_while_create_acc, null, statusCodes.API_ERROR)
         }
 
-        return showResponse(true, responseMessage.users.register_success, {}, statusCodes.SUCCESS)
+        return showResponse(true, responseMessage.users.verification_email_sent, {}, statusCodes.SUCCESS)
 
     },//ends
 
@@ -251,9 +252,9 @@ const UserAuthHandler = {
     //     // check if user exists
     //     const findUser = await findOne(userAuthModel, queryObject);
     //     //if user exist with same account source then throw error
-        // if (findUser.status && findUser?.data?.account_source == 'email' && findUser?.data?.is_verified) {
-        //     return showResponse(false, responseMessage.users.email_already, null, statusCodes.API_ERROR);
-        // }
+    // if (findUser.status && findUser?.data?.account_source == 'email' && findUser?.data?.is_verified) {
+    //     return showResponse(false, responseMessage.users.email_already, null, statusCodes.API_ERROR);
+    // }
 
     //     //if exist with different source (through google apple login) then update details and account source else insert new account entry
     //     const result = await findOneAndUpdate(userAuthModel, queryObject, payload, true);//upsert true
@@ -266,14 +267,14 @@ const UserAuthHandler = {
     //         return showResponse(false, responseMessage.users.register_error, null, statusCodes.API_ERROR);
     //     }
 
-    //     return showResponse(true, responseMessage.users.register_success, null, statusCodes.SUCCESS);
+    //     return showResponse(true, responseMessage.users.verification_email_sent, null, statusCodes.SUCCESS);
     // },
     //ends
 
     forgotPassword: async (data: any): Promise<ApiResponse> => {
         const { email } = data;
 
-        const queryObject = { email, status: { $ne: USER_STATUS.DELETED } }
+        const queryObject = { email, is_verified: true, status: { $ne: USER_STATUS.DELETED } }
         // check if user exists
         const exists = await findOne(userAuthModel, queryObject);
         if (!exists.status) {
@@ -300,7 +301,7 @@ const UserAuthHandler = {
     resetPassword: async (data: any): Promise<ApiResponse> => {
         const { email, new_password, otp } = data;
 
-        const queryObject = { email, status: { $ne: USER_STATUS.DELETED } }
+        const queryObject = { email, is_verified: true, status: { $ne: USER_STATUS.DELETED } }
 
         const result = await findOne(userAuthModel, queryObject);
         if (!result.status) {
@@ -432,7 +433,7 @@ const UserAuthHandler = {
         }
 
         const msg = status == USER_STATUS.DELETED ? 'deleted' : 'deactivated'
-        return showResponse(true, `${responseMessage.users.user_account_has_been} ${msg}`, null, statusCodes.SUCCESS);
+        return showResponse(true, `${responseMessage.users.user_account_has_been} ${msg} Successfully`, null, statusCodes.SUCCESS);
     },//ends
 
     async refreshToken(data: any): Promise<ApiResponse> {

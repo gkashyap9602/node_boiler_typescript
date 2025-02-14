@@ -23,6 +23,27 @@ const AdminUserHandler = {
             ]
         }
 
+        //if used social login n project 
+        // const queryObject: any = {
+        //     user_type: ROLE.USER, // 3 for users
+        //     status: { $ne: USER_STATUS.DELETED },
+        //     $and: [
+        //         {
+        //             $or: [
+        //                 { email: { $regex: search_key, $options: 'i' } },
+        //                 { name: { $regex: search_key, $options: 'i' } }
+        //             ]
+        //         },
+        //         {
+        //             $or: [
+        //                 { account_source: { $ne: "email" } }, // Allow all non-email accounts
+        //                 { $and: [{ account_source: "email" }, { is_verified: true }] } // Email accounts must be verified
+        //             ]
+        //         }
+        //     ]
+        // };
+
+
         if (status) {
             queryObject.status = status
         }
