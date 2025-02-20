@@ -132,8 +132,6 @@ const UserAuthHandler = {
     //         if (findUser?.data?.status == USER_STATUS.DEACTIVATED && findUser.data?.deactivate_by === DEACTIVATE_BY.USER) {
     //             await findOneAndUpdate(userAuthModel, { _id: findUser.data?._id }, { status: USER_STATUS.ACTIVE, deactivate_by: '' })
     //         }
-    //         //update main email and name everytime user login through social login and user exists
-    //         await findOneAndUpdate(userAuthModel, { _id: findUser?.data?._id }, { first_name: name, email })
     //         return showResponse(true, responseMessage.users.login_success, userData, statusCodes.SUCCESS);
 
     //     } else {

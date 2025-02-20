@@ -26,8 +26,8 @@ export default class UserAuthController extends Controller {
      */
     @Post("/login")
     public async login(@Body() request: { email: string, password: string }): Promise<ApiResponse> {
-         
-        request.email = request.email.toLocaleLowerCase()
+
+        request.email = request.email.toLocaleLowerCase().trim()
         const validate = validateLoginUser(request);
         if (validate.error) {
             return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
@@ -64,7 +64,7 @@ export default class UserAuthController extends Controller {
     public async register(@FormField() first_name: string, @FormField() last_name: string, @FormField() email: string, @FormField() password: string, @FormField() phone_number?: string, @FormField() country_code?: string, @UploadedFile() profile_pic?: Express.Multer.File): Promise<ApiResponse> {
         const body = { first_name, last_name, email, password, phone_number, country_code }
 
-        body.email = email.toLocaleLowerCase()
+        body.email = email.toLocaleLowerCase().trim()
         const validate = validateRegister(body);
         if (validate.error) {
             return showResponse(false, validate.error.message, null, statusCodes.VALIDATION_ERROR)
