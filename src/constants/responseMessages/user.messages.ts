@@ -14,6 +14,7 @@ const user_messages = {
     user_account_error: "Something wrong happens to user account",
     invalid_email: "invalid email",
     not_registered: "Mentioned email is not registered with us",
+    cannot_same_old_new_password: "New password and old password cannot be the same",
     invalid_phone: "Mentioned phone is not registered with us",
     verification_email_sent: "Email Verification Link has been sent to your email address",
     verification_email_error: "Unable to send verification email to your email address",

@@ -135,6 +135,12 @@ const AdminAuthHandler = {
             return showResponse(false, responseMessage.admin.invalid_old_password, null, statusCodes.API_ERROR)
         }
 
+        //new password and old password cannot be same
+        if (new_password === old_password) {
+            return showResponse(false, responseMessage.admin.cannot_same_old_new_password, null, statusCodes.API_ERROR)
+        }
+
+
         const hashed = await commonHelper.bycrptPasswordHash(new_password)
         const result = await findByIdAndUpdate(adminAuthModel, adminId, { password: hashed })
         if (!result.status) {
@@ -157,7 +163,7 @@ const AdminAuthHandler = {
     updateAdminProfile: async (data: any, admin_id: string, profile_pic: any): Promise<ApiResponse> => {
         const { first_name, last_name, phone_number, country_code, greet_msg } = data
 
-        const updateObj :any= {
+        const updateObj: any = {
             ...(first_name && { first_name }),
             ...(last_name && { last_name }),
             ...(phone_number && { phone_number }),

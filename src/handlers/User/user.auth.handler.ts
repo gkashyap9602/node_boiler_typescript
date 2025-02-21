@@ -370,6 +370,11 @@ const UserAuthHandler = {
             return showResponse(false, responseMessage.users.invalid_old_password, null, statusCodes.API_ERROR)
         }
 
+        //new password and old password cannot be same
+        if (new_password === old_password) {
+            return showResponse(false, responseMessage.users.cannot_same_old_new_password, null, statusCodes.API_ERROR)
+        }
+
         const hashed = await commonHelper.bycrptPasswordHash(new_password)
         const result = await findByIdAndUpdate(userAuthModel, userId, { password: hashed })
         if (!result.status) {

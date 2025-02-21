@@ -8,6 +8,7 @@ const admin_messages = {
     login_success: "Administrator Login Success",
     login_error: "Unable to login at the moment",
     invalid_login: "Invalid credentials",
+    cannot_same_old_new_password: "New password and old password cannot be the same",
     forgot_password_email_sent: "Forgot Password Email has been sent to your registered email address",
     forgot_password_email_error: "Error Occurred while sending forgot password email",
     otp_resend: "Otp resend to your email successfully",
