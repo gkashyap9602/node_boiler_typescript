@@ -1,6 +1,6 @@
 import { Model } from 'mongoose'
 import { showResponse } from '../utils/response.util';
-import { ApiResponse, fromNotification, IRecordOfAny, toNotification } from '../utils/interfaces.util';
+import { ApiResponse, IRecordOfAny } from '../utils/interfaces.util';
 import statusCodes from '../constants/statusCodes';
 
 export const findOne = (Model: Model<any>, queryObject: IRecordOfAny, fields: IRecordOfAny = {}, populate?: string | null): Promise<ApiResponse> => {

@@ -84,7 +84,7 @@ const getSecretFromAWS = async (secret_key_param: string) => {
                 return resolve(response);
             });
         } catch (e) {
-            // console.log("err in catch", e);
+            console.log("err in catch", e);
             return resolve(false);
         }
     });

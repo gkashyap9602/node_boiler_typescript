@@ -1,13 +1,12 @@
 import { ApiResponse, tokenUserTypeInterface } from "../../utils/interfaces.util";
 import { showResponse } from "../../utils/response.util";
 import { findOne, findByIdAndUpdate, findOneAndUpdate } from "../../helpers/db.helpers";
-import { decodeToken, generateAccessRefreshToken, generateJwtToken } from "../../utils/auth.util";
+import { decodeToken, generateAccessRefreshToken } from "../../utils/auth.util";
 import * as commonHelper from "../../helpers/common.helper";
 import adminAuthModel from "../../models/Admin/admin.auth.model";
 import services from '../../services';
 import responseMessage from '../../constants/responseMessages'
-import { APP } from '../../constants/app.constant';
-import { EMAIL_SEND_TYPE, USER_STATUS } from '../../constants/workflow.constant';
+import { EMAIL_SEND_TYPE } from '../../constants/workflow.constant';
 
 import statusCodes from '../../constants/statusCodes'
 

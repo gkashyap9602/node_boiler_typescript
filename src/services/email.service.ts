@@ -137,7 +137,7 @@ const sendEmail = async (emailType: EmailSendType, recipientEmail: string, body:
 
         return showResponse(true, responseMessages.common.email_sent_success, emailSent, statusCodes.SUCCESS);
     } catch (error: any) {
-        return showResponse(false, responseMessages.common.email_sent_error, null, statusCodes.API_ERROR);
+        return showResponse(false, responseMessages.common.email_sent_error, error, statusCodes.API_ERROR);
     }
 };//
 

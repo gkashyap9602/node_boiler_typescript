@@ -19,7 +19,7 @@ export const verifyTokenUser = async (req: Request, res: Response, next: NextFun
             return showOutput(res, decoded, decoded?.code) //return error message if token expire account deactiavted etc... 
         }
     } catch (error) {
-        return showOutput(res, { status: false, message: responseMessages.users.unauthorised_user, data: null, code: statusCodes.AUTH_TOKEN_ERROR }, statusCodes.AUTH_TOKEN_ERROR)
+        return showOutput(res, { status: false, message: responseMessages.users.unauthorised_user, data: error, code: statusCodes.AUTH_TOKEN_ERROR }, statusCodes.AUTH_TOKEN_ERROR)
     }
 }//ends
 
@@ -39,7 +39,7 @@ export const verifyTokenAdmin = async (req: Request, res: Response, next: NextFu
             return showOutput(res, decoded, decoded?.code) //return error message if token expire account deactiavted etc... 
         }
     } catch (error) {
-        return showOutput(res, { status: false, message: responseMessages.admin.unauthorized_access, data: null, code: statusCodes.AUTH_TOKEN_ERROR }, statusCodes.AUTH_TOKEN_ERROR)
+        return showOutput(res, { status: false, message: responseMessages.admin.unauthorized_access, data: error, code: statusCodes.AUTH_TOKEN_ERROR }, statusCodes.AUTH_TOKEN_ERROR)
     }
 } //ends
 
@@ -55,7 +55,7 @@ export const verifyTokenBoth = async (req: Request, res: Response, next: NextFun
         }
 
     } catch (error) {
-        return showOutput(res, { status: false, message: responseMessages.admin.unauthorized_access, data: null, code: statusCodes.AUTH_TOKEN_ERROR }, statusCodes.AUTH_TOKEN_ERROR)
+        return showOutput(res, { status: false, message: responseMessages.admin.unauthorized_access, data: error, code: statusCodes.AUTH_TOKEN_ERROR }, statusCodes.AUTH_TOKEN_ERROR)
     }
 } //ends
 

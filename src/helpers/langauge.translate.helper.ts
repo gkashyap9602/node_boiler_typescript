@@ -113,7 +113,7 @@ const LANGUAGES = {
 
 //for simple translation 
 const translateText = (text: string, targetLanguage: string): Promise<string> => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         translatte(text, { to: targetLanguage })
             .then((res: any) => {
                 resolve(res.text);  // Return translated text
